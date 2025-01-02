@@ -1,6 +1,10 @@
-package project.model;
+package project.model.map;
 
+import project.model.util.MapChangeListener;
 import project.model.exceptions.IncorrectPositionException;
+import project.model.movement.MapDirection;
+import project.model.movement.MoveDirection;
+import project.model.movement.Vector2d;
 import project.model.util.MapVisualizer;
 import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;

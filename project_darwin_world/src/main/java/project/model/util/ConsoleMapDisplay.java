@@ -1,7 +1,6 @@
 package project.model.util;
 
-import project.model.MapChangeListener;
-import project.model.WorldMap;
+import project.model.map.WorldMap;
 
 public class ConsoleMapDisplay implements MapChangeListener {
     public static final String MAP_COUNTER_CHANGE_MESSAGE_TEMPLATE = "%d. Change: %s";

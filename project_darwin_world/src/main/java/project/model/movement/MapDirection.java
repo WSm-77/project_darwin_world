@@ -1,4 +1,4 @@
-package project.model;
+package project.model.movement;
 
 public enum MapDirection {
     NORTH,

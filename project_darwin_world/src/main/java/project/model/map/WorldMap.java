@@ -1,6 +1,9 @@
-package project.model;
+package project.model.map;
 
 import project.model.exceptions.IncorrectPositionException;
+import project.model.movement.MoveDirection;
+import project.model.movement.MoveValidator;
+import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;
 

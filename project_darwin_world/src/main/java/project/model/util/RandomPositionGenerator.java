@@ -1,6 +1,6 @@
 package project.model.util;
 
-import project.model.Vector2d;
+import project.model.movement.Vector2d;
 
 import java.util.*;
 

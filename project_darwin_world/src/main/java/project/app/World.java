@@ -1,7 +1,15 @@
-package project;
+package project.app;
 
-import project.model.*;
+import project.model.map.GrassField;
+import project.model.map.RectangularMap;
+import project.model.movement.MapDirection;
+import project.model.movement.MoveDirection;
+import project.model.movement.Vector2d;
+import project.model.simulation.Simulation;
+import project.model.simulation.SimulationEngine;
 import project.model.util.ConsoleMapDisplay;
+import project.model.util.MapChangeListener;
+import project.model.util.OptionsParser;
 import project.model.worldelements.Animal;
 
 import java.time.Duration;

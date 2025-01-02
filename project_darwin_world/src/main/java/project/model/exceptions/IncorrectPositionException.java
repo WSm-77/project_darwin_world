@@ -1,6 +1,6 @@
 package project.model.exceptions;
 
-import project.model.Vector2d;
+import project.model.movement.Vector2d;
 
 public class IncorrectPositionException extends Exception {
     public static final String EXCEPTION_MESSAGE_TEMPLATE = "Position %s is not correct";

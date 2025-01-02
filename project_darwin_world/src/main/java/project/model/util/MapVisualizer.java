@@ -1,7 +1,7 @@
 package project.model.util;
 
-import project.model.Vector2d;
-import project.model.WorldMap;
+import project.model.movement.Vector2d;
+import project.model.map.WorldMap;
 
 /**
  * The map visualizer converts the {@link WorldMap} map into a string

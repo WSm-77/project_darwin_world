@@ -1,4 +1,4 @@
-package project;
+package project.model.simulation;
 
 import java.util.ArrayList;
 import java.util.List;

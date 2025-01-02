@@ -1,10 +1,6 @@
-package project.model;
+package project.model.map;
 
-import project.model.util.MapVisualizer;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import project.model.movement.Vector2d;
 
 public class RectangularMap extends AbstractWorldMap {
     public RectangularMap(int width, int height) {

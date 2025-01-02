@@ -1,9 +1,9 @@
 package project.model.worldelements;
 
-import project.model.MapDirection;
-import project.model.MoveDirection;
-import project.model.MoveValidator;
-import project.model.Vector2d;
+import project.model.movement.MapDirection;
+import project.model.movement.MoveDirection;
+import project.model.movement.MoveValidator;
+import project.model.movement.Vector2d;
 
 public class Animal implements WorldElement {
     public static final Vector2d DEFAULT_POSITION = new Vector2d(2, 2);

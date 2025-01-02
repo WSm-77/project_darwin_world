@@ -1,6 +1,4 @@
-package project.model;
-
-import project.model.Vector2d;
+package project.model.movement;
 
 public interface MoveValidator {
 
