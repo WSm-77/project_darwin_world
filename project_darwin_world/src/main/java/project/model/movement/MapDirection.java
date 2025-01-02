@@ -2,12 +2,12 @@ package project.model.movement;
 
 public enum MapDirection {
     NORTH,
-    SOUTH,
-    WEST,
-    EAST,
     NORTH_EAST,
+    EAST,
     SOUTH_EAST,
+    SOUTH,
     SOUTH_WEST,
+    WEST,
     NORTH_WEST;
 
     private static final Vector2d NORTH_UNIT_VECTOR = new Vector2d(0, 1);
@@ -21,15 +21,20 @@ public enum MapDirection {
 
     public String toString() {
         return switch (this) {
-            case NORTH -> "Północ";
-            case NORTH_EAST -> "Północny-wschód";
-            case EAST -> "Wschód";
-            case SOUTH_EAST -> "Południowy-wschód";
-            case SOUTH -> "Południe";
-            case SOUTH_WEST -> "Południowy-zachód";
-            case WEST -> "Zachód";
-            case NORTH_WEST -> "Północny-zachód";
+            case NORTH -> "N";
+            case NORTH_EAST -> "NE";
+            case EAST -> "E";
+            case SOUTH_EAST -> "SE";
+            case SOUTH -> "S";
+            case SOUTH_WEST -> "SW";
+            case WEST -> "W";
+            case NORTH_WEST -> "NW";
         };
+    }
+
+    public MapDirection rotate(int angleNum) {
+        MapDirection[] values = MapDirection.values();
+        return values[(this.ordinal() + angleNum) % values.length];
     }
 
     public MapDirection next() {
