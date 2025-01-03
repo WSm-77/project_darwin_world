@@ -53,11 +53,6 @@ public class GrassField extends AbstractWorldMap {
     }
 
     @Override
-    public boolean isOccupied(Vector2d position) {
-        return super.isOccupied((position)) || this.grassFields.containsKey(position);
-    }
-
-    @Override
     public Optional<WorldElement> objectAt(Vector2d position) {
         var worldElement = super.objectAt(position);
         return worldElement.isPresent() ? worldElement : Optional.ofNullable(this.grassFields.get(position));

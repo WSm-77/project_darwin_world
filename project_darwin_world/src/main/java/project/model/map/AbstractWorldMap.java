@@ -102,11 +102,6 @@ abstract public class AbstractWorldMap implements WorldMap {
     }
 
     @Override
-    public boolean isOccupied(Vector2d position) {
-        return this.animals.containsKey(position);
-    }
-
-    @Override
     public Optional<WorldElement> objectAt(Vector2d position) {
         return Optional.ofNullable(this.animals.get(position));
     }
