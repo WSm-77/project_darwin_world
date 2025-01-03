@@ -7,6 +7,7 @@ import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -40,12 +41,12 @@ public interface WorldMap extends MoveValidator {
     boolean isOccupied(Vector2d position);
 
     /**
-     * Return a WorldElement at a given position.
+     * Return a Optional Object of WorldElement at a given position.
      *
      * @param position The position of the animal.
-     * @return WorldElement or null if the position is not occupied.
+     * @return Optional object of WorldElement or empty Optional if the position is not occupied.
      */
-    WorldElement objectAt(Vector2d position);
+    Optional<WorldElement> objectAt(Vector2d position);
 
     /**
      * Return list of all map elements that are one the map.

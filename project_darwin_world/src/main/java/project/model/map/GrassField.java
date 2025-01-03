@@ -58,9 +58,9 @@ public class GrassField extends AbstractWorldMap {
     }
 
     @Override
-    public WorldElement objectAt(Vector2d position) {
-        WorldElement worldElement = super.objectAt(position);
-        return worldElement != null ? worldElement : this.grassFields.get(position);
+    public Optional<WorldElement> objectAt(Vector2d position) {
+        var worldElement = super.objectAt(position);
+        return worldElement.isPresent() ? worldElement : Optional.ofNullable(this.grassFields.get(position));
     }
 
     @Override
