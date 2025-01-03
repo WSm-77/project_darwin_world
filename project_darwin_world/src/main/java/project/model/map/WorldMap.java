@@ -1,7 +1,6 @@
 package project.model.map;
 
 import project.model.exceptions.IncorrectPositionException;
-import project.model.movement.MoveDirection;
 import project.model.movement.MoveValidator;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
@@ -12,7 +11,6 @@ import java.util.UUID;
 
 /**
  * The interface responsible for interacting with the map of the world.
- * Assumes that Vector2d and MoveDirection classes are defined.
  *
  * @author apohllo, idzik
  */

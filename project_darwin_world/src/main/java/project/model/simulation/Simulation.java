@@ -1,7 +1,6 @@
 package project.model.simulation;
 
 import project.model.worldelements.Animal;
-import project.model.movement.MoveDirection;
 import project.model.movement.Vector2d;
 import project.model.map.WorldMap;
 import project.model.exceptions.IncorrectPositionException;
@@ -11,15 +10,15 @@ import java.util.List;
 
 public class Simulation implements Runnable {
     private final List<Animal> animals;
-    private final List<MoveDirection> moves;
+    private final int numberOfMoves;
     private final WorldMap worldMap;
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!\n";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!\n";
     public static final int SIMULATION_REFRESH_TIME_MS = 500;
 
-    public Simulation(List<Vector2d> positions, List<MoveDirection> moves, WorldMap worldMap) {
+    public Simulation(List<Vector2d> positions, int numberOfMoves, WorldMap worldMap) {
         this.worldMap = worldMap;
-        this.moves = moves;
+        this.numberOfMoves = numberOfMoves;
 
         List<Animal> animals = new ArrayList<>();
 
@@ -38,10 +37,6 @@ public class Simulation implements Runnable {
 
     public List<Animal> getAnimals() {
         return this.animals;
-    }
-
-    public List<MoveDirection> getMoves() {
-        return this.moves;
     }
 
     public WorldMap getWorldMap() {
@@ -65,7 +60,7 @@ public class Simulation implements Runnable {
         // set iterator to first element
         var animalsIterator = this.animals.listIterator();
 
-        for (var move : this.moves) {
+        for (int i = 0; i < this.numberOfMoves; i++) {
             // stop execution if thread was interrupted
             if (Thread.currentThread().isInterrupted()) {
                 System.out.println(this.createTimeoutReachedMessage());
