@@ -26,10 +26,10 @@ public interface WorldMap extends MoveValidator {
     void place(Animal animal) throws IncorrectPositionException;
 
     /**
-     * Moves an animal (if it is present on the map) according to specified direction.
+     * Moves an animal (if it is present on the map) according to it's orientation.
      * If the move is not possible, this method has no effect.
      */
-    void move(Animal animal, MoveDirection direction);
+    void move(Animal animal);
 
     /**
      * Return true if given position on the map is occupied. Should not be

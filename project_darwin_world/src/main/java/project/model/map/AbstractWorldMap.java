@@ -15,7 +15,7 @@ abstract public class AbstractWorldMap implements WorldMap {
     public static final Vector2d DEFAULT_POSITION = new Vector2d(0, 0);
     public static final String PLACE_MESSAGE_TEMPLATE = "Animal '%s' was placed at %s";
     public static final String CHANGE_POSITION_MESSAGE_TEMPLATE = "Animal '%s' was moved from %s to %s";
-    public static final String NO_POSITION_CHANGE_MESSAGE_TEMPLATE = "Animal '%s' at %s wanted to move %s, but this move " +
+    public static final String NO_POSITION_CHANGE_MESSAGE_TEMPLATE = "Animal '%s' at %s wanted to move forward, but this move " +
             "is not allowed";
     public static final String CHANGE_ORIENTATION_MESSAGE_TEMPLATE = "Animal '%s' at %s changed it's orientation " +
             "from %s to %s";
@@ -56,19 +56,19 @@ abstract public class AbstractWorldMap implements WorldMap {
                 animal.getPosition().toString(), prevOrientation.toString(), animal.getOrientation().toString());
     }
 
-    private String createNoPositionChangeMessage(Animal animal, MoveDirection direction) {
+    private String createNoPositionChangeMessage(Animal animal) {
         return String.format(AbstractWorldMap.NO_POSITION_CHANGE_MESSAGE_TEMPLATE, animal.toString(),
-                animal.getPosition().toString(), direction.toString());
+                animal.getPosition().toString());
     }
 
     @Override
-    public void move(Animal animal, MoveDirection direction) {
+    public void move(Animal animal) {
         // allow subclasses to perform additional actions
-        this.preMove(animal, direction);
+        this.preMove(animal);
 
         var prevAnimalPosition = animal.getPosition();
         var prevAnimalOrientation = animal.getOrientation();
-        animal.move(direction, this);
+        animal.move(this);
 
         String message;
 
@@ -85,20 +85,20 @@ abstract public class AbstractWorldMap implements WorldMap {
         }
         // move is not allowed
         else {
-            message = this.createNoPositionChangeMessage(animal, direction);
+            message = this.createNoPositionChangeMessage(animal);
         }
 
         // allow subclasses to perform additional actions
-        this.postMove(animal, direction);
+        this.postMove(animal);
 
         this.mapChanged(message);
     }
 
-    protected void preMove(Animal animal, MoveDirection direction) {
+    protected void preMove(Animal animal) {
         // space for subclasses to add logic before moving animal
     }
 
-    protected void postMove(Animal animal, MoveDirection direction) {
+    protected void postMove(Animal animal) {
         // space for subclasses to add logic after moving animal
     }
 

@@ -49,7 +49,7 @@ public class GrassField extends AbstractWorldMap {
     }
 
     @Override
-    protected void postMove(Animal animal, MoveDirection direction) {
+    protected void postMove(Animal animal) {
         this.updateBoundaries(animal.getPosition());
     }
 

@@ -1,7 +1,6 @@
 package project.model.worldelements;
 
 import project.model.movement.MapDirection;
-import project.model.movement.MoveDirection;
 import project.model.movement.MoveValidator;
 import project.model.movement.Vector2d;
 
@@ -27,11 +26,6 @@ public class Animal implements WorldElement {
         this.genome = genome;
         this.energy = startEnergy;
         this.orientation = Animal.DEFAULT_ORIENTATION;
-    }
-
-    // TODO: remove
-    public void move(MoveDirection direction, MoveValidator moveValidator) {
-        this.move(moveValidator);
     }
 
     public boolean move(MoveValidator moveValidator) {

@@ -86,7 +86,7 @@ public class Simulation implements Runnable {
 
             Animal currentAnimal = animalsIterator.next();
 
-            this.worldMap.move(currentAnimal, move);
+            this.worldMap.move(currentAnimal);
         }
     }
 }
