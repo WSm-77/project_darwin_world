@@ -10,7 +10,7 @@ import project.model.map.WorldMap;
  * @author apohllo, idzik
  */
 public class MapVisualizer {
-    private static final String EMPTY_CELL = " ";
+    private static final String EMPTY_CELL = "  ";
     private static final String FRAME_SEGMENT = "-";
     private static final String CELL_SEGMENT = "|";
     private final WorldMap map;
@@ -57,7 +57,7 @@ public class MapVisualizer {
 
     private String drawFrame(boolean innerSegment) {
         if (innerSegment) {
-            return FRAME_SEGMENT + FRAME_SEGMENT;
+            return FRAME_SEGMENT + FRAME_SEGMENT + FRAME_SEGMENT;
         } else {
             return FRAME_SEGMENT;
         }
@@ -67,7 +67,7 @@ public class MapVisualizer {
         StringBuilder builder = new StringBuilder();
         builder.append(" y\\x ");
         for (int j = lowerLeft.getX(); j < upperRight.getX() + 1; j++) {
-            builder.append(String.format("%2d", j));
+            builder.append(String.format("%3d", j));
         }
         builder.append(System.lineSeparator());
         return builder.toString();
@@ -77,7 +77,7 @@ public class MapVisualizer {
         if (this.map.isOccupied(currentPosition)) {
             Object object = this.map.objectAt(currentPosition);
             if (object != null) {
-                return object.toString();
+                return String.format("%-2s", object.toString());
             }
         }
         return EMPTY_CELL;
