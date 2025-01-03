@@ -1,6 +1,5 @@
 package project.app;
 
-import project.model.map.GrassField;
 import project.model.map.Sphere;
 import project.model.movement.Vector2d;
 import project.model.simulation.Simulation;
@@ -15,7 +14,6 @@ public class World {
         // start
         System.out.println("System started");
 
-        // GrassField Simulation
         List<Vector2d> positions = List.of(new Vector2d(3, 4));
 
         MapChangeListener consoleLog = new ConsoleMapDisplay();
