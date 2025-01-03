@@ -1,7 +1,6 @@
 package project.model.map;
 
 import project.model.exceptions.IncorrectPositionException;
-import project.model.movement.MoveDirection;
 import project.model.movement.MoveValidator;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
@@ -12,7 +11,6 @@ import java.util.UUID;
 
 /**
  * The interface responsible for interacting with the map of the world.
- * Assumes that Vector2d and MoveDirection classes are defined.
  *
  * @author apohllo, idzik
  */
@@ -26,10 +24,10 @@ public interface WorldMap extends MoveValidator {
     void place(Animal animal) throws IncorrectPositionException;
 
     /**
-     * Moves an animal (if it is present on the map) according to specified direction.
+     * Moves an animal (if it is present on the map) according to it's orientation.
      * If the move is not possible, this method has no effect.
      */
-    void move(Animal animal, MoveDirection direction);
+    void move(Animal animal);
 
     /**
      * Return true if given position on the map is occupied. Should not be
