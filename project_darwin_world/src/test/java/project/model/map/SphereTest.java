@@ -2,14 +2,14 @@ package project.model.map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import project.model.exceptions.IncorrectPositionException;
 import project.model.movement.MapDirection;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
 import project.model.worldelements.Genome;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 class SphereIT {
     private static final int WIDTH = 5;
@@ -49,7 +49,7 @@ class SphereIT {
                 true, // new Vector2d(0, 0)
                 true,   // new Vector2d(4, 5)
                 true,   // new Vector2d(2, 2)
-                false,   // new Vector2d(5, 6)
+                false,  // new Vector2d(5, 6)
                 false,  // new Vector2d(100, 100)
                 false,  // new Vector2d(-100, -100)
                 false,  // new Vector2d(-100, 100)
@@ -147,6 +147,7 @@ class SphereIT {
         // when
         // then
         Assertions.assertDoesNotThrow(() -> map.place(animal));
+        Assertions.assertTrue(map.animalsAt(position).isPresent());
     }
 
     @Test
@@ -158,13 +159,36 @@ class SphereIT {
         // when
         // then
         Assertions.assertThrowsExactly(IncorrectPositionException.class, () -> map.place(animal));
+        Assertions.assertFalse(map.animalsAt(position).isPresent());
+    }
+
+    @Test
+    void placeMultipleAnimalsAtTheSamePosition() {
+        // given
+        Vector2d position = new Vector2d(2, 2);
+        Animal firstAnimal = new Animal(position);
+        Animal secondAnimal = new Animal(position);
+        Animal thirdAnimal = new Animal(position);
+
+        Set<Animal> expectedAnimalsSet = Set.of(firstAnimal, secondAnimal, thirdAnimal);
+
+        // when
+        Executable placeFirstAnimal = () -> map.place(firstAnimal);
+        Executable placeSecondAnimal = () -> map.place(secondAnimal);
+        Executable placeThirdAnimal = () -> map.place(thirdAnimal);
+
+        // then
+        Assertions.assertDoesNotThrow(placeFirstAnimal);
+        Assertions.assertDoesNotThrow(placeSecondAnimal);
+        Assertions.assertDoesNotThrow(placeThirdAnimal);
+        Assertions.assertEquals(expectedAnimalsSet, map.animalsAt(position).get());
     }
 
     @Test
     void generalAnimalMovement() {
         // given
         Vector2d animalStartPosition = new Vector2d(4, 5);   // start in top right corner
-        List<Integer> rotations = List.of(7, 1, 1, 2);
+        List<Integer> rotations = List.of(7, 1, 1, 2, 1, 0, 0, 7, 0, 6);
         Genome genome = new Genome(rotations, 0);
         Animal animal = new Animal(animalStartPosition, genome, 100);
 
@@ -172,14 +196,26 @@ class SphereIT {
                 new Vector2d(4, 5),
                 new Vector2d(4, 5),
                 new Vector2d(4, 5),
-                new Vector2d(0, 4)
+                new Vector2d(0, 4),
+                new Vector2d(0, 3),
+                new Vector2d(0, 2),
+                new Vector2d(0, 1),
+                new Vector2d(1, 0),
+                new Vector2d(1, 0),
+                new Vector2d(2, 1)
         );
 
         List<MapDirection> expectedNextOrientations = List.of(
                 MapDirection.NORTH_WEST,
                 MapDirection.NORTH,
                 MapDirection.NORTH_EAST,
-                MapDirection.SOUTH_EAST
+                MapDirection.SOUTH_EAST,
+                MapDirection.SOUTH,
+                MapDirection.SOUTH,
+                MapDirection.SOUTH,
+                MapDirection.SOUTH_EAST,
+                MapDirection.SOUTH_EAST,
+                MapDirection.NORTH_EAST
         );
 
         // when
@@ -197,5 +233,62 @@ class SphereIT {
         // then
         Assertions.assertEquals(expectedNextPositions, nextPositions);
         Assertions.assertEquals(expectedNextOrientations, nextOrientations);
+    }
+
+    @Test
+    void multipleAnimalsAtTheSamePosition() {
+        // given
+        Vector2d firstAnimalStartPosition = new Vector2d(0, 0);
+        Vector2d secondAnimalStartPosition = new Vector2d(0, 2);
+        List<Integer> firstAnimalRotations = List.of(0);
+        List<Integer> secondAnimalRotations = List.of(4, 0);
+        Genome firstAnimalGenome = new Genome(firstAnimalRotations, 0);
+        Genome secondAnimalGenome = new Genome(secondAnimalRotations, 0);
+        Animal firstAnimal = new Animal(firstAnimalStartPosition, firstAnimalGenome, 100);
+        Animal secondAnimal = new Animal(secondAnimalStartPosition, secondAnimalGenome, 100);
+
+        List<Vector2d> firstAnimalExpectedNextPositions = List.of(
+                new Vector2d(0, 1),
+                new Vector2d(0, 2)
+        );
+
+        List<MapDirection> firstAnimalExpectedNextOrientations = List.of(
+                MapDirection.NORTH,
+                MapDirection.NORTH
+        );
+
+        List<Vector2d> secondAnimalExpectedNextPositions = List.of(
+                new Vector2d(0, 1),
+                new Vector2d(0, 0)
+        );
+
+        List<MapDirection> secondAnimalExpectedNextOrientations = List.of(
+                MapDirection.SOUTH,
+                MapDirection.SOUTH
+        );
+
+        // when
+        List<Vector2d> firstAnimalNextPositions = new ArrayList<>();
+        List<MapDirection> firstAnimalNextOrientations = new ArrayList<>();
+        List<Vector2d> secondAnimalNextPositions = new ArrayList<>();
+        List<MapDirection> secondAnimalNextOrientations = new ArrayList<>();
+
+        map.place(firstAnimal);
+        map.place(secondAnimal);
+
+        for (int i = 0; i < firstAnimalExpectedNextPositions.size(); i++) {
+            map.move(firstAnimal);
+            firstAnimalNextPositions.add(firstAnimal.getPosition());
+            firstAnimalNextOrientations.add(firstAnimal.getOrientation());
+            map.move(secondAnimal);
+            secondAnimalNextPositions.add(secondAnimal.getPosition());
+            secondAnimalNextOrientations.add(secondAnimal.getOrientation());
+        }
+
+        // then
+        Assertions.assertEquals(firstAnimalExpectedNextPositions, firstAnimalNextPositions);
+        Assertions.assertEquals(firstAnimalExpectedNextOrientations, firstAnimalNextOrientations);
+        Assertions.assertEquals(secondAnimalExpectedNextPositions, secondAnimalNextPositions);
+        Assertions.assertEquals(secondAnimalExpectedNextOrientations, secondAnimalNextOrientations);
     }
 }
