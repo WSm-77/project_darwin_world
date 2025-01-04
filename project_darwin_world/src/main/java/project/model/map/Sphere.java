@@ -68,12 +68,7 @@ public class Sphere implements WorldMap {
                 this.animals.remove(prevPosition);
             }
 
-            try {
-                this.place(animal);
-            }
-            catch (IncorrectPositionException e) {
-                e.printStackTrace();
-            }
+            this.place(animal);
         }
 
         this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getOrientation(),
