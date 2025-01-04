@@ -1,7 +1,7 @@
 package project.model.worldelements;
 
 import project.model.movement.MapDirection;
-import project.model.movement.MoveValidator;
+import project.model.movement.NextPositionCalculator;
 import project.model.movement.Vector2d;
 
 import java.util.List;
@@ -28,19 +28,14 @@ public class Animal implements WorldElement {
         this.orientation = Animal.DEFAULT_ORIENTATION;
     }
 
-    public boolean move(MoveValidator moveValidator) {
+    public boolean move(NextPositionCalculator nextPositionCalculator) {
         int angleVal = this.genome.next();
         this.orientation = this.orientation.rotate(angleVal);
-        Vector2d nextPosition = this.position.add(this.orientation.toUnitVector());
+        Vector2d prevPosition = this.getPosition();
 
-        boolean canMove = false;
+        this.position = nextPositionCalculator.calculateNextPosition(prevPosition, this.getOrientation().toUnitVector());
 
-        if (moveValidator.canMoveTo(nextPosition)) {
-            this.position = nextPosition;
-            canMove = true;
-        }
-
-        return canMove;
+        return this.position != prevPosition;
     }
 
     @Override

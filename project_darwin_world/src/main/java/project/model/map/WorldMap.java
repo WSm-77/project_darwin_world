@@ -1,7 +1,7 @@
 package project.model.map;
 
 import project.model.exceptions.IncorrectPositionException;
-import project.model.movement.MoveValidator;
+import project.model.movement.NextPositionCalculator;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;
@@ -15,7 +15,7 @@ import java.util.UUID;
  *
  * @author apohllo, idzik
  */
-public interface WorldMap extends MoveValidator {
+public interface WorldMap extends NextPositionCalculator {
 
     /**
      * Place a animal on the map.

@@ -12,6 +12,7 @@ import java.util.*;
 
 public class Sphere implements WorldMap {
     private final static Vector2d DEFAULT_LOWER_LEFT = new Vector2d(0, 0);
+    private final static String DEFAULT_MOVE_MESSAGE_TEMPLATE = "Animal moved from %s to %s";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
     private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
@@ -27,11 +28,15 @@ public class Sphere implements WorldMap {
         this.id = UUID.randomUUID();
     }
 
+    public boolean isOnMap(Vector2d position) {
+        return position.follows(this.lowerLeft) && position.precedes(upperRight);
+    }
+
     @Override
     public void place(Animal animal) throws IncorrectPositionException {
         Vector2d position = animal.getPosition();
 
-        if (position.follows(this.lowerLeft) && position.precedes(upperRight)) {
+        if (this.isOnMap(position)) {
             Optional<Set<Animal>> optionalAnimals = this.animalsAt(position);
 
             if (optionalAnimals.isPresent()) {
@@ -66,9 +71,10 @@ public class Sphere implements WorldMap {
             catch (IncorrectPositionException e) {
                 e.printStackTrace();
             }
+
+            this.mapChanged(String.format(Sphere.DEFAULT_MOVE_MESSAGE_TEMPLATE, prevPosition, animal.getPosition()));
         }
 
-        this.mapChanged("Animal moved");
     }
 
     public Optional<Set<Animal>> animalsAt(Vector2d position) {
@@ -104,8 +110,28 @@ public class Sphere implements WorldMap {
     }
 
     @Override
-    public boolean canMoveTo(Vector2d position) {
-        return this.lowerLeft.getY() <= position.getY() && position.getY() <= this.upperRight.getY();
+    public Vector2d calculateNextPosition(Vector2d currentPosition, Vector2d moveVector) {
+        Vector2d normalizationVector = this.lowerLeft.opposite();
+        Vector2d normalizedLowerLeft = this.lowerLeft.add(normalizationVector);
+        Vector2d normalizedUpperRight = this.upperRight.add(normalizationVector);
+        Vector2d normalizedCurrentPosition = currentPosition.add(normalizationVector);
+        Vector2d normalizedNewPosition = normalizedCurrentPosition.add(moveVector);
+
+        int mapWidth = normalizedUpperRight.getX() + 1;
+        int newX = normalizedNewPosition.getX() % mapWidth;
+
+        if (newX < 0)
+            newX += mapWidth;
+
+        int newY = Math.max(normalizedLowerLeft.getY(), normalizedNewPosition.getY());
+        newY = Math.min(newY, normalizedUpperRight.getY());
+        normalizedNewPosition = new Vector2d(newX, newY);
+
+        Vector2d newPosition = normalizedNewPosition.subtract(normalizationVector);
+
+        boolean canMoveTo = this.lowerLeft.getY() <= newPosition.getY() && newPosition.getY() <= this.upperRight.getY();
+
+        return canMoveTo ? newPosition : currentPosition;
     }
 
     public void subscribe(MapChangeListener listener) {
