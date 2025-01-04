@@ -1,6 +1,7 @@
 package project.model.map;
 
 import project.model.exceptions.IncorrectPositionException;
+import project.model.movement.MapDirection;
 import project.model.movement.Vector2d;
 import project.model.util.MapChangeListener;
 import project.model.util.MapVisualizer;
@@ -12,7 +13,7 @@ import java.util.*;
 
 public class Sphere implements WorldMap {
     private final static Vector2d DEFAULT_LOWER_LEFT = new Vector2d(0, 0);
-    private final static String DEFAULT_MOVE_MESSAGE_TEMPLATE = "Animal moved from %s to %s";
+    private final static String MOVE_MESSAGE_TEMPLATE = "Animal movement:\norientation: %s -> %s\nposition: %s -> %s";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
     private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
@@ -56,6 +57,7 @@ public class Sphere implements WorldMap {
     @Override
     public void move(Animal animal) {
         Vector2d prevPosition = animal.getPosition();
+        MapDirection prevOrientation = animal.getOrientation();
 
         if (animal.move(this)) {
             Set<Animal> animalSet = this.animals.get(prevPosition);
@@ -71,10 +73,10 @@ public class Sphere implements WorldMap {
             catch (IncorrectPositionException e) {
                 e.printStackTrace();
             }
-
-            this.mapChanged(String.format(Sphere.DEFAULT_MOVE_MESSAGE_TEMPLATE, prevPosition, animal.getPosition()));
         }
 
+        this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getOrientation(),
+                prevPosition, animal.getPosition()));
     }
 
     public Optional<Set<Animal>> animalsAt(Vector2d position) {
@@ -112,7 +114,6 @@ public class Sphere implements WorldMap {
     @Override
     public Vector2d calculateNextPosition(Vector2d currentPosition, Vector2d moveVector) {
         Vector2d normalizationVector = this.lowerLeft.opposite();
-        Vector2d normalizedLowerLeft = this.lowerLeft.add(normalizationVector);
         Vector2d normalizedUpperRight = this.upperRight.add(normalizationVector);
         Vector2d normalizedCurrentPosition = currentPosition.add(normalizationVector);
         Vector2d normalizedNewPosition = normalizedCurrentPosition.add(moveVector);
@@ -123,8 +124,7 @@ public class Sphere implements WorldMap {
         if (newX < 0)
             newX += mapWidth;
 
-        int newY = Math.max(normalizedLowerLeft.getY(), normalizedNewPosition.getY());
-        newY = Math.min(newY, normalizedUpperRight.getY());
+        int newY = normalizedNewPosition.getY();
         normalizedNewPosition = new Vector2d(newX, newY);
 
         Vector2d newPosition = normalizedNewPosition.subtract(normalizationVector);

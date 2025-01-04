@@ -14,11 +14,11 @@ public class World {
         // start
         System.out.println("System started");
 
-        List<Vector2d> positions = List.of(new Vector2d(3, 4));
+        List<Vector2d> positions = List.of(new Vector2d(5, 0));
 
         MapChangeListener consoleLog = new ConsoleMapDisplay();
 
-        int numberOfMoves = 10;
+        int numberOfMoves = 12;
         var sphere = new Sphere(5, 6);
         sphere.subscribe(consoleLog);
         var sphereSimulation = new Simulation(positions, numberOfMoves, sphere);
