@@ -16,8 +16,8 @@ public class Sphere implements WorldMap {
     private final static String MOVE_MESSAGE_TEMPLATE = "Animal movement:\norientation: %s -> %s\nposition: %s -> %s";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
-    private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
-    private Map<Vector2d, Grass> grass = new HashMap<>();
+    final private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
+    final private Map<Vector2d, Grass> grass = new HashMap<>();
     final private Boundary boundary;
     final private UUID id;
     final private List<MapChangeListener> listeners = new ArrayList<>();
