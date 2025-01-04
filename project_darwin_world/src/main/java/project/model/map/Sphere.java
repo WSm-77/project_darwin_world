@@ -24,7 +24,7 @@ public class Sphere implements WorldMap {
     final private MapVisualizer mapVisualizer = new MapVisualizer(this);
 
     public Sphere(int width, int height) {
-        this.upperRight = this.lowerLeft.add(new Vector2d(width, height));
+        this.upperRight = this.lowerLeft.add(new Vector2d(width - 1, height - 1));
         this.boundary = new Boundary(this.lowerLeft, this.upperRight);
         this.id = UUID.randomUUID();
     }

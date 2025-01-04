@@ -14,7 +14,7 @@ public class World {
         // start
         System.out.println("System started");
 
-        List<Vector2d> positions = List.of(new Vector2d(5, 0));
+        List<Vector2d> positions = List.of(new Vector2d(4, 0));
 
         MapChangeListener consoleLog = new ConsoleMapDisplay();
 
