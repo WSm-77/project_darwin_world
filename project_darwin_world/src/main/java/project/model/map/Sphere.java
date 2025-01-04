@@ -96,12 +96,6 @@ public class Sphere implements WorldMap {
     }
 
     @Override
-    public List<WorldElement> getElements() {
-        // TODO
-        return List.of();
-    }
-
-    @Override
     public Boundary getCurrentBounds() {
         return this.boundary;
     }

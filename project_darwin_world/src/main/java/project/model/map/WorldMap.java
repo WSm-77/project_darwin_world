@@ -6,7 +6,6 @@ import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,13 +36,6 @@ public interface WorldMap extends NextPositionCalculator {
      * @return Optional object of WorldElement or empty Optional if the position is not occupied.
      */
     Optional<WorldElement> objectAt(Vector2d position);
-
-    /**
-     * Return list of all map elements that are one the map.
-     *
-     * @return list of all WorldElements on the map.
-     */
-    List<WorldElement> getElements();
 
     /**
      * Return map boundaries
