@@ -29,6 +29,7 @@ public class Sphere implements WorldMap {
         this.id = UUID.randomUUID();
     }
 
+    @Override
     public boolean isOnMap(Vector2d position) {
         return position.follows(this.lowerLeft) && position.precedes(upperRight);
     }

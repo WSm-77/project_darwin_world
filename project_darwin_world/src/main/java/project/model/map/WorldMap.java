@@ -15,6 +15,13 @@ import java.util.UUID;
  * @author apohllo, idzik
  */
 public interface WorldMap extends NextPositionCalculator {
+    /**
+     * Return boolean value informing whether position is on the map or not.
+     *
+     * @param position The position to check.
+     * @return True, if position is on the map otherwise false.
+     */
+    boolean isOnMap(Vector2d position);
 
     /**
      * Place a animal on the map.
@@ -26,6 +33,8 @@ public interface WorldMap extends NextPositionCalculator {
     /**
      * Moves an animal (if it is present on the map) according to it's orientation.
      * If the move is not possible, this method has no effect.
+     *
+     * @param animal The animal to move
      */
     void move(Animal animal);
 
