@@ -17,4 +17,12 @@ public class Genome {
 
         return gene;
     }
+
+    public int getActiveGeneIdx() {
+        return activeGeneIdx;
+    }
+
+    public List<Integer> getGenome() {
+        return genome;
+    }
 }
