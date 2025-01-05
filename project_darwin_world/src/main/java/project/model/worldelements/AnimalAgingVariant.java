@@ -5,7 +5,7 @@ import project.model.movement.Vector2d;
 
 import java.util.Random;
 
-public class AnimalAgingVariant extends  Animal {
+public class AnimalAgingVariant extends AnimalStandardVariant {
     public static final double MOVE_SKIP_MAX_PERCENTAGE = 0.8;
     private final Random random = new Random();
 
