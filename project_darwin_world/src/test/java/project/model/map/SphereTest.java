@@ -1,6 +1,7 @@
 package project.model.map;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import project.model.exceptions.IncorrectPositionException;
@@ -15,7 +16,13 @@ import java.util.*;
 class SphereIT {
     private static final int WIDTH = 5;
     private static final int HEIGHT = 6;
-    private static final Sphere map = new Sphere(SphereIT.WIDTH, SphereIT.HEIGHT);
+    private Sphere map;
+
+    @BeforeEach
+    public void setUp() {
+        this.map = new Sphere(SphereIT.WIDTH, SphereIT.HEIGHT);
+    }
+
 
     @Test
     void getCurrentBounds() {
