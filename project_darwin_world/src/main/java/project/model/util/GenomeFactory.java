@@ -8,53 +8,76 @@ import java.util.List;
 import java.util.Random;
 
 public class GenomeFactory {
+    private final static String PARENTS_DIFFERENT_GENOME_SIZE_MESSAGE = "The parents' genomes must be the same length!";
     private final Random random = new Random();
+    private final int genomeLength;
 
-    public Genome createRandomGenome(int length) {
+    public GenomeFactory(int genomeLength) {
+        this.genomeLength = genomeLength;
+    }
+
+    public Genome createRandomGenome() {
         List<Integer> genes = new ArrayList<>();
-        for (int i = 0; i < length; i++) {
-            genes.add(random.nextInt(8));
+        int activeGeneIdx = random.nextInt(this.genomeLength);
+
+        for (int i = 0; i < this.genomeLength; i++) {
+            int gene = random.nextInt(Genome.GENE_MAX_VALUE - Genome.GENE_MIN_VALUE + 1) + Genome.GENE_MIN_VALUE;
+            genes.add(gene);
         }
-        return new Genome(genes, 0);
+
+        return new Genome(genes, activeGeneIdx);
     }
 
     public Genome createFromParents(Animal parent1, Animal parent2) {
-        Genome genome1 = parent1.getGenome();
-        Genome genome2 = parent2.getGenome();
+        Animal strongerParent = parent1;
+        Animal weakerParent = parent2;
 
-        List<Integer> genes1 = genome1.getGenome();
-        List<Integer> genes2 = genome2.getGenome();
-
-        if (genes1.size() != genes2.size()) {
-            throw new IllegalArgumentException("The parents' genomes must be the same length!");
+        // Ensure strongerParent is indeed the animal with higher energy
+        if (strongerParent.getEnergy() < weakerParent.getEnergy()) {
+            Animal temp = strongerParent;
+            strongerParent = weakerParent;
+            weakerParent = temp;
         }
 
-        int energy1 = parent1.getEnergy();
-        int energy2 = parent2.getEnergy();
+        Genome strongerParentGenome = strongerParent.getGenome();
+        Genome weakerParentGenome = weakerParent.getGenome();
 
-        int length = genes1.size();
+        List<Integer> strongerParentGenes = strongerParentGenome.getGenome();
+        List<Integer> weakerParentGenes = weakerParentGenome.getGenome();
+
+        if (strongerParentGenes.size() != weakerParentGenes.size()) {
+            throw new IllegalArgumentException(GenomeFactory.PARENTS_DIFFERENT_GENOME_SIZE_MESSAGE);
+        }
+
+        int strongerParentEnergy = strongerParent.getEnergy();
+        int weakerParentEnergy = weakerParent.getEnergy();
+
+        int length = strongerParentGenes.size();
         List<Integer> childGenes = new ArrayList<>();
 
-        double totalEnergy = energy1 + energy2;
-        int splitPoint1 = (int) Math.round((energy1 / totalEnergy) * length);
-        int splitPoint2 = length - splitPoint1;
+        double totalEnergy = strongerParentEnergy + weakerParentEnergy;
+        int strongerParentSplitPoint = (int) Math.round((strongerParentEnergy / totalEnergy) * length);
+        int weakerParentSplitPoint = length - strongerParentSplitPoint;
 
         boolean strongerParentRightSide = random.nextBoolean();
 
         if (strongerParentRightSide) {
-            childGenes.addAll(genes1.subList(0, splitPoint1));
-            childGenes.addAll(genes2.subList(splitPoint1, length));
+            childGenes.addAll(strongerParentGenes.subList(0, strongerParentSplitPoint));
+            childGenes.addAll(weakerParentGenes.subList(strongerParentSplitPoint, length));
         } else {
-            childGenes.addAll(genes2.subList(0, splitPoint2));
-            childGenes.addAll(genes1.subList(splitPoint2, length));
+            childGenes.addAll(weakerParentGenes.subList(0, weakerParentSplitPoint));
+            childGenes.addAll(strongerParentGenes.subList(weakerParentSplitPoint, length));
         }
-        
-        int mutations = random.nextInt(length / 2 + 1);
+
+        int mutations = random.nextInt(length);
+
         for (int i = 0; i < mutations; i++) {
             int indexToMutate = random.nextInt(length);
             childGenes.set(indexToMutate, random.nextInt(8));
         }
 
-        return new Genome(childGenes, 0);
+        int activeGeneIdx = random.nextInt(length);
+
+        return new Genome(childGenes, activeGeneIdx);
     }
 }
