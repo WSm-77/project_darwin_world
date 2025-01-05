@@ -1,6 +1,6 @@
 package project.app;
 
-import project.model.map.GrassField;
+import project.model.map.Sphere;
 import project.model.movement.Vector2d;
 import project.model.simulation.Simulation;
 import project.model.util.ConsoleMapDisplay;
@@ -14,18 +14,16 @@ public class World {
         // start
         System.out.println("System started");
 
-        // GrassField Simulation
-        var repeatedPosition = new Vector2d(2, 2);
-        List<Vector2d> positions = List.of(repeatedPosition, repeatedPosition, new Vector2d(3, 4));
+        List<Vector2d> positions = List.of(new Vector2d(4, 0));
 
         MapChangeListener consoleLog = new ConsoleMapDisplay();
 
-        int numberOfMoves = 10;
-        var grassField = new GrassField(10);
-        grassField.subscribe(consoleLog);
-        var grassFieldMapSimulation = new Simulation(positions, numberOfMoves, grassField);
+        int numberOfMoves = 12;
+        var sphere = new Sphere(5, 6);
+        sphere.subscribe(consoleLog);
+        var sphereSimulation = new Simulation(positions, numberOfMoves, sphere);
 
-        grassFieldMapSimulation.run();
+        sphereSimulation.run();
 
         // stop
         System.out.println("System stopped");
