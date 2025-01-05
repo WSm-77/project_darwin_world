@@ -23,10 +23,14 @@ public class AnimalStandardVariant implements Animal {
     }
 
     public AnimalStandardVariant(Vector2d position, Genome genome, int startEnergy) {
+        this(position, genome, startEnergy, AnimalStandardVariant.DEFAULT_ORIENTATION);
+    }
+
+    public AnimalStandardVariant(Vector2d position, Genome genome, int startEnergy, MapDirection startOrientation) {
         this.position = position;
         this.genome = genome;
         this.energy = startEnergy;
-        this.orientation = AnimalStandardVariant.DEFAULT_ORIENTATION;
+        this.orientation = startOrientation;
     }
 
     public boolean move(NextPositionCalculator nextPositionCalculator) {

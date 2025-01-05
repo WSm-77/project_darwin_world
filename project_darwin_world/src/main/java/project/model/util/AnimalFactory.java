@@ -1,6 +1,7 @@
 package project.model.util;
 
 import project.model.map.Boundary;
+import project.model.movement.MapDirection;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
 import project.model.worldelements.Genome;
@@ -38,6 +39,13 @@ public class AnimalFactory {
         return new Vector2d(randomX, randomY);
     }
 
+    private MapDirection generateRandomMapDirection() {
+        var mapDirections = MapDirection.values();
+        int randomIdx = this.random.nextInt(mapDirections.length);
+
+        return mapDirections[randomIdx];
+    }
+
     private void updateParentsEnergy(Animal parent1, Animal parent2) {
         Animal strongerParent = parent1;
         Animal weakerParent = parent2;
@@ -63,7 +71,8 @@ public class AnimalFactory {
     public Animal createRandomAnimal() {
         Vector2d position = this.generateRandomPosition();
         Genome genome = genomeFactory.createRandomGenome();
-        return this.constructor.construct(position, genome, this.randomAnimalStartEnergy);
+        MapDirection startOrientation = this.generateRandomMapDirection();
+        return this.constructor.construct(position, genome, this.randomAnimalStartEnergy, startOrientation);
     }
 
     public Animal createFromParents(Animal parent1, Animal parent2) {
@@ -73,9 +82,10 @@ public class AnimalFactory {
 
         Vector2d position = parent1.getPosition();
         Genome genome = genomeFactory.createFromParents(parent1, parent2);
+        MapDirection startOrientation = this.generateRandomMapDirection();
 
         this.updateParentsEnergy(parent1, parent2);
 
-        return this.constructor.construct(position, genome, this.childAnimalStartEnergy);
+        return this.constructor.construct(position, genome, this.childAnimalStartEnergy, startOrientation);
     }
 }

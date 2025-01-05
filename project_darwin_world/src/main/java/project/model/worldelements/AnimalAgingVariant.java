@@ -1,5 +1,6 @@
 package project.model.worldelements;
 
+import project.model.movement.MapDirection;
 import project.model.movement.NextPositionCalculator;
 import project.model.movement.Vector2d;
 
@@ -15,6 +16,10 @@ public class AnimalAgingVariant extends AnimalStandardVariant {
 
     public AnimalAgingVariant(Vector2d position, Genome genome, int startEnergy) {
         super(position, genome, startEnergy);
+    }
+
+    public AnimalAgingVariant(Vector2d position, Genome genome, int startEnergy, MapDirection startOrientation) {
+        super(position, genome, startEnergy, startOrientation);
     }
 
     private double calculateSkipPercentage() {
