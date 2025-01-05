@@ -12,10 +12,11 @@ public class Animal implements WorldElement {
     public static final int DEFAULT_ENERGY = 0;
     public static final int DEFAULT_ACTIVE_GENE_IDX = 0;
 
-    private MapDirection orientation;
-    private Vector2d position;
-    private int energy;
-    final private Genome genome;
+    protected MapDirection orientation;
+    protected Vector2d position;
+    protected int energy;
+    final protected Genome genome;
+    protected int daysAlive = 0;
 
     public Animal(Vector2d position) {
         this(position, new Genome(DEFAULT_GENOME_LIST, DEFAULT_ACTIVE_GENE_IDX), DEFAULT_ENERGY);
