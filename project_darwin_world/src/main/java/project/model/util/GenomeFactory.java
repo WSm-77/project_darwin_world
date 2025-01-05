@@ -12,6 +12,10 @@ public class GenomeFactory {
     private final Random random = new Random();
     private final int genomeLength;
 
+    private int getRandomGene() {
+        return random.nextInt(Genome.GENE_MAX_VALUE - Genome.GENE_MIN_VALUE + 1) + Genome.GENE_MIN_VALUE;
+    }
+
     public GenomeFactory(int genomeLength) {
         this.genomeLength = genomeLength;
     }
@@ -21,8 +25,7 @@ public class GenomeFactory {
         int activeGeneIdx = random.nextInt(this.genomeLength);
 
         for (int i = 0; i < this.genomeLength; i++) {
-            int gene = random.nextInt(Genome.GENE_MAX_VALUE - Genome.GENE_MIN_VALUE + 1) + Genome.GENE_MIN_VALUE;
-            genes.add(gene);
+            genes.add(this.getRandomGene());
         }
 
         return new Genome(genes, activeGeneIdx);
@@ -73,7 +76,7 @@ public class GenomeFactory {
 
         for (int i = 0; i < mutations; i++) {
             int indexToMutate = random.nextInt(length);
-            childGenes.set(indexToMutate, random.nextInt(8));
+            childGenes.set(indexToMutate, this.getRandomGene());
         }
 
         int activeGeneIdx = random.nextInt(length);
