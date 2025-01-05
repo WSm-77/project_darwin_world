@@ -1,12 +1,14 @@
 package project.model.map;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import project.model.exceptions.IncorrectPositionException;
 import project.model.movement.MapDirection;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
+import project.model.worldelements.AnimalStandardVariant;
 import project.model.worldelements.Genome;
 
 import java.util.*;
@@ -14,7 +16,13 @@ import java.util.*;
 class SphereIT {
     private static final int WIDTH = 5;
     private static final int HEIGHT = 6;
-    private static final Sphere map = new Sphere(SphereIT.WIDTH, SphereIT.HEIGHT);
+    private Sphere map;
+
+    @BeforeEach
+    public void setUp() {
+        this.map = new Sphere(SphereIT.WIDTH, SphereIT.HEIGHT);
+    }
+
 
     @Test
     void getCurrentBounds() {
@@ -142,7 +150,7 @@ class SphereIT {
     void placeAnimalsOnMap() {
         // given
         Vector2d position = new Vector2d(2, 2);
-        Animal animal = new Animal(position);
+        Animal animal = new AnimalStandardVariant(position);
 
         // when
         // then
@@ -154,7 +162,7 @@ class SphereIT {
     void placeAnimalsOutsideMap() {
         // given
         Vector2d position = new Vector2d(100, 100);
-        Animal animal = new Animal(position);
+        Animal animal = new AnimalStandardVariant(position);
 
         // when
         // then
@@ -166,9 +174,9 @@ class SphereIT {
     void placeMultipleAnimalsAtTheSamePosition() {
         // given
         Vector2d position = new Vector2d(2, 2);
-        Animal firstAnimal = new Animal(position);
-        Animal secondAnimal = new Animal(position);
-        Animal thirdAnimal = new Animal(position);
+        Animal firstAnimal = new AnimalStandardVariant(position);
+        Animal secondAnimal = new AnimalStandardVariant(position);
+        Animal thirdAnimal = new AnimalStandardVariant(position);
 
         Set<Animal> expectedAnimalsSet = Set.of(firstAnimal, secondAnimal, thirdAnimal);
 
@@ -190,7 +198,7 @@ class SphereIT {
         Vector2d animalStartPosition = new Vector2d(4, 5);   // start in top right corner
         List<Integer> rotations = List.of(7, 1, 1, 2, 1, 0, 0, 7, 0, 6);
         Genome genome = new Genome(rotations, 0);
-        Animal animal = new Animal(animalStartPosition, genome, 100);
+        Animal animal = new AnimalStandardVariant(animalStartPosition, genome, 100);
 
         List<Vector2d> expectedNextPositions = List.of(
                 new Vector2d(4, 5),
@@ -244,8 +252,8 @@ class SphereIT {
         List<Integer> secondAnimalRotations = List.of(4, 0);
         Genome firstAnimalGenome = new Genome(firstAnimalRotations, 0);
         Genome secondAnimalGenome = new Genome(secondAnimalRotations, 0);
-        Animal firstAnimal = new Animal(firstAnimalStartPosition, firstAnimalGenome, 100);
-        Animal secondAnimal = new Animal(secondAnimalStartPosition, secondAnimalGenome, 100);
+        Animal firstAnimal = new AnimalStandardVariant(firstAnimalStartPosition, firstAnimalGenome, 100);
+        Animal secondAnimal = new AnimalStandardVariant(secondAnimalStartPosition, secondAnimalGenome, 100);
 
         List<Vector2d> firstAnimalExpectedNextPositions = List.of(
                 new Vector2d(0, 1),

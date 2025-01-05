@@ -1,6 +1,7 @@
 package project.model.simulation;
 
 import project.model.worldelements.Animal;
+import project.model.worldelements.AnimalStandardVariant;
 import project.model.movement.Vector2d;
 import project.model.map.WorldMap;
 import project.model.exceptions.IncorrectPositionException;
@@ -24,7 +25,7 @@ public class Simulation implements Runnable {
 
         for (var position : positions) {
             try {
-                var animal = new Animal(position);
+                var animal = new AnimalStandardVariant(position);
                 this.worldMap.place(animal);
                 animals.add(animal);
             } catch (IncorrectPositionException exception) {

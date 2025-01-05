@@ -2,69 +2,55 @@ package project.model.worldelements;
 
 import project.model.movement.MapDirection;
 import project.model.movement.NextPositionCalculator;
-import project.model.movement.Vector2d;
 
-import java.util.List;
+/**
+ * Represents an animal in the world that has energy, a genome, and orientation,
+ * can move and interact with its environment.
+ */
+public interface Animal extends WorldElement {
 
-public class Animal implements WorldElement {
-    public static final MapDirection DEFAULT_ORIENTATION = MapDirection.NORTH;
-    public static final List<Integer> DEFAULT_GENOME_LIST = List.of(1, 2, 3);
-    public static final int DEFAULT_ENERGY = 0;
-    public static final int DEFAULT_ACTIVE_GENE_IDX = 0;
+    /**
+     * Retrieves the current energy level of the animal.
+     *
+     * @return The current energy of the animal as an integer.
+     */
+    int getEnergy();
 
-    private MapDirection orientation;
-    private Vector2d position;
-    private int energy;
-    final private Genome genome;
+    /**
+     * Retrieves the genome associated with this animal.
+     *
+     * @return A Genome object representing the genetic code of the animal.
+     */
+    Genome getGenome();
 
-    public Animal(Vector2d position) {
-        this(position, new Genome(DEFAULT_GENOME_LIST, DEFAULT_ACTIVE_GENE_IDX), DEFAULT_ENERGY);
-    }
+    /**
+     * Retrieves the current orientation of the animal.
+     *
+     * @return A MapDirection enum representing the direction the animal is facing.
+     */
+    MapDirection getOrientation();
 
-    public Animal(Vector2d position, Genome genome, int startEnergy) {
-        this.position = position;
-        this.genome = genome;
-        this.energy = startEnergy;
-        this.orientation = Animal.DEFAULT_ORIENTATION;
-    }
+    /**
+     * Checks if the animal is still alive.
+     *
+     * @return True if the animal is alive, false otherwise.
+     */
+    boolean isAlive();
 
-    public boolean move(NextPositionCalculator nextPositionCalculator) {
-        int angleVal = this.genome.next();
-        this.orientation = this.orientation.rotate(angleVal);
-        Vector2d prevPosition = this.getPosition();
+    /**
+     * Moves the animal to a new position determined by the provided position calculator.
+     *
+     * @param nextPositionCalculator a functional interface or class that determines
+     *                               the next position based on the current position.
+     * @return True if animal changed position, false otherwise.
+     */
+    boolean move(NextPositionCalculator nextPositionCalculator);
 
-        this.position = nextPositionCalculator.calculateNextPosition(prevPosition, this.getOrientation().toUnitVector());
-
-        return this.position != prevPosition;
-    }
-
-    @Override
-    public String toString() {
-        return this.orientation.toString();
-    }
-
-    @Override
-    public Vector2d getPosition() {
-        return this.position;
-    }
-
-    public MapDirection getOrientation() {
-        return this.orientation;
-    }
-
-    public void updateEnergy(int energyAmount) {
-        this.energy += energyAmount;
-    }
-
-    public boolean isAlive() {
-        return this.energy > 0;
-    }
-
-    public int getEnergy() {
-        return energy;
-    }
-
-    public Genome getGenome() {
-        return genome;
-    }
+    /**
+     * Updates the animal's energy level by adding or subtracting the given amount.
+     *
+     * @param energyAmount the amount to modify the energy by. Positive to increase,
+     *                     negative to decrease.
+     */
+    void updateEnergy(int energyAmount);
 }
