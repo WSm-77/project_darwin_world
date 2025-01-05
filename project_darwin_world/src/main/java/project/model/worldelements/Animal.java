@@ -64,4 +64,12 @@ public class Animal implements WorldElement {
     public boolean isAlive() {
         return this.energy > 0;
     }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public Genome getGenome() {
+        return genome;
+    }
 }
