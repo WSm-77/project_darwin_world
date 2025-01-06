@@ -10,10 +10,12 @@ import project.model.worldelements.Grass;
 import project.model.worldelements.WorldElement;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class Sphere implements WorldMap {
     private final static Vector2d DEFAULT_LOWER_LEFT = new Vector2d(0, 0);
     private final static String MOVE_MESSAGE_TEMPLATE = "Animal movement:\norientation: %s -> %s\nposition: %s -> %s";
+    private final static String INCORRECT_ANIMAL_TO_REMOVE_MESSAGE_TEMPLATE = "There is no %s Animal at %s position!!!";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
     final private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
@@ -32,6 +34,33 @@ public class Sphere implements WorldMap {
     @Override
     public boolean isOnMap(Vector2d position) {
         return position.follows(this.lowerLeft) && position.precedes(upperRight);
+    }
+
+    private String createIncorrectAnimalToRemoveMessage(Animal animal) {
+        return String.format(Sphere.INCORRECT_ANIMAL_TO_REMOVE_MESSAGE_TEMPLATE, animal, animal.getPosition());
+    }
+
+    @Override
+    public void removeAnimal(Animal animal) throws IllegalArgumentException {
+        Vector2d animalPosition = animal.getPosition();
+
+        Consumer<? super Set<Animal>> actionIfPresent = (animalSet) -> {
+            if (!animalSet.contains(animal)) {
+                throw new IllegalArgumentException();
+            }
+
+            animalSet.remove(animal);
+
+            if (animalSet.isEmpty()) {
+                this.animals.remove(animalPosition);
+            }
+        };
+
+        Runnable actionIfNotPresent = () -> {
+            throw new IllegalArgumentException(this.createIncorrectAnimalToRemoveMessage(animal));
+        };
+
+        this.animalsAt(animalPosition).ifPresentOrElse(actionIfPresent, actionIfNotPresent);
     }
 
     @Override

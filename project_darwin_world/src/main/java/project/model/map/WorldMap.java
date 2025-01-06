@@ -24,6 +24,14 @@ public interface WorldMap extends NextPositionCalculator {
     boolean isOnMap(Vector2d position);
 
     /**
+     * Remove animal from the map.
+     *
+     * @param animal The animal to remove from the map.
+     * @throws IllegalArgumentException If animal is not present on the map.
+     */
+    void removeAnimal(Animal animal) throws IllegalArgumentException;
+
+    /**
      * Place a animal on the map.
      *
      * @param animal The animal to place on the map.
