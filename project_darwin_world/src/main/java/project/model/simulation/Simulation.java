@@ -55,6 +55,8 @@ public class Simulation implements Runnable {
     @Override
     public void run() {
         while (this.running) {
+            System.out.println("Simulation this.running");
+
             this.removeDeadAnimals();
             this.moveAnimals();
             this.consumePlants();
