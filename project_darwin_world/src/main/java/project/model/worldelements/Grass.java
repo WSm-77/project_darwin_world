@@ -18,7 +18,7 @@ public class Grass implements Plant {
     }
 
     @Override
-    public int getEnergy() {
+    public int getNutritiousness() {
         return nutritiousness;
     }
     @Override
