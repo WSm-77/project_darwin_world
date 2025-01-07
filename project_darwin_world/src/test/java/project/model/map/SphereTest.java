@@ -193,6 +193,27 @@ class SphereIT {
     }
 
     @Test
+    void getAnimals() {
+        //  given
+        var repeatedPosition = new Vector2d(2, 2);
+        Animal animal1 = new AnimalStandardVariant(repeatedPosition);
+        Animal animal2 = new AnimalStandardVariant(repeatedPosition);
+        Animal animal3 = new AnimalStandardVariant(repeatedPosition);
+        Animal animal4 = new AnimalStandardVariant(new Vector2d(1, 0));
+        List<Animal> expectedAnimals = List.of(animal1, animal2, animal3, animal4);
+
+        // when
+        this.map.place(animal1);
+        this.map.place(animal2);
+        this.map.place(animal3);
+        this.map.place(animal4);
+        List<Animal> animals = this.map.getAnimals();
+
+        // then
+        Assertions.assertEquals(new HashSet<>(expectedAnimals), new HashSet<>(animals));
+    }
+
+    @Test
     void generalAnimalMovement() {
         // given
         Vector2d animalStartPosition = new Vector2d(4, 5);   // start in top right corner
