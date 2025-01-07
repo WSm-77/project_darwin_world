@@ -119,7 +119,12 @@ public class SimulationBuilder {
 
         GenomeFactory genomeFactory = new GenomeFactory(this.genomeLength);
 
-        this.worldMap = new Sphere(this.mapWidth, this.mapHeight);
+        Sphere sphere = new Sphere(this.mapWidth, this.mapHeight);
+
+        MapChangeListener consoleLog = new ConsoleMapDisplay();
+        sphere.subscribe(consoleLog);
+
+        this.worldMap = sphere;
         this.animalFactory = new AnimalFactory(
                 genomeFactory,
                 this.initialAnimalEnergy,

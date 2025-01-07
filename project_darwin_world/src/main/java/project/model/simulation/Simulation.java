@@ -11,6 +11,7 @@ public class Simulation implements Runnable {
     private final AnimalFactory animalFactory;
     private final int energyToReproduce;
     private boolean running = true;
+    private int day = 1;
 
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
@@ -58,7 +59,10 @@ public class Simulation implements Runnable {
     @Override
     public void run() {
         while (this.running) {
-            System.out.println("Simulation this.running");
+            System.out.println();
+            System.out.printf("Simulation day: %d\n", this.day);
+            System.out.printf("Animals on the map: %s\n", this.worldMap.getAnimals());
+            System.out.println();
 
             this.removeDeadAnimals();
             this.moveAnimals();
@@ -77,6 +81,8 @@ public class Simulation implements Runnable {
                 System.out.println(this.createInterruptionDuringSleepMessage());
                 this.running = false;
             }
+
+            this.day++;
         }
     }
 }
