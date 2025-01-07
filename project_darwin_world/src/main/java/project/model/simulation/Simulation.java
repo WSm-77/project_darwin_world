@@ -15,6 +15,7 @@ public class Simulation implements Runnable {
 
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
+    public static final int ENERGY_DAILY_LOSS = 1;
     public static final int SIMULATION_REFRESH_TIME_MS = 500;
 
     public Simulation(SimulationBuilder simulationBuilder) {
@@ -56,6 +57,16 @@ public class Simulation implements Runnable {
 
     }
 
+    private void consumeDailyEnergyAmount() {
+        this.worldMap.getAnimals()
+                .forEach(animal -> animal.updateEnergy(-Simulation.ENERGY_DAILY_LOSS));
+    }
+
+    private void finishDay() {
+        this.consumeDailyEnergyAmount();
+        this.day++;
+    }
+
     @Override
     public void run() {
         while (this.running) {
@@ -70,6 +81,8 @@ public class Simulation implements Runnable {
             this.reproduceAnimals();
             this.growPlants();
 
+            this.finishDay();
+
             if (Thread.currentThread().isInterrupted()) {
                 System.out.println(this.createInterruptionMessage());
                 this.running = false;
@@ -81,8 +94,6 @@ public class Simulation implements Runnable {
                 System.out.println(this.createInterruptionDuringSleepMessage());
                 this.running = false;
             }
-
-            this.day++;
         }
     }
 }
