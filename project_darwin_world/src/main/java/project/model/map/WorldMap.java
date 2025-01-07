@@ -6,6 +6,7 @@ import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -60,6 +61,13 @@ public interface WorldMap extends NextPositionCalculator {
      * @return Boundary object representing map boundaries.
      */
     Boundary getCurrentBounds();
+
+    /**
+     * Return animals located on the map
+     *
+     * @return List of all animals located on the map.
+     */
+    List<Animal> getAnimals();
 
     /**
      * Return object's UUID

@@ -11,6 +11,7 @@ import project.model.worldelements.WorldElement;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class Sphere implements WorldMap {
     private final static Vector2d DEFAULT_LOWER_LEFT = new Vector2d(0, 0);
@@ -123,6 +124,13 @@ public class Sphere implements WorldMap {
     @Override
     public Boundary getCurrentBounds() {
         return this.boundary;
+    }
+
+    @Override
+    public List<Animal> getAnimals() {
+        return this.animals.values().stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     @Override
