@@ -39,7 +39,8 @@ public class Simulation implements Runnable {
     }
 
     public void moveAnimals() {
-
+        this.worldMap.getAnimals()
+                .forEach(this.worldMap::move);
     }
 
     public void consumePlants() {
