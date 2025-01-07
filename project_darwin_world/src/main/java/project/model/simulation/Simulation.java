@@ -33,7 +33,9 @@ public class Simulation implements Runnable {
     }
 
     public void removeDeadAnimals() {
-
+        this.worldMap.getAnimals().stream()
+                .filter(animal -> !animal.isAlive())
+                .forEach(this.worldMap::removeAnimal);
     }
 
     public void moveAnimals() {
