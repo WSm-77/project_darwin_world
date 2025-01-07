@@ -33,26 +33,26 @@ public class Simulation implements Runnable {
         return String.format(Simulation.INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE, this.worldMap.getId());
     }
 
-    public void removeDeadAnimals() {
+    private void removeDeadAnimals() {
         this.worldMap.getAnimals().stream()
                 .filter(animal -> !animal.isAlive())
                 .forEach(this.worldMap::removeAnimal);
     }
 
-    public void moveAnimals() {
+    private void moveAnimals() {
         this.worldMap.getAnimals()
                 .forEach(this.worldMap::move);
     }
 
-    public void consumePlants() {
+    private void consumePlants() {
 
     }
 
-    public void reproduceAnimals() {
+    private void reproduceAnimals() {
 
     }
 
-    public void growPlants() {
+    private void growPlants() {
 
     }
 
