@@ -5,8 +5,8 @@ import project.model.movement.MapDirection;
 import project.model.movement.Vector2d;
 import project.model.util.MapChangeListener;
 import project.model.util.MapVisualizer;
+import project.model.util.PlantGrowerStandardVariant;
 import project.model.worldelements.Animal;
-import project.model.worldelements.Grass;
 import project.model.worldelements.Plant;
 import project.model.worldelements.WorldElement;
 
@@ -15,8 +15,6 @@ import java.util.*;
 public class Sphere implements WorldMap {
     private final static Vector2d DEFAULT_LOWER_LEFT = new Vector2d(0, 0);
     private final static String MOVE_MESSAGE_TEMPLATE = "Animal movement:\norientation: %s -> %s\nposition: %s -> %s";
-    public static final String NEW_PLANT_ADDED_AT = NEW_PLANT_ADDED_AT1;
-    public static final String NEW_PLANT_ADDED_AT1 = "New plant added at ";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
     final private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
@@ -25,16 +23,25 @@ public class Sphere implements WorldMap {
     final private UUID id;
     final private List<MapChangeListener> listeners = new ArrayList<>();
     final private MapVisualizer mapVisualizer = new MapVisualizer(this);
+    private final PlantGrowerStandardVariant plantGrower;
 
     public Sphere(int width, int height) {
         this.upperRight = this.lowerLeft.add(new Vector2d(width - 1, height - 1));
         this.boundary = new Boundary(this.lowerLeft, this.upperRight);
         this.id = UUID.randomUUID();
+        this.plantGrower = new PlantGrowerStandardVariant(this.lowerLeft, this.upperRight);
     }
 
     @Override
     public boolean isOnMap(Vector2d position) {
         return position.follows(this.lowerLeft) && position.precedes(upperRight);
+    }
+
+    public void growPlants(Plant... plants) {
+        for (Plant plant : plants) {
+            Vector2d position = plantGrower.selectPlantPosition();
+            this.grass.put(position, plant);
+        }
     }
 
     @Override
@@ -61,57 +68,6 @@ public class Sphere implements WorldMap {
     public Map<Vector2d, Plant> getGrassMap() {
         return this.grass;
     }
-
-    public void growPlants(Plant... plants) {
-        int mapWidth = this.upperRight.getX() - this.lowerLeft.getX() + 1;
-        int mapHeight = this.upperRight.getY() - this.lowerLeft.getY() + 1;
-
-        int preferredAreaHeightStart = this.lowerLeft.getY() + (int)(0.1 * mapHeight);
-        int preferredAreaHeightEnd = this.upperRight.getY() - (int)(0.1 * mapHeight);
-        int preferredAreaWidthStart = this.lowerLeft.getX() + (int)(0.1 * mapWidth);
-        int preferredAreaWidthEnd = this.upperRight.getX() - (int)(0.1 * mapWidth);
-
-        Random random = new Random();
-
-        for (Plant plant : plants) {
-            Vector2d position = null;
-
-            for (int attempts = 0; attempts < 10; attempts++) {
-                int x, y;
-
-                boolean prefersPreferredArea = random.nextDouble() < 0.8;
-
-                if (prefersPreferredArea) {
-                    x = random.nextInt(preferredAreaWidthEnd - preferredAreaWidthStart + 1) + preferredAreaWidthStart;
-                    y = random.nextInt(preferredAreaHeightEnd - preferredAreaHeightStart + 1) + preferredAreaHeightStart;
-                } else {
-                    x = random.nextInt(this.upperRight.getX() - this.lowerLeft.getX() + 1) + this.lowerLeft.getX();
-                    y = random.nextInt(this.upperRight.getY() - this.lowerLeft.getY() + 1) + this.lowerLeft.getY();
-
-                    if (x >= preferredAreaWidthStart && x <= preferredAreaWidthEnd &&
-                            y >= preferredAreaHeightStart && y <= preferredAreaHeightEnd) {
-                        if (x < preferredAreaWidthStart) x -= random.nextInt(5) + 1;
-                        else if (x > preferredAreaWidthEnd) x += random.nextInt(5) + 1;
-
-                        if (y < preferredAreaHeightStart) y -= random.nextInt(5) + 1;
-                        else if (y > preferredAreaHeightEnd) y += random.nextInt(5) + 1;
-                    }
-                }
-
-                position = new Vector2d(x, y);
-
-                if (!this.grass.containsKey(position)) {
-                    break;
-                }
-            }
-
-            if (!this.grass.containsKey(position)) {
-                this.grass.put(position, (Grass) plant);
-                this.mapChanged(NEW_PLANT_ADDED_AT1 + position);
-            }
-        }
-    }
-
 
     @Override
     public void move(Animal animal) {
