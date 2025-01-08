@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import project.model.exceptions.IncorrectPositionException;
 import project.model.movement.MapDirection;
+import project.model.movement.PositionDirectionPair;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
 import project.model.worldelements.AnimalStandardVariant;
@@ -147,6 +148,40 @@ class SphereIT {
     }
 
     @Test
+    void calculateNextPositionDirectionPairUpperBoundary() {
+        // given
+        Vector2d position = new Vector2d(2, 5);
+        MapDirection direction = MapDirection.NORTH_WEST;
+        Vector2d moveVector = new Vector2d(1, 1);
+
+        var currentPositionDirectionPair = new PositionDirectionPair(position, direction);
+        var expectedPositionDirectionPair = new PositionDirectionPair(position, MapDirection.SOUTH_EAST);
+
+        // when
+        var newPositionDirectionPair = map.calculateNextPositionDirectionPair(currentPositionDirectionPair, moveVector);
+
+        // then
+        Assertions.assertEquals(expectedPositionDirectionPair, newPositionDirectionPair);
+    }
+
+    @Test
+    void calculateNextPositionDirectionLowerBoundary() {
+        // given
+        Vector2d position = new Vector2d(2, 0);
+        MapDirection direction = MapDirection.SOUTH_WEST;
+        Vector2d moveVector = new Vector2d(-1, -1);
+
+        var currentPositionDirectionPair = new PositionDirectionPair(position, direction);
+        var expectedPositionDirectionPair = new PositionDirectionPair(position, MapDirection.NORTH_EAST);
+
+        // when
+        var newPositionDirectionPair = map.calculateNextPositionDirectionPair(currentPositionDirectionPair, moveVector);
+
+        // then
+        Assertions.assertEquals(expectedPositionDirectionPair, newPositionDirectionPair);
+    }
+
+    @Test
     void placeAnimalsOnMap() {
         // given
         Vector2d position = new Vector2d(2, 2);
@@ -193,12 +228,33 @@ class SphereIT {
     }
 
     @Test
+    void getAnimals() {
+        //  given
+        var repeatedPosition = new Vector2d(2, 2);
+        Animal animal1 = new AnimalStandardVariant(repeatedPosition);
+        Animal animal2 = new AnimalStandardVariant(repeatedPosition);
+        Animal animal3 = new AnimalStandardVariant(repeatedPosition);
+        Animal animal4 = new AnimalStandardVariant(new Vector2d(1, 0));
+        List<Animal> expectedAnimals = List.of(animal1, animal2, animal3, animal4);
+
+        // when
+        this.map.place(animal1);
+        this.map.place(animal2);
+        this.map.place(animal3);
+        this.map.place(animal4);
+        List<Animal> animals = this.map.getAnimals();
+
+        // then
+        Assertions.assertEquals(new HashSet<>(expectedAnimals), new HashSet<>(animals));
+    }
+
+    @Test
     void generalAnimalMovement() {
         // given
         Vector2d animalStartPosition = new Vector2d(4, 5);   // start in top right corner
-        List<Integer> rotations = List.of(7, 1, 1, 2, 1, 0, 0, 7, 0, 6);
+        List<Integer> rotations = List.of(7, 5, 5, 6, 1, 0, 0, 7, 0, 2);
         Genome genome = new Genome(rotations, 0);
-        Animal animal = new AnimalStandardVariant(animalStartPosition, genome, 100);
+        Animal animal = new AnimalStandardVariant(animalStartPosition, genome, 100, MapDirection.NORTH);
 
         List<Vector2d> expectedNextPositions = List.of(
                 new Vector2d(4, 5),
@@ -214,15 +270,15 @@ class SphereIT {
         );
 
         List<MapDirection> expectedNextOrientations = List.of(
-                MapDirection.NORTH_WEST,
-                MapDirection.NORTH,
-                MapDirection.NORTH_EAST,
+                MapDirection.SOUTH_EAST,        // North Pole crossed
+                MapDirection.SOUTH,             // North Pole crossed
+                MapDirection.SOUTH_WEST,        // North Pole crossed
                 MapDirection.SOUTH_EAST,
                 MapDirection.SOUTH,
                 MapDirection.SOUTH,
                 MapDirection.SOUTH,
                 MapDirection.SOUTH_EAST,
-                MapDirection.SOUTH_EAST,
+                MapDirection.NORTH_WEST,        // South Pole crossed
                 MapDirection.NORTH_EAST
         );
 

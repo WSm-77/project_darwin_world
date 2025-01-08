@@ -18,6 +18,7 @@ public enum MapDirection {
     private static final Vector2d SOUTH_WEST_UNIT_VECTOR = new Vector2d(-1, -1);
     private static final Vector2d WEST_UNIT_VECTOR = new Vector2d(-1, 0);
     private static final Vector2d NORTH_WEST_UNIT_VECTOR = new Vector2d(-1, 1);
+    private static final int OPPOSITE_DIRECTION_ROTATE_ANGLE = 4;
 
     public String toString() {
         return switch (this) {
@@ -35,6 +36,10 @@ public enum MapDirection {
     public MapDirection rotate(int angleNum) {
         MapDirection[] values = MapDirection.values();
         return values[(this.ordinal() + angleNum) % values.length];
+    }
+
+    public MapDirection opposite() {
+        return this.rotate(MapDirection.OPPOSITE_DIRECTION_ROTATE_ANGLE);
     }
 
     public MapDirection next() {

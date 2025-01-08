@@ -11,9 +11,11 @@ public class Simulation implements Runnable {
     private final AnimalFactory animalFactory;
     private final int energyToReproduce;
     private boolean running = true;
+    private int day = 1;
 
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
+    public static final int ENERGY_DAILY_LOSS = 1;
     public static final int SIMULATION_REFRESH_TIME_MS = 500;
 
     public Simulation(SimulationBuilder simulationBuilder) {
@@ -32,36 +34,54 @@ public class Simulation implements Runnable {
         return String.format(Simulation.INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE, this.worldMap.getId());
     }
 
-    public void removeDeadAnimals() {
+    private void removeDeadAnimals() {
+        this.worldMap.getAnimals().stream()
+                .filter(animal -> !animal.isAlive())
+                .forEach(this.worldMap::removeAnimal);
+    }
+
+    private void moveAnimals() {
+        this.worldMap.getAnimals()
+                .forEach(this.worldMap::move);
+    }
+
+    private void consumePlants() {
 
     }
 
-    public void moveAnimals() {
+    private void reproduceAnimals() {
 
     }
 
-    public void consumePlants() {
+    private void growPlants() {
 
     }
 
-    public void reproduceAnimals() {
-
+    private void consumeDailyEnergyAmount() {
+        this.worldMap.getAnimals()
+                .forEach(animal -> animal.updateEnergy(-Simulation.ENERGY_DAILY_LOSS));
     }
 
-    public void growPlants() {
-
+    private void finishDay() {
+        this.consumeDailyEnergyAmount();
+        this.day++;
     }
 
     @Override
     public void run() {
         while (this.running) {
-            System.out.println("Simulation this.running");
+            System.out.println();
+            System.out.printf("Simulation day: %d\n", this.day);
+            System.out.printf("Animals on the map: %s\n", this.worldMap.getAnimals());
+            System.out.println();
 
             this.removeDeadAnimals();
             this.moveAnimals();
             this.consumePlants();
             this.reproduceAnimals();
             this.growPlants();
+
+            this.finishDay();
 
             if (Thread.currentThread().isInterrupted()) {
                 System.out.println(this.createInterruptionMessage());
