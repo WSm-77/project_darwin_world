@@ -59,7 +59,7 @@ public class Simulation implements Runnable {
 
     private void consumeDailyEnergyAmount() {
         this.worldMap.getAnimals()
-                .forEach(animal -> animal.updateEnergy(-Simulation.ENERGY_DAILY_LOSS));
+                .forEach(animal -> animal.getStatistics().updateEnergy(-Simulation.ENERGY_DAILY_LOSS));
     }
 
     private void finishDay() {

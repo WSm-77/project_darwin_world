@@ -85,6 +85,12 @@ public class AnimalStatistics {
         return this.energy;
     }
 
+    /**
+     * Updates the animal's energy level by adding or subtracting the given amount.
+     *
+     * @param energyAmount the amount to modify the energy by. Positive to increase,
+     *                     negative to decrease.
+     */
     public void updateEnergy(int energyAmount) {
         this.energy += energyAmount;
     }
@@ -93,6 +99,11 @@ public class AnimalStatistics {
         return eatenPlants;
     }
 
+    /**
+     * Updates the animal's eaten plants count by adding the given amount.
+     *
+     * @param plantsAmount the amount to modify the eaten plant count by.
+     */
     public void updateEatenPlants(int plantsAmount) {
         this.eatenPlants += plantsAmount;
     }

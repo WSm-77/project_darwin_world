@@ -36,14 +36,14 @@ public class GenomeFactory {
         Animal weakerParent = parent2;
 
         // Ensure strongerParent is indeed the animal with higher energy
-        if (strongerParent.getEnergy() < weakerParent.getEnergy()) {
+        if (strongerParent.getStatistics().getEnergy() < weakerParent.getStatistics().getEnergy()) {
             Animal temp = strongerParent;
             strongerParent = weakerParent;
             weakerParent = temp;
         }
 
-        Genome strongerParentGenome = strongerParent.getGenome();
-        Genome weakerParentGenome = weakerParent.getGenome();
+        Genome strongerParentGenome = strongerParent.getStatistics().getGenome();
+        Genome weakerParentGenome = weakerParent.getStatistics().getGenome();
 
         List<Integer> strongerParentGenes = strongerParentGenome.getGenome();
         List<Integer> weakerParentGenes = weakerParentGenome.getGenome();
@@ -52,8 +52,8 @@ public class GenomeFactory {
             throw new IllegalArgumentException(GenomeFactory.PARENTS_DIFFERENT_GENOME_SIZE_MESSAGE);
         }
 
-        int strongerParentEnergy = strongerParent.getEnergy();
-        int weakerParentEnergy = weakerParent.getEnergy();
+        int strongerParentEnergy = strongerParent.getStatistics().getEnergy();
+        int weakerParentEnergy = weakerParent.getStatistics().getEnergy();
 
         int length = strongerParentGenes.size();
         List<Integer> childGenes = new ArrayList<>();
