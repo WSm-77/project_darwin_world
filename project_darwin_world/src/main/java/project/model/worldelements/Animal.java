@@ -1,6 +1,5 @@
 package project.model.worldelements;
 
-import project.model.movement.MapDirection;
 import project.model.movement.NextPositionCalculator;
 
 /**
@@ -8,27 +7,6 @@ import project.model.movement.NextPositionCalculator;
  * can move and interact with its environment.
  */
 public interface Animal extends WorldElement {
-
-    /**
-     * Retrieves the current energy level of the animal.
-     *
-     * @return The current energy of the animal as an integer.
-     */
-    int getEnergy();
-
-    /**
-     * Retrieves the genome associated with this animal.
-     *
-     * @return A Genome object representing the genetic code of the animal.
-     */
-    Genome getGenome();
-
-    /**
-     * Retrieves the current orientation of the animal.
-     *
-     * @return A MapDirection enum representing the direction the animal is facing.
-     */
-    MapDirection getOrientation();
 
     /**
      * Checks if the animal is still alive.
@@ -47,10 +25,9 @@ public interface Animal extends WorldElement {
     boolean move(NextPositionCalculator nextPositionCalculator);
 
     /**
-     * Updates the animal's energy level by adding or subtracting the given amount.
+     * Retrive animal statistics
      *
-     * @param energyAmount the amount to modify the energy by. Positive to increase,
-     *                     negative to decrease.
+     * @return AnimalStatistics object representing animal state
      */
-    void updateEnergy(int energyAmount);
+    AnimalStatistics getStatistics();
 }

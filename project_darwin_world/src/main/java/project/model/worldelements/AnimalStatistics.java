@@ -1,0 +1,139 @@
+package project.model.worldelements;
+
+import project.model.movement.MapDirection;
+import project.model.movement.Vector2d;
+
+import java.util.*;
+
+public class AnimalStatistics {
+    private static final String TO_STRING_TEMPLATE = """
+            AnimalStatistics{
+            \tposition=%s
+            \torientation=%s
+            \tgenome=%s
+            \tactiveGeneIndex=%s
+            \tenergy=%s
+            \teatenPlants=%s
+            \tchildrenCount=%s
+            \tdaysAlive=%s
+            \tdeathDay=%s
+            '}'
+            """;
+    private static final String ALIVE_ANIMAL_STATUS_STRING = "Alive";
+
+    private Vector2d position;
+    private MapDirection orientation;
+    private Genome genome;
+    private int energy;
+    private int eatenPlants = 0;
+    private int daysAlive = 0;
+    private Integer deathDay = null;
+    final private Set<Animal> children = new HashSet<>();
+
+    public AnimalStatistics(Vector2d position, Genome genome, int startEnergy, MapDirection startOrientation) {
+        this.position = position;
+        this.genome = genome;
+        this.energy = startEnergy;
+        this.orientation = startOrientation;
+    }
+
+    public Vector2d getPosition() {
+        return this.position;
+    }
+
+    public void setPosition(Vector2d position) {
+        this.position = position;
+    }
+
+    public MapDirection getOrientation() {
+        return this.orientation;
+    }
+
+    public void setOrientation(MapDirection orientation) {
+        this.orientation = orientation;
+    }
+
+    public Genome getGenome() {
+        return this.genome;
+    }
+
+    public void setGenome(Genome genome) {
+        this.genome = genome;
+    }
+
+    public List<Integer> getGenesList() {
+        return this.genome.getGenome();
+    }
+
+    public int getActiveGeneIndex() {
+        return this.genome.getActiveGeneIdx();
+    }
+
+    public int getEnergy() {
+        return this.energy;
+    }
+
+    /**
+     * Updates the animal's energy level by adding or subtracting the given amount.
+     *
+     * @param energyAmount the amount to modify the energy by. Positive to increase,
+     *                     negative to decrease.
+     */
+    public void updateEnergy(int energyAmount) {
+        this.energy += energyAmount;
+    }
+
+    public int getEatenPlants() {
+        return eatenPlants;
+    }
+
+    /**
+     * Updates the animal's eaten plants count by adding the given amount.
+     *
+     * @param plantsAmount the amount to modify the eaten plant count by.
+     */
+    public void updateEatenPlants(int plantsAmount) {
+        this.eatenPlants += plantsAmount;
+    }
+
+    public int getChildrenCount() {
+        return this.children.size();
+    }
+
+    public void addChild(Animal animal) {
+        this.children.add(animal);
+    }
+
+    public int getDaysAlive() {
+        return this.daysAlive;
+    }
+
+    public void incrementDaysAlive() {
+        this.daysAlive++;
+    }
+
+    public Optional<Integer> getDeathDay() {
+        return Optional.ofNullable(this.deathDay);
+    }
+
+    public void setDeathDay(Integer deathDay) {
+        this.deathDay = deathDay;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(AnimalStatistics.TO_STRING_TEMPLATE,
+            this.getPosition(),
+            this.getOrientation(),
+            this.getGenesList(),
+            this.getActiveGeneIndex(),
+            this.getEnergy(),
+            this.getEatenPlants(),
+            this.getChildrenCount(),
+            this.getDaysAlive(),
+            this.getDeathDay()
+                    .map(Object::toString)
+                    .orElse(AnimalStatistics.ALIVE_ANIMAL_STATUS_STRING)
+        );
+    }
+}

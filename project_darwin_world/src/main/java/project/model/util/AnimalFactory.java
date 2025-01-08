@@ -4,6 +4,7 @@ import project.model.map.Boundary;
 import project.model.movement.MapDirection;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
+import project.model.worldelements.AnimalStatistics;
 import project.model.worldelements.Genome;
 
 import java.util.Objects;
@@ -51,28 +52,30 @@ public class AnimalFactory {
         Animal weakerParent = parent2;
 
         // Ensure strongerParent is indeed the animal with higher energy
-        if (strongerParent.getEnergy() < weakerParent.getEnergy()) {
+        if (strongerParent.getStatistics().getEnergy() < weakerParent.getStatistics().getEnergy()) {
             Animal temp = strongerParent;
             strongerParent = weakerParent;
             weakerParent = temp;
         }
 
-        int strongerParentEnergy = strongerParent.getEnergy();
-        int weakerParentEnergy = weakerParent.getEnergy();
+        int strongerParentEnergy = strongerParent.getStatistics().getEnergy();
+        int weakerParentEnergy = weakerParent.getStatistics().getEnergy();
 
         double totalEnergy = strongerParentEnergy + weakerParentEnergy;
         int strongerParentEnergyLoss = (int) Math.round(strongerParentEnergy / totalEnergy * strongerParentEnergy);
         int weakerParentEnergyLoss = this.childAnimalStartEnergy - strongerParentEnergyLoss;
 
-        strongerParent.updateEnergy(-strongerParentEnergyLoss);
-        weakerParent.updateEnergy(-weakerParentEnergyLoss);
+        strongerParent.getStatistics().updateEnergy(-strongerParentEnergyLoss);
+        weakerParent.getStatistics().updateEnergy(-weakerParentEnergyLoss);
     }
 
     public Animal createRandomAnimal() {
         Vector2d position = this.generateRandomPosition();
         Genome genome = genomeFactory.createRandomGenome();
         MapDirection startOrientation = this.generateRandomMapDirection();
-        return this.constructor.construct(position, genome, this.randomAnimalStartEnergy, startOrientation);
+
+        AnimalStatistics animalStatistics = new AnimalStatistics(position, genome, this.randomAnimalStartEnergy, startOrientation);
+        return this.constructor.construct(animalStatistics);
     }
 
     public Animal createFromParents(Animal parent1, Animal parent2) {
@@ -86,6 +89,7 @@ public class AnimalFactory {
 
         this.updateParentsEnergy(parent1, parent2);
 
-        return this.constructor.construct(position, genome, this.childAnimalStartEnergy, startOrientation);
+        AnimalStatistics animalStatistics = new AnimalStatistics(position, genome, this.childAnimalStartEnergy, startOrientation);
+        return this.constructor.construct(animalStatistics);
     }
 }

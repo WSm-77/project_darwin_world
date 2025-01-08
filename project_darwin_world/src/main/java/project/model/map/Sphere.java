@@ -89,7 +89,7 @@ public class Sphere implements WorldMap {
     @Override
     public void move(Animal animal) {
         Vector2d prevPosition = animal.getPosition();
-        MapDirection prevOrientation = animal.getOrientation();
+        MapDirection prevOrientation = animal.getStatistics().getOrientation();
 
         if (animal.move(this)) {
             Set<Animal> animalSet = this.animals.get(prevPosition);
@@ -102,7 +102,7 @@ public class Sphere implements WorldMap {
             this.place(animal);
         }
 
-        this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getOrientation(),
+        this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getStatistics().getOrientation(),
                 prevPosition, animal.getPosition()));
     }
 
