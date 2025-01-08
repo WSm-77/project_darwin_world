@@ -6,8 +6,9 @@ import project.model.movement.PositionDirectionPair;
 import project.model.movement.Vector2d;
 import project.model.util.MapChangeListener;
 import project.model.util.MapVisualizer;
+import project.model.util.PlantGrowerStandardVariant;
 import project.model.worldelements.Animal;
-import project.model.worldelements.Grass;
+import project.model.worldelements.Plant;
 import project.model.worldelements.WorldElement;
 
 import java.util.*;
@@ -21,21 +22,30 @@ public class Sphere implements WorldMap {
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
     final private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
-    final private Map<Vector2d, Grass> grass = new HashMap<>();
+    final private Map<Vector2d, Plant> grass = new HashMap<>();
     final private Boundary boundary;
     final private UUID id;
     final private List<MapChangeListener> listeners = new ArrayList<>();
     final private MapVisualizer mapVisualizer = new MapVisualizer(this);
+    private final PlantGrowerStandardVariant plantGrower;
 
     public Sphere(int width, int height) {
         this.upperRight = this.lowerLeft.add(new Vector2d(width - 1, height - 1));
         this.boundary = new Boundary(this.lowerLeft, this.upperRight);
         this.id = UUID.randomUUID();
+        this.plantGrower = new PlantGrowerStandardVariant(this.lowerLeft, this.upperRight);
     }
 
     @Override
     public boolean isOnMap(Vector2d position) {
         return position.follows(this.lowerLeft) && position.precedes(upperRight);
+    }
+
+    public void growPlants(Plant... plants) {
+        for (Plant plant : plants) {
+            Vector2d position = plantGrower.selectPlantPosition();
+            this.grass.put(position, plant);
+        }
     }
 
     private String createIncorrectAnimalToRemoveMessage(Animal animal) {
