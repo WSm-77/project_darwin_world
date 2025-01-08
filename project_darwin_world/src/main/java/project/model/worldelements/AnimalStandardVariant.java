@@ -2,6 +2,7 @@ package project.model.worldelements;
 
 import project.model.movement.MapDirection;
 import project.model.movement.NextPositionCalculator;
+import project.model.movement.PositionDirectionPair;
 import project.model.movement.Vector2d;
 
 import java.util.List;
@@ -38,7 +39,12 @@ public class AnimalStandardVariant implements Animal {
         this.orientation = this.orientation.rotate(angleVal);
         Vector2d prevPosition = this.getPosition();
 
-        this.position = nextPositionCalculator.calculateNextPosition(prevPosition, this.getOrientation().toUnitVector());
+        PositionDirectionPair currentPositionDirectionPair = new PositionDirectionPair(prevPosition, this.getOrientation());
+        var newPositionDirectionPair = nextPositionCalculator.calculateNextPositionDirectionPair(
+                currentPositionDirectionPair, this.getOrientation().toUnitVector());
+
+        this.position = newPositionDirectionPair.position();
+        this.orientation = newPositionDirectionPair.mapDirection();
 
         return this.position != prevPosition;
     }

@@ -2,6 +2,7 @@ package project.model.map;
 
 import project.model.exceptions.IncorrectPositionException;
 import project.model.movement.MapDirection;
+import project.model.movement.PositionDirectionPair;
 import project.model.movement.Vector2d;
 import project.model.util.MapChangeListener;
 import project.model.util.MapVisualizer;
@@ -159,6 +160,18 @@ public class Sphere implements WorldMap {
         boolean canMoveTo = this.lowerLeft.getY() <= newPosition.getY() && newPosition.getY() <= this.upperRight.getY();
 
         return canMoveTo ? newPosition : currentPosition;
+    }
+
+    @Override
+    public PositionDirectionPair calculateNextPositionDirectionPair(PositionDirectionPair currentPositionDirectionPair, Vector2d moveVector) {
+        Vector2d nextPosition = this.calculateNextPosition(currentPositionDirectionPair.position(), moveVector);
+        MapDirection nextDirection = currentPositionDirectionPair.mapDirection();
+
+        if (Objects.equals(currentPositionDirectionPair.position(), nextPosition)) {
+            nextDirection = nextDirection.opposite();
+        }
+
+        return new PositionDirectionPair(nextPosition, nextDirection);
     }
 
     public void subscribe(MapChangeListener listener) {
