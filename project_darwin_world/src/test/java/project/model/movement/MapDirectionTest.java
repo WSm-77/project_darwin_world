@@ -1,6 +1,11 @@
 package project.model.movement;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MapDirectionTest {
@@ -48,5 +53,41 @@ public class MapDirectionTest {
         MapDirection test8 = directionNorthWest.rotate(1);
         assertEquals(DIRECTION_NORTH, test8);
 
+    }
+
+    @Test
+    public void oppositeTest() {
+        // given
+        List<MapDirection> directions = List.of(
+                MapDirection.NORTH,
+                MapDirection.NORTH_EAST,
+                MapDirection.EAST,
+                MapDirection.SOUTH_EAST,
+                MapDirection.SOUTH,
+                MapDirection.SOUTH_WEST,
+                MapDirection.WEST,
+                MapDirection.NORTH_WEST
+        );
+
+        List<MapDirection> expectedDirections = List.of(
+                MapDirection.SOUTH,
+                MapDirection.SOUTH_WEST,
+                MapDirection.WEST,
+                MapDirection.NORTH_WEST,
+                MapDirection.NORTH,
+                MapDirection.NORTH_EAST,
+                MapDirection.EAST,
+                MapDirection.SOUTH_EAST
+        );
+
+        // when
+        List<MapDirection> resultDirections = new ArrayList<>();
+
+        for (var direction : directions) {
+            resultDirections.add(direction.opposite());
+        }
+
+        // then
+        Assertions.assertEquals(expectedDirections, resultDirections);
     }
 }
