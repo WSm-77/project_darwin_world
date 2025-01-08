@@ -10,6 +10,7 @@ import project.model.movement.PositionDirectionPair;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
 import project.model.worldelements.AnimalStandardVariant;
+import project.model.worldelements.AnimalStatistics;
 import project.model.worldelements.Genome;
 
 import java.util.*;
@@ -185,7 +186,8 @@ class SphereIT {
     void placeAnimalsOnMap() {
         // given
         Vector2d position = new Vector2d(2, 2);
-        Animal animal = new AnimalStandardVariant(position);
+        var animalStatistics = new AnimalStatistics(position);
+        var animal = new AnimalStandardVariant(animalStatistics);
 
         // when
         // then
@@ -197,7 +199,8 @@ class SphereIT {
     void placeAnimalsOutsideMap() {
         // given
         Vector2d position = new Vector2d(100, 100);
-        Animal animal = new AnimalStandardVariant(position);
+        var animalStatistics = new AnimalStatistics(position);
+        var animal = new AnimalStandardVariant(animalStatistics);
 
         // when
         // then
@@ -209,9 +212,12 @@ class SphereIT {
     void placeMultipleAnimalsAtTheSamePosition() {
         // given
         Vector2d position = new Vector2d(2, 2);
-        Animal firstAnimal = new AnimalStandardVariant(position);
-        Animal secondAnimal = new AnimalStandardVariant(position);
-        Animal thirdAnimal = new AnimalStandardVariant(position);
+        var firstAnimalStatistics = new AnimalStatistics(position);
+        var secondAnimalStatistics = new AnimalStatistics(position);
+        var thirdAnimalStatistics = new AnimalStatistics(position);
+        var firstAnimal = new AnimalStandardVariant(firstAnimalStatistics);
+        var secondAnimal = new AnimalStandardVariant(secondAnimalStatistics);
+        var thirdAnimal = new AnimalStandardVariant(thirdAnimalStatistics);
 
         Set<Animal> expectedAnimalsSet = Set.of(firstAnimal, secondAnimal, thirdAnimal);
 
@@ -231,10 +237,14 @@ class SphereIT {
     void getAnimals() {
         //  given
         var repeatedPosition = new Vector2d(2, 2);
-        Animal animal1 = new AnimalStandardVariant(repeatedPosition);
-        Animal animal2 = new AnimalStandardVariant(repeatedPosition);
-        Animal animal3 = new AnimalStandardVariant(repeatedPosition);
-        Animal animal4 = new AnimalStandardVariant(new Vector2d(1, 0));
+        var animalStatistics1 = new AnimalStatistics(repeatedPosition);
+        var animalStatistics2 = new AnimalStatistics(repeatedPosition);
+        var animalStatistics3 = new AnimalStatistics(repeatedPosition);
+        var animalStatistics4 = new AnimalStatistics(new Vector2d(1, 0));
+        var animal1 = new AnimalStandardVariant(animalStatistics1);
+        var animal2 = new AnimalStandardVariant(animalStatistics2);
+        var animal3 = new AnimalStandardVariant(animalStatistics3);
+        var animal4 = new AnimalStandardVariant(animalStatistics4);
         List<Animal> expectedAnimals = List.of(animal1, animal2, animal3, animal4);
 
         // when
@@ -254,7 +264,8 @@ class SphereIT {
         Vector2d animalStartPosition = new Vector2d(4, 5);   // start in top right corner
         List<Integer> rotations = List.of(7, 5, 5, 6, 1, 0, 0, 7, 0, 2);
         Genome genome = new Genome(rotations, 0);
-        Animal animal = new AnimalStandardVariant(animalStartPosition, genome, 100, MapDirection.NORTH);
+        var animalStatistics = new AnimalStatistics(animalStartPosition, genome, 100, MapDirection.NORTH);
+        var animal = new AnimalStandardVariant(animalStatistics);
 
         List<Vector2d> expectedNextPositions = List.of(
                 new Vector2d(4, 5),
@@ -291,7 +302,7 @@ class SphereIT {
         for (int i = 0; i < rotations.size(); i++) {
             map.move(animal);
             nextPositions.add(animal.getPosition());
-            nextOrientations.add(animal.getOrientation());
+            nextOrientations.add(animal.getStatistics().getOrientation());
         }
 
         // then
@@ -308,8 +319,10 @@ class SphereIT {
         List<Integer> secondAnimalRotations = List.of(4, 0);
         Genome firstAnimalGenome = new Genome(firstAnimalRotations, 0);
         Genome secondAnimalGenome = new Genome(secondAnimalRotations, 0);
-        Animal firstAnimal = new AnimalStandardVariant(firstAnimalStartPosition, firstAnimalGenome, 100);
-        Animal secondAnimal = new AnimalStandardVariant(secondAnimalStartPosition, secondAnimalGenome, 100);
+        var firstAnimalStatistics = new AnimalStatistics(firstAnimalStartPosition, firstAnimalGenome, 100);
+        var secondAnimalStatistics = new AnimalStatistics(secondAnimalStartPosition, secondAnimalGenome, 100);
+        var firstAnimal = new AnimalStandardVariant(firstAnimalStatistics);
+        var secondAnimal = new AnimalStandardVariant(secondAnimalStatistics);
 
         List<Vector2d> firstAnimalExpectedNextPositions = List.of(
                 new Vector2d(0, 1),
@@ -343,10 +356,10 @@ class SphereIT {
         for (int i = 0; i < firstAnimalExpectedNextPositions.size(); i++) {
             map.move(firstAnimal);
             firstAnimalNextPositions.add(firstAnimal.getPosition());
-            firstAnimalNextOrientations.add(firstAnimal.getOrientation());
+            firstAnimalNextOrientations.add(firstAnimal.getStatistics().getOrientation());
             map.move(secondAnimal);
             secondAnimalNextPositions.add(secondAnimal.getPosition());
-            secondAnimalNextOrientations.add(secondAnimal.getOrientation());
+            secondAnimalNextOrientations.add(secondAnimal.getStatistics().getOrientation());
         }
 
         // then
