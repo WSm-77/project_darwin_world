@@ -8,11 +8,11 @@ import java.util.*;
 public class AnimalStatistics {
     private static final String TO_STRING_TEMPLATE = """
             AnimalStatistics{
-            \tposition=%s,
-            \torientation=%s,
-            \tgenome=%s,
-            \tactiveGeneIndex=%s,
-            \tenergy=%s,
+            \tposition=%s
+            \torientation=%s
+            \tgenome=%s
+            \tactiveGeneIndex=%s
+            \tenergy=%s
             \teatenPlants=%s
             \tchildrenCount=%s
             \tdaysAlive=%s
@@ -20,10 +20,6 @@ public class AnimalStatistics {
             '}'
             """;
     private static final String ALIVE_ANIMAL_STATUS_STRING = "Alive";
-    private static final MapDirection DEFAULT_ORIENTATION = MapDirection.NORTH;
-    private static final List<Integer> DEFAULT_GENOME_LIST = List.of(1, 2, 3);
-    private static final int DEFAULT_ENERGY = 0;
-    private static final int DEFAULT_ACTIVE_GENE_IDX = 0;
 
     private Vector2d position;
     private MapDirection orientation;
@@ -33,14 +29,6 @@ public class AnimalStatistics {
     private int daysAlive = 0;
     private Integer deathDay = null;
     final private Set<Animal> children = new HashSet<>();
-
-    public AnimalStatistics(Vector2d position) {
-        this(position, new Genome(DEFAULT_GENOME_LIST, DEFAULT_ACTIVE_GENE_IDX), DEFAULT_ENERGY);
-    }
-
-    public AnimalStatistics(Vector2d position, Genome genome, int startEnergy) {
-        this(position, genome, startEnergy, DEFAULT_ORIENTATION);
-    }
 
     public AnimalStatistics(Vector2d position, Genome genome, int startEnergy, MapDirection startOrientation) {
         this.position = position;
