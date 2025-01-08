@@ -1,50 +1,30 @@
 package project.model.simulation;
 
-import project.model.worldelements.Animal;
-import project.model.worldelements.AnimalStandardVariant;
-import project.model.movement.Vector2d;
+import project.model.util.AnimalFactory;
+import project.model.util.SimulationBuilder;
 import project.model.map.WorldMap;
-import project.model.exceptions.IncorrectPositionException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Simulation implements Runnable {
-    private final List<Animal> animals;
-    private final int numberOfMoves;
     private final WorldMap worldMap;
-    public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!\n";
-    public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!\n";
+    private final int energyPerPlant;
+    private final int dailyPlantGrowth;
+    private final AnimalFactory animalFactory;
+    private final int energyToReproduce;
+    private boolean running = true;
+
+    public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
+    public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
     public static final int SIMULATION_REFRESH_TIME_MS = 500;
 
-    public Simulation(List<Vector2d> positions, int numberOfMoves, WorldMap worldMap) {
-        this.worldMap = worldMap;
-        this.numberOfMoves = numberOfMoves;
-
-        List<Animal> animals = new ArrayList<>();
-
-        for (var position : positions) {
-            try {
-                var animal = new AnimalStandardVariant(position);
-                this.worldMap.place(animal);
-                animals.add(animal);
-            } catch (IncorrectPositionException exception) {
-                System.out.println(exception.getMessage());
-            }
-        }
-
-        this.animals = animals;
+    public Simulation(SimulationBuilder simulationBuilder) {
+        this.worldMap = simulationBuilder.getWorldMap();
+        this.energyPerPlant = simulationBuilder.getEnergyPerPlant();
+        this.dailyPlantGrowth = simulationBuilder.getDailyPlantGrowth();
+        this.animalFactory = simulationBuilder.getAnimalFactory();
+        this.energyToReproduce = simulationBuilder.getEnergyToReproduce();
     }
 
-    public List<Animal> getAnimals() {
-        return this.animals;
-    }
-
-    public WorldMap getWorldMap() {
-        return this.worldMap;
-    }
-
-    private String createTimeoutReachedMessage() {
+    private String createInterruptionMessage() {
         return String.format(Simulation.INTERRUPTION_MESSAGE_TEMPLATE, this.worldMap.getId());
     }
 
@@ -52,37 +32,48 @@ public class Simulation implements Runnable {
         return String.format(Simulation.INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE, this.worldMap.getId());
     }
 
+    public void removeDeadAnimals() {
+
+    }
+
+    public void moveAnimals() {
+
+    }
+
+    public void consumePlants() {
+
+    }
+
+    public void reproduceAnimals() {
+
+    }
+
+    public void growPlants() {
+
+    }
+
     @Override
     public void run() {
-        if (this.animals.isEmpty()){
-            return;
-        }
+        while (this.running) {
+            System.out.println("Simulation this.running");
 
-        // set iterator to first element
-        var animalsIterator = this.animals.listIterator();
+            this.removeDeadAnimals();
+            this.moveAnimals();
+            this.consumePlants();
+            this.reproduceAnimals();
+            this.growPlants();
 
-        for (int i = 0; i < this.numberOfMoves; i++) {
-            // stop execution if thread was interrupted
             if (Thread.currentThread().isInterrupted()) {
-                System.out.println(this.createTimeoutReachedMessage());
-                return;
+                System.out.println(this.createInterruptionMessage());
+                this.running = false;
             }
 
             try {
                 Thread.sleep(Simulation.SIMULATION_REFRESH_TIME_MS);
             } catch (InterruptedException e) {
-                 System.out.println(this.createInterruptionDuringSleepMessage());
-                 return;
+                System.out.println(this.createInterruptionDuringSleepMessage());
+                this.running = false;
             }
-
-            // check if we reached end of animals list
-            if (!animalsIterator.hasNext()) {
-                animalsIterator = this.animals.listIterator();
-            }
-
-            Animal currentAnimal = animalsIterator.next();
-
-            this.worldMap.move(currentAnimal);
         }
     }
 }
