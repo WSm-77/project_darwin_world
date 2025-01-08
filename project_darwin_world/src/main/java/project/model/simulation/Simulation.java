@@ -37,7 +37,12 @@ public class Simulation implements Runnable {
     private void removeDeadAnimals() {
         this.worldMap.getAnimals().stream()
                 .filter(animal -> !animal.isAlive())
-                .forEach(this.worldMap::removeAnimal);
+                .forEach(animal -> {
+                    var animalStatistics = animal.getStatistics();
+                    animalStatistics.setDeathDay(this.day);
+                    this.worldMap.removeAnimal(animal);
+                }
+                );
     }
 
     private void moveAnimals() {
@@ -62,8 +67,14 @@ public class Simulation implements Runnable {
                 .forEach(animal -> animal.getStatistics().updateEnergy(-Simulation.ENERGY_DAILY_LOSS));
     }
 
+    private void updateDaysAlive() {
+        this.worldMap.getAnimals()
+                .forEach(animal -> animal.getStatistics().incrementDaysAlive());
+    }
+
     private void finishDay() {
         this.consumeDailyEnergyAmount();
+        this.updateDaysAlive();
         this.day++;
     }
 
