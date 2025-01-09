@@ -4,7 +4,7 @@ import project.model.movement.Vector2d;
 
 public interface PlantGrower {
 
-    void calculatePreferredAndNonPreferredPositions();
+    void growPlants(int number);
 
-    Vector2d selectPlantPosition();
+    double preference(Vector2d position);
 }
