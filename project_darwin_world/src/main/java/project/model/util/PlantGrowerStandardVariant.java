@@ -7,7 +7,7 @@ import project.model.worldelements.Grass;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PlantGrowerStandardVariant {
+public class PlantGrowerStandardVariant implements PlantGrower {
 
     protected final Sphere worldMap;
     private final Random random = new Random();
@@ -17,13 +17,13 @@ public class PlantGrowerStandardVariant {
         this.worldMap = worldMap;
     }
 
-    private Set<Vector2d> getOccupiedPositions() {
+    protected Set<Vector2d> getOccupiedPositions() {
         return this.worldMap.getAnimals().stream()
                 .map(animal -> animal.getPosition())
                 .collect(Collectors.toSet());
     }
 
-    private Set<Vector2d> getNotOccupiedPositions(Set<Vector2d> occupiedPositions) {
+    protected Set<Vector2d> getNotOccupiedPositions(Set<Vector2d> occupiedPositions) {
         Vector2d lowerLeft = worldMap.getCurrentBounds().lowerLeft();
         Vector2d upperRight = worldMap.getCurrentBounds().upperRight();
 
@@ -41,7 +41,7 @@ public class PlantGrowerStandardVariant {
         return positions;
     }
 
-    private Map<Vector2d, Double> getPreferencesMap(Collection<Vector2d> notOccupiedPositions) {
+    protected Map<Vector2d, Double> getPreferencesMap(Collection<Vector2d> notOccupiedPositions) {
         Map<Vector2d, Double> positionsPreferenceMap = new HashMap<>();
 
         notOccupiedPositions
@@ -53,7 +53,7 @@ public class PlantGrowerStandardVariant {
         return positionsPreferenceMap;
     }
 
-    private void growPlants(int number) {
+    public void growPlants(int number) {
         Set<Vector2d> occupiedPositions = this.getOccupiedPositions();
         Set<Vector2d> notOccupiedPositions = this.getNotOccupiedPositions(occupiedPositions);
         Map<Vector2d, Double> positionsPreferenceMap = this.getPreferencesMap(notOccupiedPositions);
@@ -65,7 +65,7 @@ public class PlantGrowerStandardVariant {
                 .forEach(plant -> worldMap.growPlants(plant));
     }
 
-    protected double preference(Vector2d position) {
+    public double preference(Vector2d position) {
         boolean isNearEquator = isPositionNearEquator(position);
         double preferenceFactor = 1;
         preferenceFactor *= isNearEquator ? 0.8 : 0.2;
