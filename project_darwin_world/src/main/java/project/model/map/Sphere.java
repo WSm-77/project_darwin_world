@@ -6,7 +6,6 @@ import project.model.movement.PositionDirectionPair;
 import project.model.movement.Vector2d;
 import project.model.util.MapChangeListener;
 import project.model.util.MapVisualizer;
-import project.model.util.PlantGrowerStandardVariant;
 import project.model.worldelements.Animal;
 import project.model.worldelements.Plant;
 import project.model.worldelements.WorldElement;
@@ -27,13 +26,11 @@ public class Sphere implements WorldMap {
     final private UUID id;
     final private List<MapChangeListener> listeners = new ArrayList<>();
     final private MapVisualizer mapVisualizer = new MapVisualizer(this);
-    private final PlantGrowerStandardVariant plantGrower;
 
     public Sphere(int width, int height) {
         this.upperRight = this.lowerLeft.add(new Vector2d(width - 1, height - 1));
         this.boundary = new Boundary(this.lowerLeft, this.upperRight);
         this.id = UUID.randomUUID();
-        this.plantGrower = new PlantGrowerStandardVariant(this.lowerLeft, this.upperRight);
     }
 
     @Override
@@ -41,10 +38,13 @@ public class Sphere implements WorldMap {
         return position.follows(this.lowerLeft) && position.precedes(upperRight);
     }
 
+    @Override
     public void growPlants(Plant... plants) {
         for (Plant plant : plants) {
-            Vector2d position = plantGrower.selectPlantPosition();
-            this.grass.put(position, plant);
+            Vector2d position = plant.getPosition();
+            if (this.isOnMap(position)) {
+                this.grass.put(position, plant);
+            }
         }
     }
 
@@ -95,6 +95,12 @@ public class Sphere implements WorldMap {
             throw new IncorrectPositionException(position);
         }
     }
+
+    @Override
+    public List<Plant> getPlants() {
+        return new ArrayList<>(this.grass.values());
+    }
+
 
     @Override
     public void move(Animal animal) {
