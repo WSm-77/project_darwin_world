@@ -3,7 +3,6 @@ package project.model.util;
 import project.model.map.Sphere;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Grass;
-import project.model.worldelements.Plant;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,31 +10,56 @@ import java.util.stream.Collectors;
 public class PlantGrowerStandardVariant {
 
     protected final Sphere worldMap;
-    private final double randomValue = Math.random();
+    private final Random random = new Random();
     private final int DEFAULT_NUTRITIOUSNESS = 5;
 
     public PlantGrowerStandardVariant(Sphere worldMap) {
         this.worldMap = worldMap;
     }
 
-    private void growPlants(int number) {
-        Set<Vector2d> occupiedPositions = worldMap.getAnimals().stream()
+    private Set<Vector2d> getOccupiedPositions() {
+        return this.worldMap.getAnimals().stream()
                 .map(animal -> animal.getPosition())
                 .collect(Collectors.toSet());
+    }
 
-        List<Vector2d> positions = new ArrayList<>();
+    private Set<Vector2d> getNotOccupiedPositions(Set<Vector2d> occupiedPositions) {
         Vector2d lowerLeft = worldMap.getCurrentBounds().lowerLeft();
         Vector2d upperRight = worldMap.getCurrentBounds().upperRight();
 
+        Set<Vector2d> positions = new HashSet<>();
+
         for (int x = lowerLeft.getX(); x <= upperRight.getX(); x++) {
             for (int y = lowerLeft.getY(); y <= upperRight.getY(); y++) {
-                positions.add(new Vector2d(x, y));
+                var position = new Vector2d(x, y);
+
+                if (!occupiedPositions.contains(position))
+                    positions.add(position);
             }
         }
 
-        positions.stream()
-                .filter(position -> !occupiedPositions.contains(position))
-                .sorted((pos1, pos2) -> Double.compare(this.preference(pos2) * randomValue, this.preference(pos1) * randomValue))
+        return positions;
+    }
+
+    private Map<Vector2d, Double> getPreferencesMap(Collection<Vector2d> notOccupiedPositions) {
+        Map<Vector2d, Double> positionsPreferenceMap = new HashMap<>();
+
+        notOccupiedPositions
+                .forEach(position -> {
+                    var randomPreference = this.preference(position) * this.random.nextDouble();
+                    positionsPreferenceMap.put(position, randomPreference);
+                });
+
+        return positionsPreferenceMap;
+    }
+
+    private void growPlants(int number) {
+        Set<Vector2d> occupiedPositions = this.getOccupiedPositions();
+        Set<Vector2d> notOccupiedPositions = this.getNotOccupiedPositions(occupiedPositions);
+        Map<Vector2d, Double> positionsPreferenceMap = this.getPreferencesMap(notOccupiedPositions);
+
+        notOccupiedPositions.stream()
+                .sorted(Comparator.comparingDouble(positionsPreferenceMap::get))
                 .limit(number)
                 .map(position -> new Grass(position, DEFAULT_NUTRITIOUSNESS))
                 .forEach(plant -> worldMap.growPlants(plant));
@@ -57,4 +81,3 @@ public class PlantGrowerStandardVariant {
         return relativeY >= equatorStart && relativeY <= equatorEnd;
     }
 }
-
