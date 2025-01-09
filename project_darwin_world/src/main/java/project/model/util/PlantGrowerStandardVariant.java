@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class PlantGrowerStandardVariant {
 
-    private final Sphere worldMap;
+    protected final Sphere worldMap;
     private final double randomValue = Math.random();
     private final int DEFAULT_NUTRITIOUSNESS = 5;
 
@@ -41,36 +41,20 @@ public class PlantGrowerStandardVariant {
                 .forEach(plant -> worldMap.growPlants(plant));
     }
 
-    private double preference(Vector2d position) {
+    protected double preference(Vector2d position) {
         boolean isNearEquator = isPositionNearEquator(position);
-        boolean hasPlantNeighbour = hasPlantNeighbour(position);
         double preferenceFactor = 1;
         preferenceFactor *= isNearEquator ? 0.8 : 0.2;
-        preferenceFactor *= hasPlantNeighbour ? 0.8 : 0.2;
 
         return preferenceFactor;
     }
 
-    private boolean isPositionNearEquator(Vector2d position) {
+    boolean isPositionNearEquator(Vector2d position) {
         int mapHeight = worldMap.getCurrentBounds().upperRight().getY() - worldMap.getCurrentBounds().lowerLeft().getY() + 1;
         int equatorStart = (int) (mapHeight * 0.4);
         int equatorEnd = (int) (mapHeight * 0.6);
         int relativeY = position.getY() - worldMap.getCurrentBounds().lowerLeft().getY();
         return relativeY >= equatorStart && relativeY <= equatorEnd;
-    }
-
-    private boolean hasPlantNeighbour(Vector2d position) {
-        List<Plant> plants = worldMap.getPlants();
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                if (dx == 0 && dy == 0) continue;
-                Vector2d neighbour = position.add(new Vector2d(dx, dy));
-                if (plants.stream().anyMatch(plant -> plant.getPosition().equals(neighbour))) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }
 
