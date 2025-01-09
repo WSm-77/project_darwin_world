@@ -4,8 +4,10 @@ import project.model.exceptions.IncorrectPositionException;
 import project.model.movement.NextPositionCalculator;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Animal;
+import project.model.worldelements.Plant;
 import project.model.worldelements.WorldElement;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,13 +25,19 @@ public interface WorldMap extends NextPositionCalculator {
      */
     boolean isOnMap(Vector2d position);
 
+    void growPlants(Plant... plants);
+
     /**
      * Place a animal on the map.
      *
      * @param animal The animal to place on the map.
      */
+
     void place(Animal animal) throws IncorrectPositionException;
 
+    List<Plant> getPlants();
+
+    List<Animal> getAnimals();
     /**
      * Moves an animal (if it is present on the map) according to it's orientation.
      * If the move is not possible, this method has no effect.
