@@ -1,6 +1,6 @@
 package project.model.util;
 
-import project.model.map.Sphere;
+import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Grass;
 
@@ -9,17 +9,17 @@ import java.util.stream.Collectors;
 
 public class PlantGrowerStandardVariant implements PlantGrower {
 
-    protected final Sphere worldMap;
+    protected final WorldMap worldMap;
     private final Random random = new Random();
     private final int DEFAULT_NUTRITIOUSNESS = 5;
 
-    public PlantGrowerStandardVariant(Sphere worldMap) {
+    public PlantGrowerStandardVariant(WorldMap worldMap) {
         this.worldMap = worldMap;
     }
 
     protected Set<Vector2d> getOccupiedPositions() {
-        return this.worldMap.getAnimals().stream()
-                .map(animal -> animal.getPosition())
+        return this.worldMap.getPlants().stream()
+                .map(plant -> plant.getPosition())
                 .collect(Collectors.toSet());
     }
 
@@ -63,6 +63,7 @@ public class PlantGrowerStandardVariant implements PlantGrower {
                 .limit(number)
                 .map(position -> new Grass(position, DEFAULT_NUTRITIOUSNESS))
                 .forEach(plant -> worldMap.growPlants(plant));
+
     }
 
     public double preference(Vector2d position) {
