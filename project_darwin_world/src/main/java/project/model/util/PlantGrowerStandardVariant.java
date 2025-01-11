@@ -59,7 +59,7 @@ public class PlantGrowerStandardVariant implements PlantGrower {
         Map<Vector2d, Double> positionsPreferenceMap = this.getPreferencesMap(notOccupiedPositions);
 
         notOccupiedPositions.stream()
-                .sorted(Comparator.comparingDouble(positionsPreferenceMap::get))
+                .sorted(Comparator.comparingDouble(positionsPreferenceMap::get).reversed())
                 .limit(number)
                 .map(position -> new Grass(position, DEFAULT_NUTRITIOUSNESS))
                 .forEach(plant -> worldMap.growPlants(plant));
