@@ -9,15 +9,24 @@ import java.util.Random;
 
 public class GenomeFactory {
     private final static String PARENTS_DIFFERENT_GENOME_SIZE_MESSAGE = "The parents' genomes must be the same length!";
+    public static final String INVALID_MUTATION_RANGE_MIN_MUTATIONS_MUST_BE_0_AND_MAX_MUTATIONS_MUST_BE_MIN_MUTATIONS = "Invalid mutation range: minMutations must be >= 0 and maxMutations must be >= minMutations.";
     private final Random random = new Random();
     private final int genomeLength;
+    private final int minMutations;
+    private final int maxMutations;
 
     private int getRandomGene() {
         return random.nextInt(Genome.GENE_MAX_VALUE - Genome.GENE_MIN_VALUE + 1) + Genome.GENE_MIN_VALUE;
     }
 
-    public GenomeFactory(int genomeLength) {
+    public GenomeFactory(int genomeLength, int minMutations, int maxMutations) {
+        if (minMutations < 0 || maxMutations < minMutations) {
+            throw new IllegalArgumentException(INVALID_MUTATION_RANGE_MIN_MUTATIONS_MUST_BE_0_AND_MAX_MUTATIONS_MUST_BE_MIN_MUTATIONS);
+        }
+
         this.genomeLength = genomeLength;
+        this.minMutations = minMutations;
+        this.maxMutations = maxMutations;
     }
 
     public Genome createRandomGenome() {
@@ -34,8 +43,7 @@ public class GenomeFactory {
     public Genome createFromParents(Animal parent1, Animal parent2) {
         Animal strongerParent = parent1;
         Animal weakerParent = parent2;
-
-        // Ensure strongerParent is indeed the animal with higher energy
+        
         if (strongerParent.getStatistics().getEnergy() < weakerParent.getStatistics().getEnergy()) {
             Animal temp = strongerParent;
             strongerParent = weakerParent;
@@ -72,7 +80,7 @@ public class GenomeFactory {
             childGenes.addAll(strongerParentGenes.subList(weakerParentSplitPoint, length));
         }
 
-        int mutations = random.nextInt(length);
+        int mutations = random.nextInt(maxMutations - minMutations + 1) + minMutations;
 
         for (int i = 0; i < mutations; i++) {
             int indexToMutate = random.nextInt(length);
