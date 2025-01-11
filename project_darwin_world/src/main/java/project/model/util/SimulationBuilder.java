@@ -23,6 +23,7 @@ public class SimulationBuilder {
 
     private WorldMap worldMap;
     private AnimalFactory animalFactory;
+    private PlantGrower plantGrower;
 
     public SimulationBuilder setMapWidth(int mapWidth) {
         this.mapWidth = mapWidth;
@@ -111,7 +112,7 @@ public class SimulationBuilder {
     }
 
     private void growPlants() {
-        // TODO
+        this.plantGrower.growPlants(this.initialPlantCount);
     }
 
     public Simulation build() {
@@ -120,11 +121,13 @@ public class SimulationBuilder {
         GenomeFactory genomeFactory = new GenomeFactory(this.genomeLength);
 
         Sphere sphere = new Sphere(this.mapWidth, this.mapHeight);
+        PlantGrower plantGrowerStandardVariant = new PlantGrowerStandardVariant(sphere);
 
         MapChangeListener consoleLog = new ConsoleMapDisplay();
         sphere.subscribe(consoleLog);
 
         this.worldMap = sphere;
+        this.plantGrower = plantGrowerStandardVariant;
         this.animalFactory = new AnimalFactory(
                 genomeFactory,
                 this.initialAnimalEnergy,
