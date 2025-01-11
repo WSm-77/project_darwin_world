@@ -117,7 +117,7 @@ public class SimulationBuilder {
     public Simulation build() {
         validateParameters();
 
-        GenomeFactory genomeFactory = new GenomeFactory(this.genomeLength);
+        GenomeFactory genomeFactory = new GenomeFactory(this.genomeLength, this.minMutations, this.maxMutations);
 
         Sphere sphere = new Sphere(this.mapWidth, this.mapHeight);
 
