@@ -12,18 +12,21 @@ public class PlantGrowerStandardVariant implements PlantGrower {
     protected final WorldMap worldMap;
     private final Random random = new Random();
     private final int DEFAULT_NUTRITIOUSNESS = 5;
+    protected Set<Vector2d> occupiedPositions;
+    protected Set<Vector2d> notOccupiedPositions;
+    protected Map<Vector2d, Double> positionsPreferenceMap;
 
     public PlantGrowerStandardVariant(WorldMap worldMap) {
         this.worldMap = worldMap;
     }
 
-    protected Set<Vector2d> getOccupiedPositions() {
-        return this.worldMap.getPlants().stream()
+    protected void setOccupiedPositions() {
+        this.occupiedPositions = this.worldMap.getPlants().stream()
                 .map(plant -> plant.getPosition())
                 .collect(Collectors.toSet());
     }
 
-    protected Set<Vector2d> getNotOccupiedPositions(Set<Vector2d> occupiedPositions) {
+    protected void setNotOccupiedPositions() {
         Vector2d lowerLeft = worldMap.getCurrentBounds().lowerLeft();
         Vector2d upperRight = worldMap.getCurrentBounds().upperRight();
 
@@ -33,40 +36,39 @@ public class PlantGrowerStandardVariant implements PlantGrower {
             for (int y = lowerLeft.getY(); y <= upperRight.getY(); y++) {
                 var position = new Vector2d(x, y);
 
-                if (!occupiedPositions.contains(position))
+                if (!this.occupiedPositions.contains(position))
                     positions.add(position);
             }
         }
 
-        return positions;
+        this.notOccupiedPositions = positions;
     }
 
-    protected Map<Vector2d, Double> getPreferencesMap(Collection<Vector2d> notOccupiedPositions) {
-        Map<Vector2d, Double> positionsPreferenceMap = new HashMap<>();
+    protected void setPreferencesMap() {
+        Map<Vector2d, Double> newPositionsPreferenceMap = new HashMap<>();
 
         notOccupiedPositions
                 .forEach(position -> {
                     var randomPreference = this.preference(position) * this.random.nextDouble();
-                    positionsPreferenceMap.put(position, randomPreference);
+                    newPositionsPreferenceMap.put(position, randomPreference);
                 });
 
-        return positionsPreferenceMap;
+        this.positionsPreferenceMap = newPositionsPreferenceMap;
     }
 
     public void growPlants(int number) {
-        Set<Vector2d> occupiedPositions = this.getOccupiedPositions();
-        Set<Vector2d> notOccupiedPositions = this.getNotOccupiedPositions(occupiedPositions);
-        Map<Vector2d, Double> positionsPreferenceMap = this.getPreferencesMap(notOccupiedPositions);
+        this.setOccupiedPositions();
+        this.setNotOccupiedPositions();
+        this.setPreferencesMap();
 
         notOccupiedPositions.stream()
-                .sorted(Comparator.comparingDouble(positionsPreferenceMap::get).reversed())
+                .sorted(Comparator.comparingDouble(this.positionsPreferenceMap::get).reversed())
                 .limit(number)
                 .map(position -> new Grass(position, DEFAULT_NUTRITIOUSNESS))
                 .forEach(plant -> worldMap.growPlants(plant));
-
     }
 
-    public double preference(Vector2d position) {
+    protected double preference(Vector2d position) {
         boolean isNearEquator = isPositionNearEquator(position);
         double preferenceFactor = 1;
         preferenceFactor *= isNearEquator ? 0.8 : 0.2;

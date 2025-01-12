@@ -20,9 +20,8 @@ public class PlantGrowerCreepingJungleVariant extends PlantGrowerStandardVariant
     }
 
     @Override
-    public double preference(Vector2d position) {
-        Set<Vector2d> occupiedPositions = getOccupiedPositions();
-        boolean hasPlantNeighbour = hasPlantNeighbour(position, occupiedPositions);
+    protected double preference(Vector2d position) {
+        boolean hasPlantNeighbour = hasPlantNeighbour(position, this.occupiedPositions);
 
         double preferenceFactor = super.preference(position);
         preferenceFactor *= hasPlantNeighbour ? 0.8 : 0.2;
