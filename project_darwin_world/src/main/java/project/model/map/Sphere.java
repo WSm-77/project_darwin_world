@@ -7,7 +7,7 @@ import project.model.movement.Vector2d;
 import project.model.util.MapChangeListener;
 import project.model.util.MapVisualizer;
 import project.model.worldelements.Animal;
-import project.model.worldelements.Grass;
+import project.model.worldelements.Plant;
 import project.model.worldelements.WorldElement;
 
 import java.util.*;
@@ -21,7 +21,7 @@ public class Sphere implements WorldMap {
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
     final private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
-    final private Map<Vector2d, Grass> grass = new HashMap<>();
+    final private Map<Vector2d, Plant> grass = new HashMap<>();
     final private Boundary boundary;
     final private UUID id;
     final private List<MapChangeListener> listeners = new ArrayList<>();
@@ -36,6 +36,16 @@ public class Sphere implements WorldMap {
     @Override
     public boolean isOnMap(Vector2d position) {
         return position.follows(this.lowerLeft) && position.precedes(upperRight);
+    }
+
+    @Override
+    public void growPlants(Plant... plants) {
+        for (Plant plant : plants) {
+            Vector2d position = plant.getPosition();
+            if (this.isOnMap(position)) {
+                this.grass.put(position, plant);
+            }
+        }
     }
 
     private String createIncorrectAnimalToRemoveMessage(Animal animal) {
@@ -85,6 +95,12 @@ public class Sphere implements WorldMap {
             throw new IncorrectPositionException(position);
         }
     }
+
+    @Override
+    public List<Plant> getPlants() {
+        return new ArrayList<>(this.grass.values());
+    }
+
 
     @Override
     public void move(Animal animal) {
