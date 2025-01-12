@@ -21,7 +21,7 @@ public class PlantGrowerCreepingJungleVariant extends PlantGrowerStandardVariant
 
     @Override
     protected double preference(Vector2d position) {
-        boolean hasPlantNeighbour = hasPlantNeighbour(position, this.occupiedPositions);
+        boolean hasPlantNeighbour = hasPlantNeighbour(position);
 
         double preferenceFactor = super.preference(position);
         preferenceFactor *= hasPlantNeighbour ? 0.8 : 0.2;
@@ -29,10 +29,10 @@ public class PlantGrowerCreepingJungleVariant extends PlantGrowerStandardVariant
         return preferenceFactor;
     }
 
-    private boolean hasPlantNeighbour(Vector2d position, Set<Vector2d> occupiedPositions) {
+    private boolean hasPlantNeighbour(Vector2d position) {
         for (var neighbourVector : NEIGHBOURS_VECTORS) {
             var neighbourPosition = this.worldMap.calculateNextPosition(position, neighbourVector);
-            if (occupiedPositions.contains(neighbourPosition))
+            if (this.occupiedPositions.contains(neighbourPosition))
                 return true;
         }
         return false;
