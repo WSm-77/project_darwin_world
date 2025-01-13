@@ -1,6 +1,7 @@
 package project.model.simulation;
 
 import project.model.util.AnimalFactory;
+import project.model.util.AnimalMediator;
 import project.model.util.SimulationBuilder;
 import project.model.map.WorldMap;
 
@@ -9,6 +10,7 @@ public class Simulation implements Runnable {
     private final int energyPerPlant;
     private final int dailyPlantGrowth;
     private final AnimalFactory animalFactory;
+    private final AnimalMediator animalMediator;
     private final int energyToReproduce;
     private boolean running = true;
     private int day = 1;
@@ -24,6 +26,7 @@ public class Simulation implements Runnable {
         this.dailyPlantGrowth = simulationBuilder.getDailyPlantGrowth();
         this.animalFactory = simulationBuilder.getAnimalFactory();
         this.energyToReproduce = simulationBuilder.getEnergyToReproduce();
+        this.animalMediator = simulationBuilder.getAnimalMediator();
     }
 
     private String createInterruptionMessage() {
