@@ -62,7 +62,7 @@ public class AnimalFactory {
         int weakerParentEnergy = weakerParent.getStatistics().getEnergy();
 
         double totalEnergy = strongerParentEnergy + weakerParentEnergy;
-        int strongerParentEnergyLoss = (int) Math.round(strongerParentEnergy / totalEnergy * strongerParentEnergy);
+        int strongerParentEnergyLoss = (int) Math.round(strongerParentEnergy / totalEnergy * this.childAnimalStartEnergy);
         int weakerParentEnergyLoss = this.childAnimalStartEnergy - strongerParentEnergyLoss;
 
         strongerParent.getStatistics().updateEnergy(-strongerParentEnergyLoss);
