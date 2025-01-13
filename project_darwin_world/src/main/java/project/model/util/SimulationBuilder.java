@@ -7,6 +7,8 @@ import project.model.worldelements.Animal;
 
 public class SimulationBuilder {
     private static final String BUILDER_NOT_READY_MESSAGE = "All parameters must be set before building the Simulation.";
+    private static final String INVALID_CHILD_INITIAL_ENERGY_TO_ENERGY_TO_REPRODUCE_RATIO_MESSAGE =
+            "Child initial energy must be less or equal to 2 * energy needed to reproduce!!!";
     private Integer mapWidth;
     private Integer mapHeight;
     private Integer initialPlantCount;
@@ -108,7 +110,7 @@ public class SimulationBuilder {
         }
 
         if (this.childInitialEnergy > 2 * this.energyToReproduce) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(INVALID_CHILD_INITIAL_ENERGY_TO_ENERGY_TO_REPRODUCE_RATIO_MESSAGE);
         }
     }
 
