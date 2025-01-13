@@ -27,6 +27,7 @@ public class Simulation implements Runnable {
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
     public static final int ENERGY_DAILY_LOSS = 1;
+    public static final int PARENTS_NEEDED_TO_BREED_COUNT = 2;
     public static final int SIMULATION_REFRESH_TIME_MS = 500;
 
     public Simulation(SimulationBuilder simulationBuilder) {
@@ -77,25 +78,20 @@ public class Simulation implements Runnable {
                 parent2.getStatistics().getEnergy() >= this.energyToReproduce;
     }
 
-    private void breedAt(Vector2d groupOfAnimalsPosition) {
-        Optional<Set<Animal>> groupOfAnimals = this.worldMap.animalsAt(groupOfAnimalsPosition);
+    private void breedGroup(Set<Animal> groupOfAnimals) {
+        List<Animal> parentsList = this.animalMediator.resolveAnimalsConflict(groupOfAnimals, PARENTS_NEEDED_TO_BREED_COUNT);
 
-        if (groupOfAnimals.isEmpty())
+        if (parentsList.size() != PARENTS_NEEDED_TO_BREED_COUNT)
             return;
 
-        List<Animal> parentsList = this.animalMediator.resolveAnimalsConflict(groupOfAnimals.get(), 2);
-
-        if (parentsList.size() != 2)
-            return;
-
-        var parent1 = parentsList.getFirst();
-        var parent2 = parentsList.getLast();
+        Animal parent1 = parentsList.getFirst();
+        Animal parent2 = parentsList.getLast();
 
         if (!this.canBreed(parent1, parent2)) {
             return;
         }
 
-        var child = this.animalFactory.createFromParents(parent1, parent2);
+        Animal child = this.animalFactory.createFromParents(parent1, parent2);
         this.worldMap.place(child);
     }
 
@@ -103,7 +99,9 @@ public class Simulation implements Runnable {
         Set<Vector2d> animalsPositions = this.getWorldElementsPositions(this.worldMap.getAnimals());
 
         for (var groupOfAnimalsPosition : animalsPositions) {
-            this.breedAt(groupOfAnimalsPosition);
+            Optional<Set<Animal>> groupOfAnimals = this.worldMap.animalsAt(groupOfAnimalsPosition);
+
+            groupOfAnimals.ifPresent(this::breedGroup);
         }
     }
 
