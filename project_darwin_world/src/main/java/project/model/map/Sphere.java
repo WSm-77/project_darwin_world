@@ -41,12 +41,15 @@ public class Sphere implements WorldMap {
     @Override
     public void growPlants(Plant... plants) throws IncorrectPositionException{
         for (Plant plant : plants) {
-            Vector2d position = plant.getPosition();
-            if (this.isOnMap(position)) {
-                this.grass.put(position, plant);
-            }
-            else {
-                throw new IncorrectPositionException(position);
+            try {
+                Vector2d position = plant.getPosition();
+                if (this.isOnMap(position)) {
+                    this.grass.put(position, plant);
+                } else {
+                    throw new IncorrectPositionException(position);
+                }
+            } catch (IncorrectPositionException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
