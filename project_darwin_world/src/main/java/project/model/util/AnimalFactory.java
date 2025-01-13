@@ -62,11 +62,16 @@ public class AnimalFactory {
         int weakerParentEnergy = weakerParent.getStatistics().getEnergy();
 
         double totalEnergy = strongerParentEnergy + weakerParentEnergy;
-        int strongerParentEnergyLoss = (int) Math.round(strongerParentEnergy / totalEnergy * strongerParentEnergy);
+        int strongerParentEnergyLoss = (int) Math.round(strongerParentEnergy / totalEnergy * this.childAnimalStartEnergy);
         int weakerParentEnergyLoss = this.childAnimalStartEnergy - strongerParentEnergyLoss;
 
         strongerParent.getStatistics().updateEnergy(-strongerParentEnergyLoss);
         weakerParent.getStatistics().updateEnergy(-weakerParentEnergyLoss);
+    }
+
+    private void updateParentsChildren(Animal parent1, Animal parent2, Animal child) {
+        parent1.getStatistics().addChild(child);
+        parent2.getStatistics().addChild(child);
     }
 
     public Animal createRandomAnimal() {
@@ -87,9 +92,12 @@ public class AnimalFactory {
         Genome genome = genomeFactory.createFromParents(parent1, parent2);
         MapDirection startOrientation = this.generateRandomMapDirection();
 
-        this.updateParentsEnergy(parent1, parent2);
-
         AnimalStatistics animalStatistics = new AnimalStatistics(position, genome, this.childAnimalStartEnergy, startOrientation);
-        return this.constructor.construct(animalStatistics);
+        Animal child =  this.constructor.construct(animalStatistics);
+
+        this.updateParentsEnergy(parent1, parent2);
+        this.updateParentsChildren(parent1, parent2, child);
+
+        return child;
     }
 }

@@ -9,6 +9,7 @@ import project.model.worldelements.WorldElement;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -74,6 +75,12 @@ public interface WorldMap extends NextPositionCalculator {
      * @return List of all animals located on the map.
      */
     List<Animal> getAnimals();
+
+    /**
+     * @param position position of animals
+     * @return optional object of set of animals that are on given position
+     */
+    Optional<Set<Animal>> animalsAt(Vector2d position);
 
     /**
      * Return object's UUID

@@ -122,6 +122,7 @@ public class Sphere implements WorldMap {
                 prevPosition, animal.getPosition()));
     }
 
+    @Override
     public Optional<Set<Animal>> animalsAt(Vector2d position) {
         return this.animals.containsKey(position) ? Optional.of(this.animals.get(position)) : Optional.empty();
     }

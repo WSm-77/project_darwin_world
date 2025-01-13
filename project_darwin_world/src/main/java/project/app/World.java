@@ -3,6 +3,7 @@ package project.app;
 import project.model.map.Sphere;
 import project.model.movement.Vector2d;
 import project.model.simulation.Simulation;
+import project.model.util.AnimalMediatorStandardVariant;
 import project.model.util.ConsoleMapDisplay;
 import project.model.util.MapChangeListener;
 import project.model.util.SimulationBuilder;
@@ -36,6 +37,7 @@ public class World {
                 .setMaxMutations(3)
                 .setGenomeLength(8)
                 .setAnimalConstructor(AnimalStandardVariant::new)
+                .setAnimalMediatorConstructor(AnimalMediatorStandardVariant::new)
                 .build();
 
         Thread thread = new Thread(sphereSimulation);

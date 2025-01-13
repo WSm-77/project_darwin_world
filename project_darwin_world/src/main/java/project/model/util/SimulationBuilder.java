@@ -7,6 +7,8 @@ import project.model.worldelements.Animal;
 
 public class SimulationBuilder {
     private static final String BUILDER_NOT_READY_MESSAGE = "All parameters must be set before building the Simulation.";
+    private static final String INVALID_CHILD_INITIAL_ENERGY_TO_ENERGY_TO_REPRODUCE_RATIO_MESSAGE =
+            "Child initial energy must be less or equal to 2 * energy needed to reproduce!!!";
     private Integer mapWidth;
     private Integer mapHeight;
     private Integer initialPlantCount;
@@ -20,10 +22,12 @@ public class SimulationBuilder {
     private Integer maxMutations;
     private Integer genomeLength;
     private AnimalConstructor<? extends Animal> animalConstructor;
+    private AnimalMediatorConstructor<? extends AnimalMediator> animalMediatorConstructor;
 
     private WorldMap worldMap;
     private AnimalFactory animalFactory;
     private PlantGrower plantGrower;
+    private AnimalMediator animalMediator;
 
     public SimulationBuilder setMapWidth(int mapWidth) {
         this.mapWidth = mapWidth;
@@ -90,17 +94,23 @@ public class SimulationBuilder {
         return this;
     }
 
+    public SimulationBuilder setAnimalMediatorConstructor(AnimalMediatorConstructor<? extends AnimalMediator> animalMediatorConstructor) {
+        this.animalMediatorConstructor = animalMediatorConstructor;
+        return this;
+    }
+
     private void validateParameters() {
         if (this.mapWidth == null || this.mapHeight == null  ||
                 this.initialPlantCount == null || this.energyPerPlant == null || this.dailyPlantGrowth == null ||
                 this.initialAnimalCount == null || this.initialAnimalEnergy == null ||
                 this.energyToReproduce == null || this.childInitialEnergy == null || this.minMutations == null ||
-                this.maxMutations == null || this.genomeLength == null || this.animalConstructor == null) {
+                this.maxMutations == null || this.genomeLength == null || this.animalConstructor == null ||
+                this.animalMediatorConstructor == null) {
             throw new IllegalStateException(SimulationBuilder.BUILDER_NOT_READY_MESSAGE);
         }
 
         if (this.childInitialEnergy > 2 * this.energyToReproduce) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(INVALID_CHILD_INITIAL_ENERGY_TO_ENERGY_TO_REPRODUCE_RATIO_MESSAGE);
         }
     }
 
@@ -122,6 +132,7 @@ public class SimulationBuilder {
 
         Sphere sphere = new Sphere(this.mapWidth, this.mapHeight);
         PlantGrower plantGrowerStandardVariant = new PlantGrowerStandardVariant(sphere);
+        AnimalMediator animalMediatorVariant = this.animalMediatorConstructor.construct();
 
         MapChangeListener consoleLog = new ConsoleMapDisplay();
         sphere.subscribe(consoleLog);
@@ -135,6 +146,7 @@ public class SimulationBuilder {
                 this.worldMap.getCurrentBounds(),
                 this.animalConstructor
         );
+        this.animalMediator = animalMediatorVariant;
 
         this.createAndPlaceAnimalsOnMap();
         this.growPlants();
@@ -147,4 +159,5 @@ public class SimulationBuilder {
     public int getEnergyToReproduce() { return this.energyToReproduce; }
     public WorldMap getWorldMap() { return this.worldMap; }
     public AnimalFactory getAnimalFactory() { return this.animalFactory; }
+    public AnimalMediator getAnimalMediator() { return this.animalMediator; }
 }

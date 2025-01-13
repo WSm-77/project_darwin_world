@@ -1,14 +1,25 @@
 package project.model.simulation;
 
+import project.model.movement.Vector2d;
 import project.model.util.AnimalFactory;
+import project.model.util.AnimalMediator;
 import project.model.util.SimulationBuilder;
 import project.model.map.WorldMap;
+import project.model.worldelements.Animal;
+import project.model.worldelements.WorldElement;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Simulation implements Runnable {
     private final WorldMap worldMap;
     private final int energyPerPlant;
     private final int dailyPlantGrowth;
     private final AnimalFactory animalFactory;
+    private final AnimalMediator animalMediator;
     private final int energyToReproduce;
     private boolean running = true;
     private int day = 1;
@@ -16,6 +27,7 @@ public class Simulation implements Runnable {
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
     public static final int ENERGY_DAILY_LOSS = 1;
+    public static final int PARENTS_NEEDED_TO_BREED_COUNT = 2;
     public static final int SIMULATION_REFRESH_TIME_MS = 500;
 
     public Simulation(SimulationBuilder simulationBuilder) {
@@ -24,6 +36,7 @@ public class Simulation implements Runnable {
         this.dailyPlantGrowth = simulationBuilder.getDailyPlantGrowth();
         this.animalFactory = simulationBuilder.getAnimalFactory();
         this.energyToReproduce = simulationBuilder.getEnergyToReproduce();
+        this.animalMediator = simulationBuilder.getAnimalMediator();
     }
 
     private String createInterruptionMessage() {
@@ -45,6 +58,12 @@ public class Simulation implements Runnable {
                 );
     }
 
+    private Set<Vector2d> getWorldElementsPositions(Collection<? extends WorldElement> worldElements) {
+        return worldElements.stream()
+                .map(WorldElement::getPosition)
+                .collect(Collectors.toSet());
+    }
+
     private void moveAnimals() {
         this.worldMap.getAnimals()
                 .forEach(this.worldMap::move);
@@ -54,8 +73,36 @@ public class Simulation implements Runnable {
 
     }
 
-    private void reproduceAnimals() {
+    private boolean canBreed(Animal parent1, Animal parent2) {
+        return parent1.getStatistics().getEnergy() >= this.energyToReproduce &&
+                parent2.getStatistics().getEnergy() >= this.energyToReproduce;
+    }
 
+    private void breedGroup(Set<Animal> groupOfAnimals) {
+        List<Animal> parentsList = this.animalMediator.resolveAnimalsConflict(groupOfAnimals, PARENTS_NEEDED_TO_BREED_COUNT);
+
+        if (parentsList.size() != PARENTS_NEEDED_TO_BREED_COUNT)
+            return;
+
+        Animal parent1 = parentsList.getFirst();
+        Animal parent2 = parentsList.getLast();
+
+        if (!this.canBreed(parent1, parent2)) {
+            return;
+        }
+
+        Animal child = this.animalFactory.createFromParents(parent1, parent2);
+        this.worldMap.place(child);
+    }
+
+    private void reproduceAnimals() {
+        Set<Vector2d> animalsPositions = this.getWorldElementsPositions(this.worldMap.getAnimals());
+
+        for (var groupOfAnimalsPosition : animalsPositions) {
+            Optional<Set<Animal>> groupOfAnimals = this.worldMap.animalsAt(groupOfAnimalsPosition);
+
+            groupOfAnimals.ifPresent(this::breedGroup);
+        }
     }
 
     private void growPlants() {
