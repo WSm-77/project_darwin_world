@@ -26,7 +26,13 @@ public interface WorldMap extends NextPositionCalculator {
      */
     boolean isOnMap(Vector2d position);
 
-    void growPlants(Plant... plants);
+    /**
+     * Grow plants on the map.
+     *
+     * @param plants Plants to place on the map.
+     * @throws IncorrectPositionException If position is occupied on the map.
+     */
+    void growPlants(Plant... plants) throws IncorrectPositionException;
 
     /**
      * Remove animal from the map.
@@ -44,6 +50,11 @@ public interface WorldMap extends NextPositionCalculator {
 
     void place(Animal animal) throws IncorrectPositionException;
 
+    /**
+     * Return plants located on the map
+     *
+     * @return List of all plants located on the map.
+     */
     List<Plant> getPlants();
 
     /**

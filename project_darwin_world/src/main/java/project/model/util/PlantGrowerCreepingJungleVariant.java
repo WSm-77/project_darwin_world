@@ -14,6 +14,8 @@ public class PlantGrowerCreepingJungleVariant extends PlantGrowerStandardVariant
     public static final List<Vector2d> NEIGHBOURS_VECTORS = Arrays.stream(MapDirection.values())
                                                             .map(MapDirection::toUnitVector)
                                                             .toList();
+    public static final double PREFERRED_DOUBLE = 0.8;
+    public static final double NOT_PREFERRED_DOUBLE = 0.2;
 
     public PlantGrowerCreepingJungleVariant(Sphere worldMap) {
         super(worldMap);
@@ -24,7 +26,7 @@ public class PlantGrowerCreepingJungleVariant extends PlantGrowerStandardVariant
         boolean hasPlantNeighbour = hasPlantNeighbour(position);
 
         double preferenceFactor = super.preference(position);
-        preferenceFactor *= hasPlantNeighbour ? 0.8 : 0.2;
+        preferenceFactor *= hasPlantNeighbour ? PREFERRED_DOUBLE : NOT_PREFERRED_DOUBLE;
 
         return preferenceFactor;
     }

@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 
 public class PlantGrowerStandardVariant implements PlantGrower {
 
+    public static final double PREFERRED_DOUBLE = 0.8;
+    public static final double NOT_PREFERRED_DOUBLE = 0.2;
+    public static final double EQUATOR_START = 0.4;
+    public static final double EQUATOR_STOP = 0.6;
     protected final WorldMap worldMap;
     private final Random random = new Random();
     private final int DEFAULT_NUTRITIOUSNESS = 5;
@@ -71,15 +75,15 @@ public class PlantGrowerStandardVariant implements PlantGrower {
     protected double preference(Vector2d position) {
         boolean isNearEquator = isPositionNearEquator(position);
         double preferenceFactor = 1;
-        preferenceFactor *= isNearEquator ? 0.8 : 0.2;
+        preferenceFactor *= isNearEquator ? PREFERRED_DOUBLE : NOT_PREFERRED_DOUBLE;
 
         return preferenceFactor;
     }
 
     boolean isPositionNearEquator(Vector2d position) {
         int mapHeight = worldMap.getCurrentBounds().upperRight().getY() - worldMap.getCurrentBounds().lowerLeft().getY() + 1;
-        int equatorStart = (int) (mapHeight * 0.4);
-        int equatorEnd = (int) (mapHeight * 0.6);
+        int equatorStart = (int) (mapHeight * EQUATOR_START);
+        int equatorEnd = (int) (mapHeight * EQUATOR_STOP);
         int relativeY = position.getY() - worldMap.getCurrentBounds().lowerLeft().getY();
         return relativeY >= equatorStart && relativeY <= equatorEnd;
     }
