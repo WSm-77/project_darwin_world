@@ -1,9 +1,18 @@
 package project.model.simulation;
 
+import project.model.movement.Vector2d;
 import project.model.util.AnimalFactory;
 import project.model.util.AnimalMediator;
 import project.model.util.SimulationBuilder;
 import project.model.map.WorldMap;
+import project.model.worldelements.Animal;
+import project.model.worldelements.WorldElement;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Simulation implements Runnable {
     private final WorldMap worldMap;
@@ -48,6 +57,12 @@ public class Simulation implements Runnable {
                 );
     }
 
+    private Set<Vector2d> getWorldElementsPositions(Collection<? extends WorldElement> worldElements) {
+        return worldElements.stream()
+                .map(WorldElement::getPosition)
+                .collect(Collectors.toSet());
+    }
+
     private void moveAnimals() {
         this.worldMap.getAnimals()
                 .forEach(this.worldMap::move);
@@ -57,8 +72,39 @@ public class Simulation implements Runnable {
 
     }
 
-    private void reproduceAnimals() {
+    private boolean canBreed(Animal parent1, Animal parent2) {
+        return parent1.getStatistics().getEnergy() >= this.energyToReproduce &&
+                parent2.getStatistics().getEnergy() >= this.energyToReproduce;
+    }
 
+    private void breedAt(Vector2d groupOfAnimalsPosition) {
+        Optional<Set<Animal>> groupOfAnimals = this.worldMap.animalsAt(groupOfAnimalsPosition);
+
+        if (groupOfAnimals.isEmpty())
+            return;
+
+        List<Animal> parentsList = this.animalMediator.resolveAnimalsConflict(groupOfAnimals.get(), 2);
+
+        if (parentsList.size() != 2)
+            return;
+
+        var parent1 = parentsList.getFirst();
+        var parent2 = parentsList.getLast();
+
+        if (!this.canBreed(parent1, parent2)) {
+            return;
+        }
+
+        var child = this.animalFactory.createFromParents(parent1, parent2);
+        this.worldMap.place(child);
+    }
+
+    private void reproduceAnimals() {
+        Set<Vector2d> animalsPositions = this.getWorldElementsPositions(this.worldMap.getAnimals());
+
+        for (var groupOfAnimalsPosition : animalsPositions) {
+            this.breedAt(groupOfAnimalsPosition);
+        }
     }
 
     private void growPlants() {
