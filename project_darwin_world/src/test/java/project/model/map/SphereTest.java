@@ -384,7 +384,41 @@ class SphereIT {
     }
 
     @Test
-    void growPlantsOnFreePositions() {
+    void growSinglePlantCorrectPosition() throws IncorrectPositionException {
+        // given
+        Plant grass = new Grass(new Vector2d(2, 2), 10);
+
+        // when
+        map.growPlants(grass);
+
+        // then
+        Assertions.assertTrue(map.getPlants().contains(grass));
+    }
+
+    @Test
+    void growPlantOnOccupiedPosition() {
+        // given
+        Plant grass1 = new Grass(new Vector2d(2, 2), 10);
+        Plant grass2 = new Grass(new Vector2d(2, 2), 5);
+
+        // when
+        map.growPlants(grass1);
+
+        // then
+        Assertions.assertThrows(IncorrectPositionException.class, () -> map.growPlants(grass2));
+    }
+
+    @Test
+    void growPlantOutsideMap() {
+        // given
+        Plant grass = new Grass(new Vector2d(10, 10), 10);
+
+        // when & then
+        Assertions.assertThrows(IncorrectPositionException.class, () -> map.growPlants(grass));
+    }
+
+    @Test
+    void growMultiplePlantsCorrectPositions() throws IncorrectPositionException {
         // given
         Plant grass1 = new Grass(new Vector2d(2, 2), 10);
         Plant grass2 = new Grass(new Vector2d(3, 3), 5);
@@ -399,57 +433,29 @@ class SphereIT {
         Assertions.assertTrue(map.getPlants().contains(grass3));
     }
 
-
     @Test
-    void growPlantsWithOneOccupiedPosition() {
+    void growMultiplePlantsWithErrors() {
         // given
         Plant grass1 = new Grass(new Vector2d(2, 2), 10);
         Plant grass2 = new Grass(new Vector2d(2, 2), 5);
         Plant grass3 = new Grass(new Vector2d(3, 3), 7);
 
         // when
-        map.growPlants(grass1, grass2, grass3);
+        map.growPlants(grass1);
 
         // then
-        Assertions.assertTrue(map.getPlants().contains(grass1));
-        Assertions.assertFalse(map.getPlants().contains(grass2));
-        Assertions.assertTrue(map.getPlants().contains(grass3));
+        Assertions.assertThrows(IncorrectPositionException.class, () -> map.growPlants(grass2, grass3));
+        Assertions.assertFalse(map.getPlants().contains(grass3));
     }
 
-
     @Test
-    void growPlantsOutsideMap() {
+    void growPlantsStopsOnFirstError() {
         // given
         Plant grass1 = new Grass(new Vector2d(10, 10), 10);
-        Plant grass2 = new Grass(new Vector2d(-1, -1), 5);
-        Plant grass3 = new Grass(new Vector2d(4, 4), 7);
+        Plant grass2 = new Grass(new Vector2d(3, 3), 5);
 
-        // when
-        map.growPlants(grass1, grass2, grass3);
-
-        // then
-        Assertions.assertFalse(map.getPlants().contains(grass1));
+        // when & then
+        Assertions.assertThrows(IncorrectPositionException.class, () -> map.growPlants(grass1, grass2));
         Assertions.assertFalse(map.getPlants().contains(grass2));
-        Assertions.assertTrue(map.getPlants().contains(grass3));
     }
-
-
-    @Test
-    void growPlantsWithMixedResults() {
-        // given
-        Plant grass1 = new Grass(new Vector2d(2, 2), 10);
-        Plant grass2 = new Grass(new Vector2d(2, 2), 5);
-        Plant grass3 = new Grass(new Vector2d(3, 3), 7);
-        Plant grass4 = new Grass(new Vector2d(10, 10), 12);
-
-        // when
-        map.growPlants(grass1, grass2, grass3, grass4);
-
-        // then
-        Assertions.assertTrue(map.getPlants().contains(grass1));
-        Assertions.assertFalse(map.getPlants().contains(grass2));
-        Assertions.assertTrue(map.getPlants().contains(grass3));
-        Assertions.assertFalse(map.getPlants().contains(grass4));
-    }
-
 }
