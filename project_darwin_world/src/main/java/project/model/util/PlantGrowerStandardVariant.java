@@ -13,15 +13,21 @@ public class PlantGrowerStandardVariant implements PlantGrower {
     public static final double NOT_PREFERRED_DOUBLE = 0.2;
     public static final double EQUATOR_START = 0.4;
     public static final double EQUATOR_STOP = 0.6;
+    public static final int DEFAULT_NUTRITIOUSNESS = 5;
     protected final WorldMap worldMap;
     private final Random random = new Random();
-    private final int DEFAULT_NUTRITIOUSNESS = 5;
     protected Set<Vector2d> occupiedPositions;
     protected Set<Vector2d> notOccupiedPositions;
     protected Map<Vector2d, Double> positionsPreferenceMap;
+    protected int plantNutritiousness;
 
     public PlantGrowerStandardVariant(WorldMap worldMap) {
+        this(worldMap, DEFAULT_NUTRITIOUSNESS);
+    }
+
+    public PlantGrowerStandardVariant(WorldMap worldMap, int plantNutritiousness) {
         this.worldMap = worldMap;
+        this.plantNutritiousness = plantNutritiousness;
     }
 
     protected void setOccupiedPositions() {
@@ -68,7 +74,7 @@ public class PlantGrowerStandardVariant implements PlantGrower {
         notOccupiedPositions.stream()
                 .sorted(Comparator.comparingDouble(this.positionsPreferenceMap::get).reversed())
                 .limit(number)
-                .map(position -> new Grass(position, DEFAULT_NUTRITIOUSNESS))
+                .map(position -> new Grass(position, this.plantNutritiousness))
                 .forEach(plant -> worldMap.growPlants(plant));
     }
 
