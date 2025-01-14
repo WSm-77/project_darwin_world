@@ -160,7 +160,6 @@ public class SimulationBuilder {
         return new Simulation(this);
     }
 
-    public int getEnergyPerPlant() { return this.energyPerPlant; }
     public int getDailyPlantGrowth() { return this.dailyPlantGrowth; }
     public int getEnergyToReproduce() { return this.energyToReproduce; }
     public WorldMap getWorldMap() { return this.worldMap; }
