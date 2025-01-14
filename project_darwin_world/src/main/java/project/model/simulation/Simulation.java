@@ -3,6 +3,7 @@ package project.model.simulation;
 import project.model.movement.Vector2d;
 import project.model.util.AnimalFactory;
 import project.model.util.AnimalMediator;
+import project.model.util.PlantGrower;
 import project.model.util.SimulationBuilder;
 import project.model.map.WorldMap;
 import project.model.worldelements.Animal;
@@ -16,10 +17,10 @@ import java.util.stream.Collectors;
 
 public class Simulation implements Runnable {
     private final WorldMap worldMap;
-    private final int energyPerPlant;
     private final int dailyPlantGrowth;
     private final AnimalFactory animalFactory;
     private final AnimalMediator animalMediator;
+    private final PlantGrower plantGrower;
     private final int energyToReproduce;
     private boolean running = true;
     private int day = 1;
@@ -32,11 +33,11 @@ public class Simulation implements Runnable {
 
     public Simulation(SimulationBuilder simulationBuilder) {
         this.worldMap = simulationBuilder.getWorldMap();
-        this.energyPerPlant = simulationBuilder.getEnergyPerPlant();
         this.dailyPlantGrowth = simulationBuilder.getDailyPlantGrowth();
         this.animalFactory = simulationBuilder.getAnimalFactory();
         this.energyToReproduce = simulationBuilder.getEnergyToReproduce();
         this.animalMediator = simulationBuilder.getAnimalMediator();
+        this.plantGrower = simulationBuilder.getPlantGrower();
     }
 
     private String createInterruptionMessage() {
@@ -106,7 +107,7 @@ public class Simulation implements Runnable {
     }
 
     private void growPlants() {
-
+        this.plantGrower.growPlants(this.dailyPlantGrowth);
     }
 
     private void consumeDailyEnergyAmount() {

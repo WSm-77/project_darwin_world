@@ -23,6 +23,7 @@ public class SimulationBuilder {
     private Integer genomeLength;
     private AnimalConstructor<? extends Animal> animalConstructor;
     private AnimalMediatorConstructor<? extends AnimalMediator> animalMediatorConstructor;
+    private PlantGrowerConstructor<? extends PlantGrower> plantGrowerConstructor;
 
     private WorldMap worldMap;
     private AnimalFactory animalFactory;
@@ -99,13 +100,18 @@ public class SimulationBuilder {
         return this;
     }
 
+    public SimulationBuilder setPlantGrowerConstructor(PlantGrowerConstructor<? extends PlantGrower> plantGrowerConstructor) {
+        this.plantGrowerConstructor = plantGrowerConstructor;
+        return this;
+    }
+
     private void validateParameters() {
         if (this.mapWidth == null || this.mapHeight == null  ||
                 this.initialPlantCount == null || this.energyPerPlant == null || this.dailyPlantGrowth == null ||
                 this.initialAnimalCount == null || this.initialAnimalEnergy == null ||
                 this.energyToReproduce == null || this.childInitialEnergy == null || this.minMutations == null ||
                 this.maxMutations == null || this.genomeLength == null || this.animalConstructor == null ||
-                this.animalMediatorConstructor == null) {
+                this.animalMediatorConstructor == null || this.plantGrowerConstructor == null) {
             throw new IllegalStateException(SimulationBuilder.BUILDER_NOT_READY_MESSAGE);
         }
 
@@ -131,14 +137,13 @@ public class SimulationBuilder {
         GenomeFactory genomeFactory = new GenomeFactory(this.genomeLength, this.minMutations, this.maxMutations);
 
         Sphere sphere = new Sphere(this.mapWidth, this.mapHeight);
-        PlantGrower plantGrowerStandardVariant = new PlantGrowerStandardVariant(sphere);
+        PlantGrower plantGrower = this.plantGrowerConstructor.construct(sphere, this.energyPerPlant);
         AnimalMediator animalMediatorVariant = this.animalMediatorConstructor.construct();
 
         MapChangeListener consoleLog = new ConsoleMapDisplay();
         sphere.subscribe(consoleLog);
 
         this.worldMap = sphere;
-        this.plantGrower = plantGrowerStandardVariant;
         this.animalFactory = new AnimalFactory(
                 genomeFactory,
                 this.initialAnimalEnergy,
@@ -147,6 +152,7 @@ public class SimulationBuilder {
                 this.animalConstructor
         );
         this.animalMediator = animalMediatorVariant;
+        this.plantGrower = plantGrower;
 
         this.createAndPlaceAnimalsOnMap();
         this.growPlants();
@@ -154,10 +160,10 @@ public class SimulationBuilder {
         return new Simulation(this);
     }
 
-    public int getEnergyPerPlant() { return this.energyPerPlant; }
     public int getDailyPlantGrowth() { return this.dailyPlantGrowth; }
     public int getEnergyToReproduce() { return this.energyToReproduce; }
     public WorldMap getWorldMap() { return this.worldMap; }
     public AnimalFactory getAnimalFactory() { return this.animalFactory; }
     public AnimalMediator getAnimalMediator() { return this.animalMediator; }
+    public PlantGrower getPlantGrower() { return this.plantGrower; }
 }
