@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 public class PlantGrowerStandardVariant implements PlantGrower {
 
-    public static final double PREFERRED_DOUBLE = 0.8;
-    public static final double NOT_PREFERRED_DOUBLE = 0.2;
+    public static final double PREFERRED_POSITION_FACTOR = 0.8;
+    public static final double NOT_PREFERRED_POSITION_FACTOR = 1 - PREFERRED_POSITION_FACTOR;
     public static final double EQUATOR_START = 0.4;
     public static final double EQUATOR_STOP = 0.6;
     public static final int DEFAULT_NUTRITIOUSNESS = 5;
@@ -81,7 +81,7 @@ public class PlantGrowerStandardVariant implements PlantGrower {
     protected double preference(Vector2d position) {
         boolean isNearEquator = isPositionNearEquator(position);
         double preferenceFactor = 1;
-        preferenceFactor *= isNearEquator ? PREFERRED_DOUBLE : NOT_PREFERRED_DOUBLE;
+        preferenceFactor *= isNearEquator ? PREFERRED_POSITION_FACTOR : NOT_PREFERRED_POSITION_FACTOR;
 
         return preferenceFactor;
     }
