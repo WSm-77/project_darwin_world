@@ -18,6 +18,7 @@ public class Sphere implements WorldMap {
     private final static Vector2d DEFAULT_LOWER_LEFT = new Vector2d(0, 0);
     private final static String MOVE_MESSAGE_TEMPLATE = "Animal movement:\norientation: %s -> %s\nposition: %s -> %s";
     private final static String INCORRECT_ANIMAL_TO_REMOVE_MESSAGE_TEMPLATE = "There is no %s Animal at %s position!!!";
+    public static final String ANIMAL_AND_PLANT_MUST_NOT_BE_NULL = "Animal and Plant must not be null.";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
     final private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
@@ -47,6 +48,26 @@ public class Sphere implements WorldMap {
                 throw new IncorrectPositionException(position);
             }
             else {this.grass.put(position, plant);}
+        }
+    }
+
+    public void feedAnimal(Animal animal, Plant plant) {
+        if (animal == null || plant == null) {
+            throw new IllegalArgumentException(ANIMAL_AND_PLANT_MUST_NOT_BE_NULL);
+        }
+
+        int nutritionalValue = plant.getNutritiousness();
+        animal.getStatistics().updateEnergy(nutritionalValue);
+
+        Vector2d plantPosition = plant.getPosition();
+        removePlantFromMap(plantPosition);
+    }
+
+    public void removePlantFromMap(Vector2d position) {
+        if (this.grass.containsKey(position)) {
+            this.grass.remove(position);
+        } else {
+            throw new IncorrectPositionException(position);
         }
     }
 
