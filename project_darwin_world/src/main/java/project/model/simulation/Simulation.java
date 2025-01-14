@@ -107,7 +107,7 @@ public class Simulation implements Runnable {
     }
 
     private void growPlants() {
-
+        this.plantGrower.growPlants(this.dailyPlantGrowth);
     }
 
     private void consumeDailyEnergyAmount() {
