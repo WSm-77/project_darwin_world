@@ -86,11 +86,11 @@ public class PlantGrowerStandardVariant implements PlantGrower {
         return preferenceFactor;
     }
 
-    boolean isPositionNearEquator(Vector2d position) {
+    protected boolean isPositionNearEquator(Vector2d position) {
         int mapHeight = worldMap.getCurrentBounds().upperRight().getY() - worldMap.getCurrentBounds().lowerLeft().getY() + 1;
         int equatorStart = (int) (mapHeight * EQUATOR_START);
         int equatorEnd = (int) (mapHeight * EQUATOR_STOP);
         int relativeY = position.getY() - worldMap.getCurrentBounds().lowerLeft().getY();
-        return relativeY >= equatorStart && relativeY <= equatorEnd;
+        return relativeY >= equatorStart && relativeY < equatorEnd;
     }
 }
