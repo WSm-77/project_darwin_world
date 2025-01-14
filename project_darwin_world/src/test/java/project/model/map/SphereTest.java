@@ -458,4 +458,73 @@ class SphereIT {
         Assertions.assertThrows(IncorrectPositionException.class, () -> map.growPlants(grass1, grass2));
         Assertions.assertFalse(map.getPlants().contains(grass2));
     }
+
+    @Test
+    void feedAnimal_increasesEnergyWhenAnimalEats() {
+        // given
+        Vector2d animalPosition = new Vector2d(2, 2);
+        var animalStatistics = SphereIT.getAnimalStatistics(animalPosition);
+        var animal = new AnimalStandardVariant(animalStatistics);
+        map.place(animal);
+
+        int initialEnergy = animal.getStatistics().getEnergy();
+        int plantEnergy = 5;  // Energy provided by the plant
+        Plant grass = new Grass(new Vector2d(2, 2), plantEnergy);
+        map.growPlants(grass);
+
+        // when
+        map.feedAnimal(animal, grass);  // This assumes that feedAnimal increases energy by plant's energy
+
+        // then
+        Assertions.assertEquals(initialEnergy + plantEnergy, animal.getStatistics().getEnergy());
+    }
+
+    @Test
+    void feedAnimal_throwsExceptionWhenNoPlantsNearby() {
+        // given
+        Vector2d animalPosition = new Vector2d(2, 2);
+        var animalStatistics = SphereIT.getAnimalStatistics(animalPosition);
+        var animal = new AnimalStandardVariant(animalStatistics);
+        map.place(animal);
+
+        // when & then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> map.feedAnimal(animal, null));
+    }
+
+    @Test
+    void feedAnimal_throwsExceptionWhenNoAnimalsNearby() {
+        // given
+        int plantEnergy = 5;  // Energy provided by the plant
+        Plant grass = new Grass(new Vector2d(2, 2), plantEnergy);
+        map.growPlants(grass);
+
+        // when & then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> map.feedAnimal(null, grass));
+    }
+
+    @Test
+    void removePlantFromMap_removesPlantSuccessfully() {
+        // given
+        Vector2d plantPosition = new Vector2d(3, 3);
+        Plant grass = new Grass(plantPosition, 10);
+        map.growPlants(grass);
+        Assertions.assertTrue(map.getPlants().contains(grass));
+
+        // when
+        map.removePlantFromMap(plantPosition);
+
+        // then
+        Assertions.assertFalse(map.getPlants().contains(grass));
+    }
+
+    @Test
+    void removePlantFromMap_throwsExceptionWhenPlantNotOnMap() {
+        // given
+        Vector2d plantPosition = new Vector2d(3, 3);
+
+        // when & then
+        Assertions.assertThrows(IncorrectPositionException.class, () -> map.removePlantFromMap(plantPosition));
+    }
+
+
 }
