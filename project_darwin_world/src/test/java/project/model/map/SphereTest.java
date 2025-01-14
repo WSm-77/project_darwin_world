@@ -460,7 +460,7 @@ class SphereIT {
     }
 
     @Test
-    void feedAnimal_increasesEnergyWhenAnimalEats() {
+    void feedAnimalIncreasesEnergyWhenAnimalEats() {
         // given
         Vector2d animalPosition = new Vector2d(2, 2);
         var animalStatistics = SphereIT.getAnimalStatistics(animalPosition);
@@ -480,7 +480,7 @@ class SphereIT {
     }
 
     @Test
-    void feedAnimal_throwsExceptionWhenNoPlantsNearby() {
+    void feedAnimalThrowsExceptionWhenNoPlantsNearby() {
         // given
         Vector2d animalPosition = new Vector2d(2, 2);
         var animalStatistics = SphereIT.getAnimalStatistics(animalPosition);
@@ -492,7 +492,7 @@ class SphereIT {
     }
 
     @Test
-    void feedAnimal_throwsExceptionWhenNoAnimalsNearby() {
+    void feedAnimalThrowsExceptionWhenNoAnimalsNearby() {
         // given
         int plantEnergy = 5;  // Energy provided by the plant
         Plant grass = new Grass(new Vector2d(2, 2), plantEnergy);
@@ -503,7 +503,7 @@ class SphereIT {
     }
 
     @Test
-    void removePlantFromMap_removesPlantSuccessfully() {
+    void removePlantFromMapRemovesPlantSuccessfully() {
         // given
         Vector2d plantPosition = new Vector2d(3, 3);
         Plant grass = new Grass(plantPosition, 10);
@@ -518,13 +518,11 @@ class SphereIT {
     }
 
     @Test
-    void removePlantFromMap_throwsExceptionWhenPlantNotOnMap() {
+    void removePlantFromMapThrowsExceptionWhenPlantNotOnMap() {
         // given
         Vector2d plantPosition = new Vector2d(3, 3);
 
         // when & then
         Assertions.assertThrows(IncorrectPositionException.class, () -> map.removePlantFromMap(plantPosition));
     }
-
-
 }
