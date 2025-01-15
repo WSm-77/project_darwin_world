@@ -17,6 +17,17 @@ import java.util.stream.Collectors;
 public class Sphere implements WorldMap {
     private final static Vector2d DEFAULT_LOWER_LEFT = new Vector2d(0, 0);
     private final static String MOVE_MESSAGE_TEMPLATE = "Animal movement:\norientation: %s -> %s\nposition: %s -> %s";
+    private final static String ANIMAL_PLACE_MESSAGE_TEMPLATE = """
+            Animal placed:
+            position: %s
+            orientation: %s
+            """;
+    private final static String PLANT_GROWN_MESSAGE_TEMPLATE = """
+            Plant grown:
+            position: %s
+            """;
+    private final static String PLANT_REMOVED_MESSAGE_TEMPLATE = "Plant removed from %s";
+    private final static String ANIMAL_REMOVED_MESSAGE_TEMPLATE = "Animal removed from %s";
     private final static String INCORRECT_ANIMAL_TO_REMOVE_MESSAGE_TEMPLATE = "There is no %s Animal at %s position!!!";
     public static final String ANIMAL_AND_PLANT_MUST_NOT_BE_NULL = "Animal and Plant must not be null.";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
@@ -44,10 +55,13 @@ public class Sphere implements WorldMap {
         for (Plant plant : plants) {
             Vector2d position = plant.getPosition();
 
-            if (!this.isOnMap(position)||this.grass.containsKey(position)) {
+            if (!this.isOnMap(position) || this.grass.containsKey(position)) {
                 throw new IncorrectPositionException(position);
             }
-            else {this.grass.put(position, plant);}
+
+            this.grass.put(position, plant);
+
+            this.mapChanged(String.format(PLANT_GROWN_MESSAGE_TEMPLATE, plant.getPosition()));
         }
     }
 
@@ -69,6 +83,8 @@ public class Sphere implements WorldMap {
         } else {
             throw new IncorrectPositionException(position);
         }
+
+        this.mapChanged(String.format(PLANT_REMOVED_MESSAGE_TEMPLATE, position));
     }
 
     private String createIncorrectAnimalToRemoveMessage(Animal animal) {
@@ -89,6 +105,8 @@ public class Sphere implements WorldMap {
             if (animalSet.isEmpty()) {
                 this.animals.remove(animalPosition);
             }
+
+            this.mapChanged(String.format(ANIMAL_REMOVED_MESSAGE_TEMPLATE, animal.getStatistics().getPosition()));
         };
 
         Runnable actionIfNotPresent = () -> {
@@ -117,6 +135,8 @@ public class Sphere implements WorldMap {
         else {
             throw new IncorrectPositionException(position);
         }
+
+        this.mapChanged(String.format(ANIMAL_PLACE_MESSAGE_TEMPLATE, animal.getPosition(), animal.getStatistics().getOrientation()));
     }
 
     @Override
