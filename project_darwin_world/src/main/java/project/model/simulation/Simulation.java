@@ -155,4 +155,8 @@ public class Simulation implements Runnable {
             }
         }
     }
+
+    public WorldMap getWorldMap() {
+        return this.worldMap;
+    }
 }
