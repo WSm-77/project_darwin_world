@@ -39,7 +39,7 @@
                         <VBox alignment="TOP_CENTER" prefHeight="75.0" prefWidth="215.0">
                            <children>
                               <Label alignment="CENTER" prefHeight="33.0" prefWidth="241.0" text="Map Variant" />
-                              <ChoiceBox id="mapVariantChoiceBox" prefHeight="29.0" prefWidth="141.0">
+                              <ChoiceBox id="mapVariantChoiceBox" fx:id="mapVariantChoiceBox" prefHeight="29.0" prefWidth="141.0">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
@@ -66,7 +66,7 @@
                         <VBox alignment="TOP_CENTER" prefHeight="75.0" prefWidth="242.0">
                            <children>
                               <Label alignment="CENTER" prefHeight="33.0" prefWidth="241.0" text="Animal Variant" />
-                              <ChoiceBox prefHeight="29.0" prefWidth="141.0">
+                              <ChoiceBox fx:id="animalVariantChoiceBox" prefHeight="29.0" prefWidth="141.0">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
