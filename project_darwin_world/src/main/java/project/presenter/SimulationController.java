@@ -1,30 +1,23 @@
 package project.presenter;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import project.model.simulation.Simulation;
 
-import java.io.IOException;
-
 public class SimulationController {
-    public static final String APP_TITLE = "Darwin World";
     public static final String PATH_TO_FXML_CONFIGURATION_FILE = "simulation.fxml";
 
-    public static void openNewSimulationWindow(Simulation simulation) throws IOException {
-        Stage simulationWindow = new Stage();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(SimulationController.class.getClassLoader().getResource(PATH_TO_FXML_CONFIGURATION_FILE));
-        AnchorPane viewRoot = loader.load();
+    @FXML
+    private Label mapLabel;
 
-        configureMenuStage(simulationWindow, viewRoot);
-        simulationWindow.show();
+    private Simulation simulation;
+
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
     }
 
-    private static void configureMenuStage(Stage menuStage, AnchorPane viewRoot) {
-        Scene scene = new Scene(viewRoot);
-        menuStage.setScene(scene);
-        menuStage.setTitle(APP_TITLE);
+    public void onClick(ActionEvent actionEvent) {
+        this.mapLabel.setText(this.simulation.getWorldMap().getId().toString());
     }
 }
