@@ -1,21 +1,15 @@
 package project.model.simulation;
 
 import project.model.movement.Vector2d;
-import project.model.util.AnimalFactory;
-import project.model.util.AnimalMediator;
-import project.model.util.PlantGrower;
-import project.model.util.SimulationBuilder;
+import project.model.util.*;
 import project.model.map.WorldMap;
 import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class Simulation implements Runnable {
+public class Simulation implements Runnable, MapChangeListener {
     private final WorldMap worldMap;
     private final int dailyPlantGrowth;
     private final AnimalFactory animalFactory;
@@ -24,6 +18,7 @@ public class Simulation implements Runnable {
     private final int energyToReproduce;
     private boolean running = true;
     private int day = 1;
+    private final List<SimulationListener> simulationListeners = new ArrayList<>();
 
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
@@ -158,5 +153,20 @@ public class Simulation implements Runnable {
 
     public WorldMap getWorldMap() {
         return this.worldMap;
+    }
+
+    public void subscribe(SimulationListener simulationListener) {
+        this.simulationListeners.add(simulationListener);
+    }
+
+    private void notifyListeners(SimulationEvent simulationEvent) {
+        for (var listener : this.simulationListeners) {
+            listener.simulationChanged(simulationEvent);
+        }
+    }
+
+    @Override
+    public void mapChanged(WorldMap worldMap, String message) {
+        this.notifyListeners(SimulationEvent.MAP_CHANGED);
     }
 }

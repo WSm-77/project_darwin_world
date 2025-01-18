@@ -74,7 +74,7 @@ public class MenuController {
             Parent simulationRoot = fxmlLoader.load();
 
             SimulationController simulationController = fxmlLoader.getController();
-            simulationController.setSimulation(sphereSimulation);
+            simulationController.initializeSimulation(sphereSimulation);
 
             Stage simulationStage = new Stage();
             simulationStage.setTitle("Simulation Window");
