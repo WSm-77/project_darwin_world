@@ -2,9 +2,7 @@ package project.presenter;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import project.model.util.*;
@@ -70,7 +68,13 @@ public class MenuController {
 
             SimulationWindowCreator.createNewSimulationWindow(sphereSimulation);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            this.createAlertWindow(e.getMessage());
         }
+    }
+
+    private void createAlertWindow(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setContentText(message);
+        alert.show();
     }
 }
