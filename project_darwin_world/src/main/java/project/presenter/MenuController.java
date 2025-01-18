@@ -7,7 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
-import javafx.stage.Stage;
 import project.model.util.*;
 
 public class MenuController {
@@ -69,17 +68,7 @@ public class MenuController {
                     .setPlantGrowerConstructor(this.mapVariantChoiceBox.getValue().toPlantGrowerConstructor())
                     .build();
 
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader()
-                    .getResource(SimulationController.PATH_TO_FXML_CONFIGURATION_FILE));
-            Parent simulationRoot = fxmlLoader.load();
-
-            SimulationController simulationController = fxmlLoader.getController();
-            simulationController.initializeSimulation(sphereSimulation);
-
-            Stage simulationStage = new Stage();
-            simulationStage.setTitle("Simulation Window");
-            simulationStage.setScene(new Scene(simulationRoot));
-            simulationStage.show();
+            SimulationWindowCreator.createNewSimulationWindow(sphereSimulation);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
