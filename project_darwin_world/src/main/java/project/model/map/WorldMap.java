@@ -99,4 +99,18 @@ public interface WorldMap extends NextPositionCalculator {
      * @return object's UUID
      */
     UUID getId();
+
+    /**
+     * Return map height
+     *
+     * @return map height
+     */
+    int getHeight();
+
+    /**
+     * Return map width
+     *
+     * @return map width
+     */
+    int getWidth();
 }
