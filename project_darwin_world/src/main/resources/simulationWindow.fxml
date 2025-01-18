@@ -6,9 +6,9 @@
     <items>
         <SplitPane fx:id="horizontalSplit" dividerPositions="0.3283582089552239" prefHeight="262.0" prefWidth="598.0">
          <items>
-                  <fx:include source="settingsPane.fxml" />
-                  <fx:include source="mapPane.fxml" />
+                  <fx:include fx:id="settingsPane" source="settingsPane.fxml" />
+                  <fx:include fx:id="mapPane" source="mapPane.fxml" />
          </items></SplitPane>
-        <fx:include source="chartPane.fxml" />
+        <fx:include fx:id="chartPane" source="chartPane.fxml" />
     </items>
 </SplitPane>
