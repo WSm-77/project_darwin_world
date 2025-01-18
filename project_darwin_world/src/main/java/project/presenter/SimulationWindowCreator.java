@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import project.model.simulation.Simulation;
 
 import java.io.IOException;
@@ -20,9 +21,11 @@ public class SimulationWindowCreator {
         SplitPane simulationRoot = simulationWindowFxmlLoader.load();
         SimulationWindowController simulationWindowController = simulationWindowFxmlLoader.getController();
 
-        initializeChildControllers(simulationWindowController, simulation);
+        var simulationThread = initializeChildControllers(simulationWindowController, simulation);
 
         Stage simulationStage = new Stage();
+
+        simulationStage.setOnCloseRequest((WindowEvent event) -> simulationThread.interrupt());
         simulationStage.setTitle(WINDOW_TITLE);
         simulationStage.setScene(new Scene(simulationRoot));
         simulationStage.show();
@@ -30,7 +33,7 @@ public class SimulationWindowCreator {
         System.out.println("Window created");
     }
 
-    private static void initializeChildControllers(SimulationWindowController simulationWindowController, Simulation simulation) {
+    private static Thread initializeChildControllers(SimulationWindowController simulationWindowController, Simulation simulation) {
         SettingsPaneController settingsPaneController = simulationWindowController.getSettingsPaneController();
         MapPaneController mapPaneController = simulationWindowController.getMapPaneController();
         ChartPaneController chartPaneController = simulationWindowController.getChartPaneController();
@@ -50,5 +53,7 @@ public class SimulationWindowCreator {
         chartPaneController.setSimulationThread(simulationThread);
 
         simulationThread.start();
+
+        return simulationThread;
     }
 }
