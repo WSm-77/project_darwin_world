@@ -1,13 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.presenter.SimulationController">
-   <children>
-      <Label fx:id="mapLabel" layoutX="293.0" layoutY="161.0" text="GJ :)" />
-      <Button layoutX="287.0" layoutY="224.0" mnemonicParsing="false" onAction="#onClick" text="Click" />
-   </children>
-</AnchorPane>
+<SplitPane dividerPositions="0.7412060301507538" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="530.0" prefWidth="739.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.presenter.SimulationController">
+    <items>
+        <SplitPane dividerPositions="0.3419267299864315" prefHeight="262.0" prefWidth="598.0">
+            <items>
+                <VBox prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <Accordion>
+                            <panes>
+                                <TitledPane animated="false" text="simulation controls">
+                                    <content>
+                                        <GridPane alignment="CENTER">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="ALWAYS" maxWidth="83.0" minWidth="10.0" prefWidth="81.0" />
+                                                <ColumnConstraints hgrow="ALWAYS" maxWidth="64.0" minWidth="10.0" prefWidth="57.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                                            </rowConstraints>
+                                            <children>
+                                                <Label text="Refresh time" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                                    <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="71.0" text="Button" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                                    <Label text="Pause" GridPane.rowIndex="1" />
+                                            </children>
+                                        </GridPane>
+                                    </content>
+                                </TitledPane>
+                                <TitledPane animated="false" text="untitled 2" />
+                            </panes>
+                        </Accordion>
+                    </children>
+                </VBox>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Label fx:id="mapLabel" layoutX="14.0" layoutY="14.0" text="Map" />
+               </children></AnchorPane>
+            </items>
+        </SplitPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+    </items>
+</SplitPane>
