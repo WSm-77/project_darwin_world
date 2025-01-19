@@ -11,16 +11,22 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
+import project.model.util.AnimalMediator;
+import project.model.util.AnimalMediatorStandardVariant;
 import project.model.worldelements.Animal;
 import project.model.worldelements.Plant;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public class MapDrawer {
     private final static String AXIS_DESCRIPTION_STRING = "y/x";
+    private final static int MAX_ENERGY_COLOR = 100;
+    private final static double MIN_ANIMAL_OPACITY = 0.1;
     private final GridPane mapGridPane;
     private final WorldMap worldMap;
+    private final AnimalMediator animalMediator = new AnimalMediatorStandardVariant();
 
     public MapDrawer(GridPane mapGridPane, WorldMap worldMap) {
         this.mapGridPane = mapGridPane;
@@ -124,7 +130,9 @@ public class MapDrawer {
 
         Optional<Set<Animal>> animals = this.worldMap.animalsAt(mapPosition);
         if (animals.isPresent()) {
-            field.getChildren().add(this.getAnimalNode(field));
+            List<Animal> strongestAnimalList = this.animalMediator.resolveAnimalsConflict(animals.get(), 1);
+            Node animalNode = this.getAnimalNode(field, strongestAnimalList.getFirst());
+            field.getChildren().add(animalNode);
         }
 
         field.prefHeightProperty().bind(rowConstraints.prefHeightProperty());
@@ -133,9 +141,14 @@ public class MapDrawer {
         return field;
     }
 
-    private Node getAnimalNode(Pane parentPane) {
+    private Node getAnimalNode(Pane parentPane, Animal animal) {
+        double animalEnergy = Math.min(animal.getStatistics().getEnergy(), MAX_ENERGY_COLOR);
+        double colorRate = animalEnergy / MAX_ENERGY_COLOR;
+        colorRate = Math.max(colorRate, MIN_ANIMAL_OPACITY);
+        var color = new Color(0.8, 0.0, 0.0, colorRate);
+
         Circle animalCircle = new Circle();
-        animalCircle.setFill(new Color(0.8, 0.05, 0.05, 0.5));
+        animalCircle.setFill(color);
 
         animalCircle.radiusProperty()
                 .bind(Bindings.min(
