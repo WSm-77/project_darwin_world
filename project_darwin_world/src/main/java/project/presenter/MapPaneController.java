@@ -15,7 +15,8 @@ import java.util.Optional;
 public class MapPaneController extends AbstractController {
     @FXML
     public void initialize() {
-
+        this.mapGridPane.prefHeightProperty().bind(this.parentBorderPane.heightProperty());
+        this.mapGridPane.prefWidthProperty().bind(this.parentBorderPane.widthProperty());
     }
 
     public void mapChange() {
@@ -52,8 +53,6 @@ public class MapPaneController extends AbstractController {
     }
 
     private void clearGrid() {
-//        this.mapGridPane.getChildren().retainAll(this.mapGridPane.getChildren().getFirst()); // hack to retain visible grid lines
-//        this.mapGridPane.getChildren().clear();
         this.mapGridPane.getColumnConstraints().clear();
         this.mapGridPane.getRowConstraints().clear();
 
@@ -66,12 +65,6 @@ public class MapPaneController extends AbstractController {
         var boundaries = this.simulation.getWorldMap().getCurrentBounds();
 
         var upperLeft = new Vector2d(boundaries.lowerLeft().getX(), boundaries.upperRight().getY());
-
-        double parentNodeHeight = this.parentBorderPane.getHeight();
-        double parentNodeWidth = this.parentBorderPane.getWidth();
-
-        this.mapGridPane.setPrefHeight(parentNodeHeight);
-        this.mapGridPane.setPrefWidth(parentNodeWidth);
 
         int mapRowsCnt = this.simulation.getWorldMap().getHeight();
         int mapColumnsCnt = this.simulation.getWorldMap().getWidth();
