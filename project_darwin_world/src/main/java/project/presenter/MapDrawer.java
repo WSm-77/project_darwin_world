@@ -21,8 +21,6 @@ public class MapDrawer {
     private final static String AXIS_DESCRIPTION_STRING = "y/x";
     private final GridPane mapGridPane;
     private final WorldMap worldMap;
-    private double cellHeight;
-    private double cellWidth;
 
     public MapDrawer(GridPane mapGridPane, WorldMap worldMap) {
         this.mapGridPane = mapGridPane;
@@ -60,25 +58,19 @@ public class MapDrawer {
     }
 
     private void setRowsSize(int rows) {
-        double maxHeight = this.mapGridPane.getHeight();
-        this.cellHeight = maxHeight / rows;
-
         for (int i = 0; i < rows; i++){
             RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setPrefHeight(cellHeight);
+            rowConstraints.setPrefHeight(100.0 / rows);
             rowConstraints.setVgrow(Priority.ALWAYS);
             this.mapGridPane.getRowConstraints().add(rowConstraints);
         }
     }
 
     private void setColumnsSize(int columns) {
-        double maxWidth = this.mapGridPane.getWidth();
-        this.cellWidth = maxWidth / columns;
-
         for (int i = 0; i < columns; i++){
             ColumnConstraints columnConstraints = new ColumnConstraints();
             columnConstraints.setHgrow(Priority.ALWAYS);
-            columnConstraints.setPrefWidth(cellWidth);
+            columnConstraints.setPercentWidth(100.0 / columns);
             this.mapGridPane.getColumnConstraints().add(columnConstraints);
         }
     }
@@ -107,11 +99,13 @@ public class MapDrawer {
     }
 
     private void fillGridCells(Vector2d upperLeft) {
-        for (int gridRow = 0; gridRow < this.worldMap.getHeight(); gridRow++) {
-            for (int gridColumn = 0; gridColumn < this.worldMap.getWidth(); gridColumn++) {
+        for (int gridRow = 0; gridRow < this.mapGridPane.getRowCount() - 1; gridRow++) {
+            for (int gridColumn = 0; gridColumn < this.mapGridPane.getColumnCount() - 1; gridColumn++) {
                 var mapPosition = upperLeft.add(new Vector2d(gridColumn, -gridRow));
+                RowConstraints rowConstraints = this.mapGridPane.getRowConstraints().get(gridRow + 1);
+                ColumnConstraints columnConstraints = this.mapGridPane.getColumnConstraints().get(gridColumn + 1);
 
-                Node field = this.getFieldNode(mapPosition);
+                Node field = this.getFieldNode(mapPosition, rowConstraints, columnConstraints);
                 this.mapGridPane.add(field, gridColumn + 1, gridRow + 1);
 
                 GridPane.setHalignment(field, HPos.CENTER);
@@ -120,7 +114,7 @@ public class MapDrawer {
         }
     }
 
-    private Node getFieldNode(Vector2d mapPosition) {
+    private Node getFieldNode(Vector2d mapPosition, RowConstraints rowConstraints, ColumnConstraints columnConstraints) {
         StackPane field = new StackPane();
 
         Optional<Plant> plant = this.worldMap.plantAt(mapPosition);
@@ -133,13 +127,14 @@ public class MapDrawer {
             field.getChildren().add(this.getAnimalNode(field));
         }
 
+        field.prefHeightProperty().bind(rowConstraints.prefHeightProperty());
+        field.prefWidthProperty().bind(columnConstraints.prefWidthProperty());
+
         return field;
     }
 
     private Node getAnimalNode(Pane parentPane) {
-        var radius = Math.min(this.cellHeight, this.cellWidth) / 2;
-
-        Circle animalCircle = new Circle(radius);
+        Circle animalCircle = new Circle();
         animalCircle.setFill(new Color(0.8, 0.05, 0.05, 0.5));
 
         animalCircle.radiusProperty()
@@ -152,7 +147,7 @@ public class MapDrawer {
     }
 
     private Node getGrassNode(Pane parentPane) {
-        Rectangle grassRectangle = new Rectangle(this.cellWidth, this.cellHeight);
+        Rectangle grassRectangle = new Rectangle();
         grassRectangle.setFill(new Color(0, 0.8, 0.05, 0.5));
 
         grassRectangle.widthProperty().bind(parentPane.widthProperty());
