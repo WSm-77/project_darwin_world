@@ -21,11 +21,11 @@ public class SimulationWindowCreator {
         SplitPane simulationRoot = simulationWindowFxmlLoader.load();
         SimulationWindowController simulationWindowController = simulationWindowFxmlLoader.getController();
 
-        var simulationThread = initializeChildControllers(simulationWindowController, simulation);
+        initializeChildControllers(simulationWindowController, simulation);
 
         Stage simulationStage = new Stage();
 
-        simulationStage.setOnCloseRequest((WindowEvent event) -> simulationThread.interrupt());
+        simulationStage.setOnCloseRequest((WindowEvent event) -> simulation.terminate());
         simulationStage.setTitle(WINDOW_TITLE);
         simulationStage.setScene(new Scene(simulationRoot));
         simulationStage.show();
@@ -33,7 +33,7 @@ public class SimulationWindowCreator {
         System.out.println("Window created");
     }
 
-    private static Thread initializeChildControllers(SimulationWindowController simulationWindowController, Simulation simulation) {
+    private static void initializeChildControllers(SimulationWindowController simulationWindowController, Simulation simulation) {
         SettingsPaneController settingsPaneController = simulationWindowController.getSettingsPaneController();
         MapPaneController mapPaneController = simulationWindowController.getMapPaneController();
         ChartPaneController chartPaneController = simulationWindowController.getChartPaneController();
@@ -42,18 +42,10 @@ public class SimulationWindowCreator {
         simulation.subscribe(mapPaneController);
         simulation.subscribe(chartPaneController);
 
-        Thread simulationThread = new Thread(simulation);
-
         settingsPaneController.setSimulation(simulation);
         mapPaneController.setSimulation(simulation);
         chartPaneController.setSimulation(simulation);
 
-        settingsPaneController.setSimulationThread(simulationThread);
-        mapPaneController.setSimulationThread(simulationThread);
-        chartPaneController.setSimulationThread(simulationThread);
-
-        simulationThread.start();
-
-        return simulationThread;
+        simulation.start();
     }
 }
