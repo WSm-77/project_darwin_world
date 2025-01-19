@@ -17,6 +17,7 @@ public class Simulation implements Runnable, MapChangeListener {
     private final PlantGrower plantGrower;
     private final int energyToReproduce;
     private boolean running = true;
+    private boolean paused = false;
     private int day = 1;
     private final List<SimulationListener> simulationListeners = new ArrayList<>();
     private Optional<Thread> simulationThread = Optional.empty();
@@ -156,16 +157,27 @@ public class Simulation implements Runnable, MapChangeListener {
         }
 
         try {
-            Thread.sleep(Simulation.SIMULATION_REFRESH_TIME_MS);
+            this.simulationStep();
         } catch (InterruptedException e) {
             this.simulationThread.ifPresent(Thread::interrupt);
             this.running = false;
+            this.paused = false;
         }
     }
 
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
         this.notifyListeners(SimulationEvent.MAP_CHANGED);
+    }
+
+    public void simulationStep() throws InterruptedException {
+        synchronized (this) {
+                while (this.isPaused()) {
+                    this.wait();
+                }
+            }
+
+        Thread.sleep(Simulation.SIMULATION_REFRESH_TIME_MS);
     }
 
     public void start() {
@@ -180,5 +192,19 @@ public class Simulation implements Runnable, MapChangeListener {
 
         this.simulationThread.get().interrupt();
         this.running = false;
+    }
+
+    public synchronized void pause() {
+        this.paused = true;
+        System.out.println("Simulation paused!!!");
+    }
+
+    public synchronized void resume() {
+        this.paused = false;
+        this.notifyAll();
+    }
+
+    public synchronized boolean isPaused() {
+        return this.paused;
     }
 }

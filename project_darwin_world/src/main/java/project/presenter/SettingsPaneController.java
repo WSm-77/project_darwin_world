@@ -9,10 +9,18 @@ public class SettingsPaneController extends AbstractController {
     @FXML
     public Button pauseResumeButton;
 
+    private static final String PAUSE_BUTTON_TEXT = "Pause";
+    private static final String RESUME_BUTTON_TEXT = "Resume";
+
     @FXML
     public void onClick(ActionEvent event) {
-        System.out.println("SettingsControllerButton clicked");
-        this.pauseResumeButton.setText("Resume");
+        if (this.simulation.isPaused()) {
+            this.simulation.resume();
+            this.pauseResumeButton.setText(PAUSE_BUTTON_TEXT);
+        } else {
+            this.pauseResumeButton.setText(RESUME_BUTTON_TEXT);
+            this.simulation.pause();
+        }
     }
 
     @Override
