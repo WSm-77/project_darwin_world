@@ -120,6 +120,8 @@ public class Simulation implements Runnable, MapChangeListener {
         this.consumeDailyEnergyAmount();
         this.updateDaysAlive();
         this.day++;
+
+        this.notifyListeners(SimulationEvent.NEXT_DAY);
     }
 
     @Override
@@ -137,18 +139,6 @@ public class Simulation implements Runnable, MapChangeListener {
             this.growPlants();
 
             this.finishDay();
-
-            if (Thread.currentThread().isInterrupted()) {
-                System.out.println(this.createInterruptionMessage());
-                this.running = false;
-            }
-
-            try {
-                Thread.sleep(Simulation.SIMULATION_REFRESH_TIME_MS);
-            } catch (InterruptedException e) {
-                System.out.println(this.createInterruptionDuringSleepMessage());
-                this.running = false;
-            }
         }
     }
 
@@ -164,6 +154,13 @@ public class Simulation implements Runnable, MapChangeListener {
         for (var listener : this.simulationListeners) {
             listener.simulationChanged(simulationEvent);
         }
+
+        try {
+            Thread.sleep(Simulation.SIMULATION_REFRESH_TIME_MS);
+        } catch (InterruptedException e) {
+            this.simulationThread.ifPresent(Thread::interrupt);
+            this.running = false;
+        }
     }
 
     @Override
@@ -176,9 +173,12 @@ public class Simulation implements Runnable, MapChangeListener {
         this.simulationThread.ifPresent(Thread::start);
     }
 
-    public void stop() {
-        this.simulationThread.ifPresentOrElse(Thread::interrupt, () -> {
+    public void terminate() {
+        if (this.simulationThread.isEmpty()) {
             throw new IllegalThreadStateException("Thread not Started!!!");
-        });
+        }
+
+        this.simulationThread.get().interrupt();
+        this.running = false;
     }
 }
