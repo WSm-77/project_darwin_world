@@ -148,6 +148,10 @@ public class Sphere implements WorldMap {
         return new ArrayList<>(this.grass.values());
     }
 
+    @Override
+    public Optional<Plant> plantAt(Vector2d position) {
+        return Optional.ofNullable(this.grass.get(position));
+    }
 
     @Override
     public void move(Animal animal) {

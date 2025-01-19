@@ -1,19 +1,28 @@
 package project.presenter;
 
+import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
-import project.model.worldelements.WorldElement;
+import project.model.worldelements.Animal;
+import project.model.worldelements.Plant;
 
 import java.util.Optional;
+import java.util.Set;
 
 public class MapDrawer {
     private final static String AXIS_DESCRIPTION_STRING = "y/x";
     private final GridPane mapGridPane;
     private final WorldMap worldMap;
+    private double cellHeight;
+    private double cellWidth;
 
     public MapDrawer(GridPane mapGridPane, WorldMap worldMap) {
         this.mapGridPane = mapGridPane;
@@ -52,7 +61,7 @@ public class MapDrawer {
 
     private void setRowsSize(int rows) {
         double maxHeight = this.mapGridPane.getHeight();
-        double cellHeight = maxHeight / rows;
+        this.cellHeight = maxHeight / rows;
 
         for (int i = 0; i < rows; i++){
             RowConstraints rowConstraints = new RowConstraints();
@@ -64,7 +73,7 @@ public class MapDrawer {
 
     private void setColumnsSize(int columns) {
         double maxWidth = this.mapGridPane.getWidth();
-        double cellWidth = maxWidth / columns;
+        this.cellWidth = maxWidth / columns;
 
         for (int i = 0; i < columns; i++){
             ColumnConstraints columnConstraints = new ColumnConstraints();
@@ -101,19 +110,54 @@ public class MapDrawer {
         for (int gridRow = 0; gridRow < this.worldMap.getHeight(); gridRow++) {
             for (int gridColumn = 0; gridColumn < this.worldMap.getWidth(); gridColumn++) {
                 var mapPosition = upperLeft.add(new Vector2d(gridColumn, -gridRow));
-                Label field = new Label("");
 
-                Optional<WorldElement> optionalWorldElement = this.worldMap.objectAt(mapPosition);
-                if (optionalWorldElement.isPresent()) {
-
-                    field.setText(optionalWorldElement.get().toString());
-
-                    GridPane.setHalignment(field, HPos.CENTER);
-                    GridPane.setValignment(field, VPos.CENTER);
-                }
-
+                Node field = this.getFieldNode(mapPosition);
                 this.mapGridPane.add(field, gridColumn + 1, gridRow + 1);
+
+                GridPane.setHalignment(field, HPos.CENTER);
+                GridPane.setValignment(field, VPos.CENTER);
             }
         }
+    }
+
+    private Node getFieldNode(Vector2d mapPosition) {
+        StackPane field = new StackPane();
+
+        Optional<Plant> plant = this.worldMap.plantAt(mapPosition);
+        if (plant.isPresent()) {
+            field.getChildren().add(this.getGrassNode(field));
+        }
+
+        Optional<Set<Animal>> animals = this.worldMap.animalsAt(mapPosition);
+        if (animals.isPresent()) {
+            field.getChildren().add(this.getAnimalNode(field));
+        }
+
+        return field;
+    }
+
+    private Node getAnimalNode(Pane parentPane) {
+        var radius = Math.min(this.cellHeight, this.cellWidth) / 2;
+
+        Circle animalCircle = new Circle(radius);
+        animalCircle.setFill(new Color(0.8, 0.05, 0.05, 0.5));
+
+        animalCircle.radiusProperty()
+                .bind(Bindings.min(
+                        parentPane.widthProperty(),
+                        parentPane.heightProperty())
+                .divide(2));
+
+        return animalCircle;
+    }
+
+    private Node getGrassNode(Pane parentPane) {
+        Rectangle grassRectangle = new Rectangle(this.cellWidth, this.cellHeight);
+        grassRectangle.setFill(new Color(0, 0.8, 0.05, 0.5));
+
+        grassRectangle.widthProperty().bind(parentPane.widthProperty());
+        grassRectangle.heightProperty().bind(parentPane.heightProperty());
+
+        return grassRectangle;
     }
 }
