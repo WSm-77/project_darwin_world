@@ -19,6 +19,7 @@ public class Simulation implements Runnable, MapChangeListener {
     private boolean running = true;
     private int day = 1;
     private final List<SimulationListener> simulationListeners = new ArrayList<>();
+    private Optional<Thread> simulationThread = Optional.empty();
 
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
@@ -168,5 +169,16 @@ public class Simulation implements Runnable, MapChangeListener {
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
         this.notifyListeners(SimulationEvent.MAP_CHANGED);
+    }
+
+    public void start() {
+        this.simulationThread = Optional.of(new Thread(this));
+        this.simulationThread.ifPresent(Thread::start);
+    }
+
+    public void stop() {
+        this.simulationThread.ifPresentOrElse(Thread::interrupt, () -> {
+            throw new IllegalThreadStateException("Thread not Started!!!");
+        });
     }
 }
