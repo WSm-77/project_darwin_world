@@ -1,16 +1,31 @@
 package project.presenter;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import project.model.simulation.SimulationEvent;
+
+import javax.swing.event.ChangeEvent;
 
 public class SettingsPaneController extends AbstractController {
     @FXML
-    public Button pauseResumeButton;
+    private Button pauseResumeButton;
+    @FXML
+    private Slider refreshTimeSlider;
 
     private static final String PAUSE_BUTTON_TEXT = "Pause";
     private static final String RESUME_BUTTON_TEXT = "Resume";
+
+    @FXML
+    public void initialize() {
+        // Add a listener to the slider's value property
+        refreshTimeSlider.valueProperty().addListener(event -> {
+            this.simulation.setSimulationRefreshTime((int) this.refreshTimeSlider.getValue());
+        });
+    }
 
     @FXML
     public void onClick(ActionEvent event) {

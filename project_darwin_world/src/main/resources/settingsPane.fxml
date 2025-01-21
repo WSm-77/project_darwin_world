@@ -3,9 +3,11 @@
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
@@ -17,18 +19,23 @@
                     <content>
                         <GridPane alignment="CENTER" prefHeight="110.0" prefWidth="284.0">
                             <columnConstraints>
-                                <ColumnConstraints hgrow="ALWAYS" maxWidth="118.0" minWidth="10.0" prefWidth="79.0" />
-                                <ColumnConstraints hgrow="ALWAYS" maxWidth="103.0" minWidth="10.0" prefWidth="103.0" />
+                                <ColumnConstraints hgrow="ALWAYS" maxWidth="147.0" minWidth="103.0" prefWidth="103.0" />
+                                <ColumnConstraints hgrow="ALWAYS" maxWidth="202.0" minWidth="10.0" prefWidth="202.0" />
                             </columnConstraints>
                             <rowConstraints>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                                <RowConstraints percentHeight="50.0" vgrow="ALWAYS" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
                             </rowConstraints>
                             <children>
                                 <Label text="Refresh time" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
-                    <Button fx:id="pauseResumeButton" mnemonicParsing="false" onAction="#onClick" prefHeight="26.0" prefWidth="71.0" text="Puase" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                    <Label prefHeight="18.0" prefWidth="108.0" text="Pause/Resume" GridPane.rowIndex="1" />
+                    <Button fx:id="pauseResumeButton" mnemonicParsing="false" onAction="#onClick" prefHeight="26.0" prefWidth="71.0" text="Puase" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                    <Label prefHeight="18.0" prefWidth="108.0" text="Pause/Resume" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                        <HBox alignment="CENTER" prefHeight="45.0" prefWidth="140.0" spacing="15.0" GridPane.columnIndex="1">
+                           <children>
+                              <Slider fx:id="refreshTimeSlider" blockIncrement="100.0" majorTickUnit="999.0" max="1000.0" min="1.0" minorTickCount="10" prefHeight="21.0" prefWidth="133.0" showTickLabels="true" showTickMarks="true" value="500.0" />
+                              <Label text="ms" />
+                           </children>
+                        </HBox>
                             </children>
                         </GridPane>
                     </content>

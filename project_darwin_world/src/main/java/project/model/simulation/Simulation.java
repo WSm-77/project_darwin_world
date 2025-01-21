@@ -21,12 +21,12 @@ public class Simulation implements Runnable, MapChangeListener {
     private int day = 1;
     private final List<SimulationListener> simulationListeners = new ArrayList<>();
     private Optional<Thread> simulationThread = Optional.empty();
+    private int simulationRefreshTime = 500;
 
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
     public static final int ENERGY_DAILY_LOSS = 1;
     public static final int PARENTS_NEEDED_TO_BREED_COUNT = 2;
-    public static final int SIMULATION_REFRESH_TIME_MS = 500;
 
     public Simulation(SimulationBuilder simulationBuilder) {
         this.worldMap = simulationBuilder.getWorldMap();
@@ -177,7 +177,11 @@ public class Simulation implements Runnable, MapChangeListener {
                 }
             }
 
-        Thread.sleep(Simulation.SIMULATION_REFRESH_TIME_MS);
+        Thread.sleep(this.simulationRefreshTime);
+    }
+
+    public void setSimulationRefreshTime(int ms) {
+        this.simulationRefreshTime = ms;
     }
 
     public void start() {
