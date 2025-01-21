@@ -30,9 +30,9 @@
                                 <Label text="Refresh time" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
                     <Button fx:id="pauseResumeButton" mnemonicParsing="false" onAction="#onClick" prefHeight="26.0" prefWidth="71.0" text="Puase" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                     <Label prefHeight="18.0" prefWidth="108.0" text="Pause/Resume" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                        <HBox alignment="CENTER" prefHeight="45.0" prefWidth="140.0" spacing="15.0" GridPane.columnIndex="1">
+                        <HBox alignment="CENTER" prefHeight="45.0" prefWidth="140.0" spacing="15.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
                            <children>
-                              <Slider fx:id="refreshTimeSlider" blockIncrement="100.0" majorTickUnit="999.0" max="1000.0" min="1.0" minorTickCount="10" prefHeight="21.0" prefWidth="133.0" showTickLabels="true" showTickMarks="true" value="500.0" />
+                              <Slider fx:id="refreshTimeSlider" blockIncrement="100.0" majorTickUnit="990.0" max="1000.0" min="10.0" minorTickCount="10" prefHeight="21.0" prefWidth="133.0" showTickLabels="true" showTickMarks="true" value="500.0" />
                               <Label text="ms" />
                            </children>
                         </HBox>
