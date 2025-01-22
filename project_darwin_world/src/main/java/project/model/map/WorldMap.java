@@ -120,4 +120,11 @@ public interface WorldMap extends NextPositionCalculator {
      * @return map width
      */
     int getWidth();
+
+    /**
+     * Return map buffer
+     *
+     * @return Return map buffer
+     */
+    MapBuffer getMapBuffer();
 }

@@ -16,18 +16,6 @@ import java.util.stream.Collectors;
 
 public class Sphere implements WorldMap {
     private final static Vector2d DEFAULT_LOWER_LEFT = new Vector2d(0, 0);
-    private final static String MOVE_MESSAGE_TEMPLATE = "Animal movement:\norientation: %s -> %s\nposition: %s -> %s";
-    private final static String ANIMAL_PLACE_MESSAGE_TEMPLATE = """
-            Animal placed:
-            position: %s
-            orientation: %s
-            """;
-    private final static String PLANT_GROWN_MESSAGE_TEMPLATE = """
-            Plant grown:
-            position: %s
-            """;
-    private final static String PLANT_REMOVED_MESSAGE_TEMPLATE = "Plant removed from %s";
-    private final static String ANIMAL_REMOVED_MESSAGE_TEMPLATE = "Animal removed from %s";
     private final static String INCORRECT_ANIMAL_TO_REMOVE_MESSAGE_TEMPLATE = "There is no %s Animal at %s position!!!";
     public static final String ANIMAL_AND_PLANT_MUST_NOT_BE_NULL = "Animal and Plant must not be null.";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
@@ -40,6 +28,7 @@ public class Sphere implements WorldMap {
     final private MapVisualizer mapVisualizer = new MapVisualizer(this);
     final private int width;
     final private int height;
+    final private MapBuffer mapBuffer = new MapBuffer();
 
     public Sphere(int width, int height) {
         this.upperRight = this.lowerLeft.add(new Vector2d(width - 1, height - 1));
@@ -65,7 +54,8 @@ public class Sphere implements WorldMap {
 
             this.grass.put(position, plant);
 
-            this.mapChanged(String.format(PLANT_GROWN_MESSAGE_TEMPLATE, plant.getPosition()));
+            this.mapBuffer.setLastPlantPlaced(plant);
+            this.mapChanged(MapEvent.GROW_PLANT);
         }
     }
 
@@ -82,13 +72,15 @@ public class Sphere implements WorldMap {
     }
 
     public void removePlantFromMap(Vector2d position) {
+        this.mapBuffer.setLastPlantRemoved(this.grass.get(position));
+
         if (this.grass.containsKey(position)) {
             this.grass.remove(position);
         } else {
             throw new IncorrectPositionException(position);
         }
 
-        this.mapChanged(String.format(PLANT_REMOVED_MESSAGE_TEMPLATE, position));
+        this.mapChanged(MapEvent.REMOVE_PLANT);
     }
 
     private String createIncorrectAnimalToRemoveMessage(Animal animal) {
@@ -98,6 +90,7 @@ public class Sphere implements WorldMap {
     @Override
     public void removeAnimal(Animal animal) throws IllegalArgumentException {
         Vector2d animalPosition = animal.getPosition();
+        this.mapBuffer.setLastAnimalRemoved(animal);
 
         Consumer<? super Set<Animal>> actionIfPresent = (animalSet) -> {
             if (!animalSet.contains(animal)) {
@@ -110,7 +103,7 @@ public class Sphere implements WorldMap {
                 this.animals.remove(animalPosition);
             }
 
-            this.mapChanged(String.format(ANIMAL_REMOVED_MESSAGE_TEMPLATE, animal.getStatistics().getPosition()));
+            this.mapChanged(MapEvent.REMOVE_ANIMAL);
         };
 
         Runnable actionIfNotPresent = () -> {
@@ -140,7 +133,8 @@ public class Sphere implements WorldMap {
             throw new IncorrectPositionException(position);
         }
 
-        this.mapChanged(String.format(ANIMAL_PLACE_MESSAGE_TEMPLATE, animal.getPosition(), animal.getStatistics().getOrientation()));
+        this.mapBuffer.setLastAnimalPlaced(animal);
+        this.mapChanged(MapEvent.PLACE_ANIMAL);
     }
 
     @Override
@@ -169,8 +163,7 @@ public class Sphere implements WorldMap {
             this.place(animal);
         }
 
-        this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getStatistics().getOrientation(),
-                prevPosition, animal.getPosition()));
+        this.mapChanged(MapEvent.MOVE_ANIMAL);
     }
 
     @Override
@@ -218,6 +211,11 @@ public class Sphere implements WorldMap {
     }
 
     @Override
+    public MapBuffer getMapBuffer() {
+        return this.mapBuffer;
+    }
+
+    @Override
     public Vector2d calculateNextPosition(Vector2d currentPosition, Vector2d moveVector) {
         Vector2d normalizationVector = this.lowerLeft.opposite();
         Vector2d normalizedUpperRight = this.upperRight.add(normalizationVector);
@@ -256,9 +254,9 @@ public class Sphere implements WorldMap {
         this.listeners.add(listener);
     }
 
-    private void mapChanged(String message) {
+    private void mapChanged(MapEvent event) {
         for (var listener : this.listeners) {
-            listener.mapChanged(this, message);
+            listener.mapChanged(this, event);
         }
     }
 

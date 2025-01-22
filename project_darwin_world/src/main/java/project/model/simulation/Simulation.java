@@ -1,5 +1,6 @@
 package project.model.simulation;
 
+import project.model.map.MapEvent;
 import project.model.movement.Vector2d;
 import project.model.util.*;
 import project.model.map.WorldMap;
@@ -176,7 +177,7 @@ public class Simulation implements Runnable, MapChangeListener {
     }
 
     @Override
-    public void mapChanged(WorldMap worldMap, String message) {
+    public void mapChanged(WorldMap worldMap, MapEvent event) {
         this.notifyListeners(SimulationEvent.MAP_CHANGED);
     }
 
