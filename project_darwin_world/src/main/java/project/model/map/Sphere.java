@@ -250,6 +250,7 @@ public class Sphere implements WorldMap {
         return new PositionDirectionPair(nextPosition, nextDirection);
     }
 
+    @Override
     public void subscribe(MapChangeListener listener) {
         this.listeners.add(listener);
     }
