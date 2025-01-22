@@ -147,6 +147,10 @@ public class Simulation implements Runnable, MapChangeListener {
         return this.worldMap;
     }
 
+    public int getDay() {
+        return this.day;
+    }
+
     public void subscribe(SimulationListener simulationListener) {
         this.simulationListeners.add(simulationListener);
     }
