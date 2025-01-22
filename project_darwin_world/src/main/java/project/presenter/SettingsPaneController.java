@@ -1,14 +1,10 @@
 package project.presenter;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import project.model.simulation.SimulationEvent;
-
-import javax.swing.event.ChangeEvent;
 
 public class SettingsPaneController extends AbstractController {
     @FXML
@@ -28,7 +24,7 @@ public class SettingsPaneController extends AbstractController {
     }
 
     @FXML
-    public void onClick(ActionEvent event) {
+    public void onPauseResumeButtonClick(ActionEvent event) {
         if (this.simulation.isPaused()) {
             this.simulation.resume();
             this.pauseResumeButton.setText(PAUSE_BUTTON_TEXT);

@@ -28,7 +28,7 @@
                             </rowConstraints>
                             <children>
                                 <Label text="Refresh time" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
-                    <Button fx:id="pauseResumeButton" mnemonicParsing="false" onAction="#onClick" prefHeight="26.0" prefWidth="71.0" text="Puase" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                    <Button fx:id="pauseResumeButton" mnemonicParsing="false" onAction="#onPauseResumeButtonClick" prefHeight="26.0" prefWidth="71.0" text="Puase" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                     <Label prefHeight="18.0" prefWidth="108.0" text="Pause/Resume" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                         <HBox alignment="CENTER" prefHeight="45.0" prefWidth="140.0" spacing="15.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
                            <children>
