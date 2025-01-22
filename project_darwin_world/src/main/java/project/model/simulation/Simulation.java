@@ -22,6 +22,7 @@ public class Simulation implements Runnable, MapChangeListener {
     private final List<SimulationListener> simulationListeners = new ArrayList<>();
     private Optional<Thread> simulationThread = Optional.empty();
     private int simulationRefreshTime = 500;
+    private final List<Animal> deadAnimals = new ArrayList<>();
 
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
@@ -52,6 +53,7 @@ public class Simulation implements Runnable, MapChangeListener {
                     var animalStatistics = animal.getStatistics();
                     animalStatistics.setDeathDay(this.day);
                     this.worldMap.removeAnimal(animal);
+                    this.deadAnimals.add(animal);
                 }
                 );
     }
@@ -149,6 +151,10 @@ public class Simulation implements Runnable, MapChangeListener {
 
     public int getDay() {
         return this.day;
+    }
+
+    public List<Animal> getDeadAnimals() {
+        return this.deadAnimals;
     }
 
     public void subscribe(SimulationListener simulationListener) {
