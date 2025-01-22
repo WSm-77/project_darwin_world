@@ -1,10 +1,9 @@
 package project.presenter;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
+import javafx.scene.control.Label;
 import project.model.map.Boundary;
 import project.model.movement.Vector2d;
 import project.model.simulation.SimulationEvent;
@@ -17,25 +16,26 @@ import java.util.stream.Stream;
 
 public class ChartPaneController extends AbstractController {
     @FXML
+    private Label numberOfEmptySpotsLabel;
+    @FXML
     private BarChart<String, Double> simulationStatisticChart;
+
+    private static final String SIMULATION_DAY_TEMPLATE = "Simulation Day: %d";
+    private static final String EMPTY_SPOTS_TEMPLATE = "Number of empty spots: %d";
+
     private XYChart.Series<String, Double> animalsCountSeries = new XYChart.Series<>();
     private XYChart.Series<String, Double> plantsCountSeries = new XYChart.Series<>();
 
     @FXML
     public void initialize() {
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
+        Axis<String> xAxis = this.simulationStatisticChart.getXAxis();
+        Axis<Double> yAxis = this.simulationStatisticChart.getYAxis();
 
         xAxis.setLabel("Simulation statistics");
         yAxis.setLabel("Values");
 
-        yAxis.setLowerBound(0);
-        yAxis.setUpperBound(100);
-
-        yAxis.setAutoRanging(false);
-
-        XYChart.Data<String, Double> animalsCountChartData = new XYChart.Data<>("Animals count", 10.0);
-        XYChart.Data<String, Double> plantsCountChartData = new XYChart.Data<>("Plants count", 15.0);
+        XYChart.Data<String, Double> animalsCountChartData = new XYChart.Data<>("Animals count", 0.0);
+        XYChart.Data<String, Double> plantsCountChartData = new XYChart.Data<>("Plants count", 0.0);
         this.animalsCountSeries.getData().add(animalsCountChartData);
         this.plantsCountSeries.getData().add(plantsCountChartData);
 
@@ -44,7 +44,32 @@ public class ChartPaneController extends AbstractController {
 
     @Override
     public void simulationChanged(SimulationEvent simulationEvent) {
+        switch (simulationEvent) {
+            case MAP_CHANGED -> Platform.runLater(this::updateCharts);
+            case NEXT_DAY -> Platform.runLater(this::updateDay);
+        }
 
+        Platform.runLater(this::updateEmptySpots);
+    }
+
+    private void updateEmptySpots() {
+        String emptySpotsText = String.format(EMPTY_SPOTS_TEMPLATE, this.calculateNumberOfEmptySpots());
+        this.numberOfEmptySpotsLabel.setText(emptySpotsText);
+    }
+
+    private void updateDay() {
+        String simulationDay = String.format(SIMULATION_DAY_TEMPLATE, this.simulation.getDay());
+        this.simulationStatisticChart.setTitle(simulationDay);
+    }
+
+    private void updateCharts() {
+        this.updateSeries(this.animalsCountSeries, (double) this.getAnimalsCount());
+        this.updateSeries(this.plantsCountSeries, (double) this.getPlantsCount());
+    }
+
+    private void updateSeries(XYChart.Series<String, Double> series, Double value) {
+        var data = series.getData().getFirst();
+        data.setYValue(value);
     }
 
     private int getAnimalsCount() {

@@ -20,9 +20,10 @@
       </BarChart>
    </center>
    <bottom>
-      <HBox alignment="CENTER" prefHeight="56.0" prefWidth="1004.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" prefHeight="56.0" prefWidth="1004.0" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
             <Label text="Most popular genom: genome" />
+            <Label fx:id="numberOfEmptySpotsLabel" lineSpacing="20.0" text="Number of empty spots: 0" />
          </children>
       </HBox>
    </bottom>
