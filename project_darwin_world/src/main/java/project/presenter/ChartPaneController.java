@@ -29,6 +29,7 @@ public class ChartPaneController extends AbstractController {
     private XYChart.Series<String, Double> plantsCountSeries = new XYChart.Series<>();
     private XYChart.Series<String, Double> averageAnimalsEnergy = new XYChart.Series<>();
     private XYChart.Series<String, Double> averageAnimalsLifeTime = new XYChart.Series<>();
+    private XYChart.Series<String, Double> averageAnimalsChilderenCount = new XYChart.Series<>();
 
     @FXML
     public void initialize() {
@@ -42,16 +43,19 @@ public class ChartPaneController extends AbstractController {
         XYChart.Data<String, Double> plantsCountChartData = new XYChart.Data<>("Plants count", 0.0);
         XYChart.Data<String, Double> averageAnimalsEnergyChartData = new XYChart.Data<>("Average animal energy", 0.0);
         XYChart.Data<String, Double> averageAnimalLifeTimeChartData = new XYChart.Data<>("Average animal life time", 0.0);
+        XYChart.Data<String, Double> averageAnimalChildrenCountChartData = new XYChart.Data<>("Average animal children count", 0.0);
         this.animalsCountSeries.getData().add(animalsCountChartData);
         this.plantsCountSeries.getData().add(plantsCountChartData);
         this.averageAnimalsEnergy.getData().add(averageAnimalsEnergyChartData);
         this.averageAnimalsLifeTime.getData().add(averageAnimalLifeTimeChartData);
+        this.averageAnimalsChilderenCount.getData().add(averageAnimalChildrenCountChartData);
 
         this.simulationStatisticChart.getData().addAll(
                 animalsCountSeries,
                 plantsCountSeries,
                 averageAnimalsEnergy,
-                averageAnimalsLifeTime
+                averageAnimalsLifeTime,
+                averageAnimalsChilderenCount
         );
     }
 
@@ -80,6 +84,7 @@ public class ChartPaneController extends AbstractController {
         this.updateSeries(this.plantsCountSeries, (double) this.getPlantsCount());
         this.updateSeries(this.averageAnimalsEnergy, this.calculateAverageEnergy());
         this.updateSeries(this.averageAnimalsLifeTime, this.calculateAverageLifeTime());
+        this.updateSeries(this.averageAnimalsChilderenCount, this.calculateAverageAnimalChildrenCount());
     }
 
     private void updateSeries(XYChart.Series<String, Double> series, Double value) {
@@ -132,6 +137,16 @@ public class ChartPaneController extends AbstractController {
 
         return deadAnimals.stream()
                 .mapToDouble(animal -> (double) animal.getStatistics().getDaysAlive())
+                .average()
+                .orElse(0.0);
+    }
+
+    private double calculateAverageAnimalChildrenCount() {
+        WorldMap worldMap = this.simulation.getWorldMap();
+        List<Animal> animals = worldMap.getAnimals();
+
+        return animals.stream()
+                .mapToDouble(animal -> animal.getStatistics().getChildrenCount())
                 .average()
                 .orElse(0.0);
     }
