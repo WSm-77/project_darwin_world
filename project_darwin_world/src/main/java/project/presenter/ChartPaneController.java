@@ -5,8 +5,10 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import project.model.map.Boundary;
+import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.simulation.SimulationEvent;
+import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;
 
 import java.util.List;
@@ -25,6 +27,7 @@ public class ChartPaneController extends AbstractController {
 
     private XYChart.Series<String, Double> animalsCountSeries = new XYChart.Series<>();
     private XYChart.Series<String, Double> plantsCountSeries = new XYChart.Series<>();
+    private XYChart.Series<String, Double> averageAnimalsEnergy = new XYChart.Series<>();
 
     @FXML
     public void initialize() {
@@ -36,10 +39,12 @@ public class ChartPaneController extends AbstractController {
 
         XYChart.Data<String, Double> animalsCountChartData = new XYChart.Data<>("Animals count", 0.0);
         XYChart.Data<String, Double> plantsCountChartData = new XYChart.Data<>("Plants count", 0.0);
+        XYChart.Data<String, Double> averageAnimalsEnergyChartData = new XYChart.Data<>("Average animal energy", 0.0);
         this.animalsCountSeries.getData().add(animalsCountChartData);
         this.plantsCountSeries.getData().add(plantsCountChartData);
+        this.averageAnimalsEnergy.getData().add(averageAnimalsEnergyChartData);
 
-        this.simulationStatisticChart.getData().addAll(animalsCountSeries, plantsCountSeries);
+        this.simulationStatisticChart.getData().addAll(animalsCountSeries, plantsCountSeries, averageAnimalsEnergy);
     }
 
     @Override
@@ -65,6 +70,7 @@ public class ChartPaneController extends AbstractController {
     private void updateCharts() {
         this.updateSeries(this.animalsCountSeries, (double) this.getAnimalsCount());
         this.updateSeries(this.plantsCountSeries, (double) this.getPlantsCount());
+        this.updateSeries(this.averageAnimalsEnergy, this.calculateAverageEnergy());
     }
 
     private void updateSeries(XYChart.Series<String, Double> series, Double value) {
@@ -100,5 +106,15 @@ public class ChartPaneController extends AbstractController {
         int totalSpots = worldMap.getWidth() * worldMap.getHeight();
 
         return totalSpots - occupiedPositions.size();
+    }
+
+    private double calculateAverageEnergy() {
+        WorldMap worldMap = this.simulation.getWorldMap();
+        List<Animal> animals = worldMap.getAnimals();
+
+        return animals.stream()
+                .mapToDouble(animal -> animal.getStatistics().getEnergy())
+                .average()
+                .orElse(0.0);
     }
 }
