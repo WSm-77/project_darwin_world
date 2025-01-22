@@ -1,5 +1,10 @@
 package project.presenter;
 
+import javafx.fxml.FXML;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import project.model.map.Boundary;
 import project.model.movement.Vector2d;
 import project.model.simulation.SimulationEvent;
@@ -11,6 +16,32 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ChartPaneController extends AbstractController {
+    @FXML
+    private BarChart<String, Double> simulationStatisticChart;
+    private XYChart.Series<String, Double> animalsCountSeries = new XYChart.Series<>();
+    private XYChart.Series<String, Double> plantsCountSeries = new XYChart.Series<>();
+
+    @FXML
+    public void initialize() {
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+
+        xAxis.setLabel("Simulation statistics");
+        yAxis.setLabel("Values");
+
+        yAxis.setLowerBound(0);
+        yAxis.setUpperBound(100);
+
+        yAxis.setAutoRanging(false);
+
+        XYChart.Data<String, Double> animalsCountChartData = new XYChart.Data<>("Animals count", 10.0);
+        XYChart.Data<String, Double> plantsCountChartData = new XYChart.Data<>("Plants count", 15.0);
+        this.animalsCountSeries.getData().add(animalsCountChartData);
+        this.plantsCountSeries.getData().add(plantsCountChartData);
+
+        this.simulationStatisticChart.getData().addAll(animalsCountSeries, plantsCountSeries);
+    }
+
     @Override
     public void simulationChanged(SimulationEvent simulationEvent) {
 

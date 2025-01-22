@@ -10,7 +10,7 @@
 
 <BorderPane prefHeight="410.0" prefWidth="757.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.presenter.ChartPaneController">
    <center>
-      <BarChart categoryGap="100.0" prefWidth="600.0" scaleShape="false" title="Simulation Day: 1" BorderPane.alignment="CENTER">
+      <BarChart fx:id="simulationStatisticChart" categoryGap="100.0" prefWidth="600.0" scaleShape="false" title="Simulation Day: 1" BorderPane.alignment="CENTER">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
         </xAxis>
