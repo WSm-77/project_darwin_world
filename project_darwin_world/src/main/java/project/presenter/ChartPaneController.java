@@ -4,19 +4,19 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.chart.*;
 import javafx.scene.control.Label;
-import project.model.map.Boundary;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.simulation.SimulationEvent;
 import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ChartPaneController extends AbstractController {
+    @FXML
+    private Label mostPopularGenomeLabel;
     @FXML
     private Label numberOfEmptySpotsLabel;
     @FXML
@@ -24,6 +24,8 @@ public class ChartPaneController extends AbstractController {
 
     private static final String SIMULATION_DAY_TEMPLATE = "Simulation Day: %d";
     private static final String EMPTY_SPOTS_TEMPLATE = "Number of empty spots: %d";
+    private static final String MOST_POPULAR_GENOME = "Most popular genome: %s";
+    private static final String NO_INFORMATION_STRING = "-";
 
     private XYChart.Series<String, Double> animalsCountSeries = new XYChart.Series<>();
     private XYChart.Series<String, Double> plantsCountSeries = new XYChart.Series<>();
@@ -62,7 +64,7 @@ public class ChartPaneController extends AbstractController {
     @Override
     public void simulationChanged(SimulationEvent simulationEvent) {
         switch (simulationEvent) {
-            case MAP_CHANGED -> Platform.runLater(this::updateCharts);
+            case MAP_CHANGED -> Platform.runLater(this::updateMapInformation);
             case NEXT_DAY -> Platform.runLater(this::updateDay);
         }
 
@@ -77,6 +79,22 @@ public class ChartPaneController extends AbstractController {
     private void updateDay() {
         String simulationDay = String.format(SIMULATION_DAY_TEMPLATE, this.simulation.getDay());
         this.simulationStatisticChart.setTitle(simulationDay);
+    }
+
+    private void updateMapInformation() {
+        this.updateCharts();
+        this.updateEmptySpots();
+        this.updateMostPopularGenome();
+    }
+
+    private void updateMostPopularGenome() {
+        Optional<List<Integer>> mostPopularOptionalGenesList = this.mostPopularGenome();
+        String genomeString = mostPopularOptionalGenesList
+                .map(Objects::toString)
+                .orElse(NO_INFORMATION_STRING);
+
+        String mostPopularGenomeText = String.format(MOST_POPULAR_GENOME, genomeString);
+        this.mostPopularGenomeLabel.setText(mostPopularGenomeText);
     }
 
     private void updateCharts() {
@@ -149,5 +167,21 @@ public class ChartPaneController extends AbstractController {
                 .mapToDouble(animal -> animal.getStatistics().getChildrenCount())
                 .average()
                 .orElse(0.0);
+    }
+
+    private Optional<List<Integer>> mostPopularGenome() {
+        WorldMap worldMap = this.simulation.getWorldMap();
+        List<Animal> aliveAnimals = worldMap.getAnimals();
+
+        HashMap<List<Integer>, Integer> genomeCountMap = new HashMap<>();
+        for (var animal : aliveAnimals) {
+            List<Integer> genesList = animal.getStatistics().getGenesList();
+            Integer genomeCount = genomeCountMap.getOrDefault(genesList, 0) + 1;
+            genomeCountMap.put(genesList, genomeCount);
+        }
+
+        return genomeCountMap.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey);
     }
 }
