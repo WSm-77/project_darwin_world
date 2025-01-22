@@ -1,21 +1,15 @@
 package project.model.simulation;
 
 import project.model.movement.Vector2d;
-import project.model.util.AnimalFactory;
-import project.model.util.AnimalMediator;
-import project.model.util.PlantGrower;
-import project.model.util.SimulationBuilder;
+import project.model.util.*;
 import project.model.map.WorldMap;
 import project.model.worldelements.Animal;
 import project.model.worldelements.WorldElement;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class Simulation implements Runnable {
+public class Simulation implements Runnable, MapChangeListener {
     private final WorldMap worldMap;
     private final int dailyPlantGrowth;
     private final AnimalFactory animalFactory;
@@ -23,13 +17,16 @@ public class Simulation implements Runnable {
     private final PlantGrower plantGrower;
     private final int energyToReproduce;
     private boolean running = true;
+    private boolean paused = false;
     private int day = 1;
+    private final List<SimulationListener> simulationListeners = new ArrayList<>();
+    private Optional<Thread> simulationThread = Optional.empty();
+    private int simulationRefreshTime = 500;
 
     public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
     public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
     public static final int ENERGY_DAILY_LOSS = 1;
     public static final int PARENTS_NEEDED_TO_BREED_COUNT = 2;
-    public static final int SIMULATION_REFRESH_TIME_MS = 500;
 
     public Simulation(SimulationBuilder simulationBuilder) {
         this.worldMap = simulationBuilder.getWorldMap();
@@ -124,6 +121,8 @@ public class Simulation implements Runnable {
         this.consumeDailyEnergyAmount();
         this.updateDaysAlive();
         this.day++;
+
+        this.notifyListeners(SimulationEvent.NEXT_DAY);
     }
 
     @Override
@@ -141,18 +140,75 @@ public class Simulation implements Runnable {
             this.growPlants();
 
             this.finishDay();
-
-            if (Thread.currentThread().isInterrupted()) {
-                System.out.println(this.createInterruptionMessage());
-                this.running = false;
-            }
-
-            try {
-                Thread.sleep(Simulation.SIMULATION_REFRESH_TIME_MS);
-            } catch (InterruptedException e) {
-                System.out.println(this.createInterruptionDuringSleepMessage());
-                this.running = false;
-            }
         }
+    }
+
+    public WorldMap getWorldMap() {
+        return this.worldMap;
+    }
+
+    public void subscribe(SimulationListener simulationListener) {
+        this.simulationListeners.add(simulationListener);
+    }
+
+    private void notifyListeners(SimulationEvent simulationEvent) {
+        for (var listener : this.simulationListeners) {
+            listener.simulationChanged(simulationEvent);
+        }
+
+        try {
+            this.simulationStep();
+        } catch (InterruptedException e) {
+            this.simulationThread.ifPresent(Thread::interrupt);
+            this.running = false;
+            this.paused = false;
+        }
+    }
+
+    @Override
+    public void mapChanged(WorldMap worldMap, String message) {
+        this.notifyListeners(SimulationEvent.MAP_CHANGED);
+    }
+
+    public void simulationStep() throws InterruptedException {
+        synchronized (this) {
+                while (this.isPaused()) {
+                    this.wait();
+                }
+            }
+
+        Thread.sleep(this.simulationRefreshTime);
+    }
+
+    public void setSimulationRefreshTime(int ms) {
+        this.simulationRefreshTime = ms;
+    }
+
+    public void start() {
+        this.simulationThread = Optional.of(new Thread(this));
+        this.simulationThread.ifPresent(Thread::start);
+    }
+
+    public void terminate() {
+        if (this.simulationThread.isEmpty()) {
+            throw new IllegalThreadStateException("Thread not Started!!!");
+        }
+
+        this.simulationThread.get().interrupt();
+        this.running = false;
+    }
+
+    public synchronized void pause() {
+        this.paused = true;
+        System.out.println("Simulation paused!!!");
+    }
+
+    public synchronized void resume() {
+        this.paused = false;
+        this.notifyAll();
+    }
+
+    public synchronized boolean isPaused() {
+        return this.paused;
     }
 }

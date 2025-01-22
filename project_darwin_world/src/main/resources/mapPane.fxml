@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+
+<BorderPane fx:id="parentBorderPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.presenter.MapPaneController">
+   <center>
+      <GridPane fx:id="mapGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="200.0" minWidth="200.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+          <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints percentHeight="33.0" vgrow="ALWAYS" />
+          <RowConstraints percentHeight="33.0" vgrow="ALWAYS" />
+          <RowConstraints vgrow="ALWAYS" />
+        </rowConstraints>
+      </GridPane>
+   </center>
+</BorderPane>

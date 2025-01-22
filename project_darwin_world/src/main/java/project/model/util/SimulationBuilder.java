@@ -157,7 +157,10 @@ public class SimulationBuilder {
         this.createAndPlaceAnimalsOnMap();
         this.growPlants();
 
-        return new Simulation(this);
+        Simulation simulation = new Simulation(this);
+        sphere.subscribe(simulation);
+
+        return simulation;
     }
 
     public int getDailyPlantGrowth() { return this.dailyPlantGrowth; }

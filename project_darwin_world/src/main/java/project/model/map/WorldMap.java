@@ -7,6 +7,7 @@ import project.model.worldelements.Animal;
 import project.model.worldelements.Plant;
 import project.model.worldelements.WorldElement;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -58,6 +59,12 @@ public interface WorldMap extends NextPositionCalculator {
     List<Plant> getPlants();
 
     /**
+     * @param position position of plant
+     * @return optional object of plant that is on given position
+     */
+    Optional<Plant> plantAt(Vector2d position);
+
+    /**
      * Moves an animal (if it is present on the map) according to it's orientation.
      * If the move is not possible, this method has no effect.
      *
@@ -99,4 +106,18 @@ public interface WorldMap extends NextPositionCalculator {
      * @return object's UUID
      */
     UUID getId();
+
+    /**
+     * Return map height
+     *
+     * @return map height
+     */
+    int getHeight();
+
+    /**
+     * Return map width
+     *
+     * @return map width
+     */
+    int getWidth();
 }

@@ -38,11 +38,15 @@ public class Sphere implements WorldMap {
     final private UUID id;
     final private List<MapChangeListener> listeners = new ArrayList<>();
     final private MapVisualizer mapVisualizer = new MapVisualizer(this);
+    final private int width;
+    final private int height;
 
     public Sphere(int width, int height) {
         this.upperRight = this.lowerLeft.add(new Vector2d(width - 1, height - 1));
         this.boundary = new Boundary(this.lowerLeft, this.upperRight);
         this.id = UUID.randomUUID();
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -144,6 +148,10 @@ public class Sphere implements WorldMap {
         return new ArrayList<>(this.grass.values());
     }
 
+    @Override
+    public Optional<Plant> plantAt(Vector2d position) {
+        return Optional.ofNullable(this.grass.get(position));
+    }
 
     @Override
     public void move(Animal animal) {
@@ -197,6 +205,16 @@ public class Sphere implements WorldMap {
     @Override
     public UUID getId() {
         return this.id;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.height;
+    }
+
+    @Override
+    public int getWidth() {
+        return this.width;
     }
 
     @Override
