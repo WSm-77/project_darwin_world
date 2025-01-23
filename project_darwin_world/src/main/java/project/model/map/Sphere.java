@@ -40,6 +40,7 @@ public class Sphere implements WorldMap {
     final private MapVisualizer mapVisualizer = new MapVisualizer(this);
     final private int width;
     final private int height;
+    private boolean isInMoveState = false;
 
     public Sphere(int width, int height) {
         this.upperRight = this.lowerLeft.add(new Vector2d(width - 1, height - 1));
@@ -110,7 +111,9 @@ public class Sphere implements WorldMap {
                 this.animals.remove(animalPosition);
             }
 
-            this.mapChanged(String.format(ANIMAL_REMOVED_MESSAGE_TEMPLATE, animal.getStatistics().getPosition()));
+            if (!this.isInMoveState) {
+                this.mapChanged(String.format(ANIMAL_REMOVED_MESSAGE_TEMPLATE, animal.getStatistics().getPosition()));
+            }
         };
 
         Runnable actionIfNotPresent = () -> {
@@ -140,7 +143,9 @@ public class Sphere implements WorldMap {
             throw new IncorrectPositionException(position);
         }
 
-        this.mapChanged(String.format(ANIMAL_PLACE_MESSAGE_TEMPLATE, animal.getPosition(), animal.getStatistics().getOrientation()));
+        if (!this.isInMoveState) {
+            this.mapChanged(String.format(ANIMAL_PLACE_MESSAGE_TEMPLATE, animal.getPosition(), animal.getStatistics().getOrientation()));
+        }
     }
 
     @Override
@@ -155,6 +160,7 @@ public class Sphere implements WorldMap {
 
     @Override
     public void move(Animal animal) {
+        this.isInMoveState = true;
         Vector2d prevPosition = animal.getPosition();
         MapDirection prevOrientation = animal.getStatistics().getOrientation();
 
@@ -171,6 +177,8 @@ public class Sphere implements WorldMap {
 
         this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getStatistics().getOrientation(),
                 prevPosition, animal.getPosition()));
+
+        this.isInMoveState = false;
     }
 
     @Override
