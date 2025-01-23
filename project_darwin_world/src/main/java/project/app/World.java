@@ -3,6 +3,7 @@ package project.app;
 import project.model.map.Sphere;
 import project.model.movement.Vector2d;
 import project.model.simulation.Simulation;
+import project.model.simulation.SimulationDayStep;
 import project.model.util.*;
 import project.model.worldelements.AnimalStandardVariant;
 
@@ -36,13 +37,14 @@ public class World {
                 .setAnimalConstructor(AnimalStandardVariant::new)
                 .setAnimalMediatorConstructor(AnimalMediatorStandardVariant::new)
                 .setPlantGrowerConstructor(PlantGrowerCreepingJungleVariant::new)
+                .setSimulationConstructor(SimulationDayStep::new)
                 .build();
 
         Thread thread = new Thread(sphereSimulation);
         thread.start();
 
         try {
-            thread.join(3000);
+            thread.join(10000);
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }

@@ -3,11 +3,17 @@ package project.presenter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
+import project.model.simulation.Simulation;
+import project.model.simulation.SimulationDayStep;
+import project.model.simulation.SimulationEachChangeStep;
 import project.model.util.*;
 
 public class MenuController {
+    @FXML
+    private CheckBox simulationRefreshTypeCheckbox;
     @FXML
     private ChoiceBox<PlantGrowerVariant> mapVariantChoiceBox;
     @FXML
@@ -48,6 +54,9 @@ public class MenuController {
 
     public void onStartButtonClick(ActionEvent actionEvent) {
         try {
+            SimulationConstructor<? extends Simulation> simulationType = simulationRefreshTypeCheckbox.isSelected() ?
+                    SimulationEachChangeStep::new : SimulationDayStep::new;
+
             var sphereSimulation = new SimulationBuilder()
                     .setMapWidth((int)this.mapWidthSlider.getValue())
                     .setMapHeight((int)this.mapHeightSlider.getValue())
@@ -64,6 +73,7 @@ public class MenuController {
                     .setAnimalConstructor(this.animalVariantChoiceBox.getValue().toAnimalConstructor())
                     .setAnimalMediatorConstructor(AnimalMediatorStandardVariant::new)
                     .setPlantGrowerConstructor(this.mapVariantChoiceBox.getValue().toPlantGrowerConstructor())
+                    .setSimulationConstructor(simulationType)
                     .build();
 
             SimulationWindowCreator.createNewSimulationWindow(sphereSimulation);
