@@ -3,6 +3,7 @@ package project.model.map;
 import project.model.exceptions.IncorrectPositionException;
 import project.model.movement.NextPositionCalculator;
 import project.model.movement.Vector2d;
+import project.model.util.MapChangeListener;
 import project.model.worldelements.Animal;
 import project.model.worldelements.Plant;
 import project.model.worldelements.WorldElement;
@@ -120,4 +121,11 @@ public interface WorldMap extends NextPositionCalculator {
      * @return map width
      */
     int getWidth();
+
+    /**
+     * Subscribe to map to receive map change information
+     *
+     * @param mapChangeListener
+     */
+    void subscribe(MapChangeListener mapChangeListener);
 }
