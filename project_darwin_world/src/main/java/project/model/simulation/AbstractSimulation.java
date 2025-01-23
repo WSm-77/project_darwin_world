@@ -7,6 +7,7 @@ import project.model.util.AnimalMediator;
 import project.model.util.PlantGrower;
 import project.model.util.SimulationBuilder;
 import project.model.worldelements.Animal;
+import project.model.worldelements.Plant;
 import project.model.worldelements.WorldElement;
 
 import java.util.*;
@@ -63,7 +64,20 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     protected void consumePlants() {
+        for (Plant plant : worldMap.getPlants()) {
+            worldMap.animalsAt(plant.getPosition())
+                    .filter(animals -> !animals.isEmpty())
+                    .ifPresent(animals -> feedStrongestAnimal(animals, plant));
+        }
+    }
 
+    protected void feedStrongestAnimal(Set<Animal> animals, Plant plant) {
+        List<Animal> winners = animalMediator.resolveAnimalsConflict(animals, 1);
+
+        if (!winners.isEmpty()) {
+            Animal winner = winners.getFirst();
+            worldMap.feedAnimal(winner, plant);
+        }
     }
 
     protected boolean canBreed(Animal parent1, Animal parent2) {
