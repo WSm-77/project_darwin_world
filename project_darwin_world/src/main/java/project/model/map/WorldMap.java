@@ -37,6 +37,13 @@ public interface WorldMap extends NextPositionCalculator {
     void growPlants(Plant... plants) throws IncorrectPositionException;
 
     /**
+     * Remove plant from given position
+     *
+     * @param position position of a plant to remove
+     */
+    void removePlantFromMap(Vector2d position);
+
+    /**
      * Remove animal from the map.
      *
      * @param animal The animal to remove from the map.
@@ -51,6 +58,14 @@ public interface WorldMap extends NextPositionCalculator {
      */
 
     void place(Animal animal) throws IncorrectPositionException;
+
+    /**
+     * Make given animal consume given plant
+     *
+     * @param animal animal to feed
+     * @param plant plant to consume
+     */
+    void feedAnimal(Animal animal, Plant plant);
 
     /**
      * Return plants located on the map
