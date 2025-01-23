@@ -4,6 +4,7 @@ import project.model.map.Sphere;
 import project.model.map.WorldMap;
 import project.model.simulation.Simulation;
 import project.model.simulation.SimulationDayStep;
+import project.model.simulation.SimulationEachChangeStep;
 import project.model.worldelements.Animal;
 
 public class SimulationBuilder {
@@ -25,6 +26,7 @@ public class SimulationBuilder {
     private AnimalConstructor<? extends Animal> animalConstructor;
     private AnimalMediatorConstructor<? extends AnimalMediator> animalMediatorConstructor;
     private PlantGrowerConstructor<? extends PlantGrower> plantGrowerConstructor;
+    private SimulationConstructor<? extends Simulation> simulationConstructor;
 
     private WorldMap worldMap;
     private AnimalFactory animalFactory;
@@ -106,13 +108,19 @@ public class SimulationBuilder {
         return this;
     }
 
+    public SimulationBuilder setSimulationConstructor(SimulationConstructor<? extends Simulation> simulationConstructor) {
+        this.simulationConstructor = simulationConstructor;
+        return this;
+    }
+
     private void validateParameters() {
         if (this.mapWidth == null || this.mapHeight == null  ||
                 this.initialPlantCount == null || this.energyPerPlant == null || this.dailyPlantGrowth == null ||
                 this.initialAnimalCount == null || this.initialAnimalEnergy == null ||
                 this.energyToReproduce == null || this.childInitialEnergy == null || this.minMutations == null ||
                 this.maxMutations == null || this.genomeLength == null || this.animalConstructor == null ||
-                this.animalMediatorConstructor == null || this.plantGrowerConstructor == null) {
+                this.animalMediatorConstructor == null || this.plantGrowerConstructor == null ||
+                this.simulationConstructor == null) {
             throw new IllegalStateException(SimulationBuilder.BUILDER_NOT_READY_MESSAGE);
         }
 
@@ -158,9 +166,7 @@ public class SimulationBuilder {
         this.createAndPlaceAnimalsOnMap();
         this.growPlants();
 
-        Simulation simulation = new SimulationDayStep(this);
-
-        return simulation;
+        return this.simulationConstructor.construct(this);
     }
 
     public int getDailyPlantGrowth() { return this.dailyPlantGrowth; }
