@@ -12,6 +12,5 @@ public class SimulationDayStep extends AbstractSimulation{
         super.finishDay();
 
         this.notifyListeners(SimulationEvent.MAP_CHANGED);
-        this.notifyListeners(SimulationEvent.NEXT_DAY);
     }
 }

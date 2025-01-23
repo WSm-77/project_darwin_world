@@ -116,6 +116,8 @@ public abstract class AbstractSimulation implements Simulation {
         this.consumeDailyEnergyAmount();
         this.updateDaysAlive();
         this.day++;
+
+        this.notifyListeners(SimulationEvent.NEXT_DAY);
     }
 
     @Override
