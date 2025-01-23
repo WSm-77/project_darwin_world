@@ -26,6 +26,11 @@ public class ChartPaneController extends AbstractController {
     private static final String EMPTY_SPOTS_TEMPLATE = "Number of empty spots: %d";
     private static final String MOST_POPULAR_GENOME = "Most popular genome: %s";
     private static final String NO_INFORMATION_STRING = "-";
+    private static final String ANIMALS_COUNT_SERIES_NAME = "Animals count";
+    private static final String PLANTS_COUNT_SERIES_NAME = "Plants count";
+    private static final String AVERAGE_ANIMAL_ENERGY_SERIES_NAME = "Average animal energy";
+    private static final String AVERAGE_ANIMAL_LIFE_TIME_SERIES_NAME = "Average animal life time";
+    private static final String AVERAGE_ANIMAL_CHILDREN_COUNT_SERIES_NAME = "Average animal children count";
 
     private XYChart.Series<String, Double> animalsCountSeries = new XYChart.Series<>();
     private XYChart.Series<String, Double> plantsCountSeries = new XYChart.Series<>();
@@ -41,16 +46,23 @@ public class ChartPaneController extends AbstractController {
         xAxis.setLabel("Simulation statistics");
         yAxis.setLabel("Values");
 
-        XYChart.Data<String, Double> animalsCountChartData = new XYChart.Data<>("Animals count", 0.0);
-        XYChart.Data<String, Double> plantsCountChartData = new XYChart.Data<>("Plants count", 0.0);
-        XYChart.Data<String, Double> averageAnimalsEnergyChartData = new XYChart.Data<>("Average animal energy", 0.0);
-        XYChart.Data<String, Double> averageAnimalLifeTimeChartData = new XYChart.Data<>("Average animal life time", 0.0);
-        XYChart.Data<String, Double> averageAnimalChildrenCountChartData = new XYChart.Data<>("Average animal children count", 0.0);
+        XYChart.Data<String, Double> animalsCountChartData = new XYChart.Data<>(ANIMALS_COUNT_SERIES_NAME, 0.0);
+        XYChart.Data<String, Double> plantsCountChartData = new XYChart.Data<>(PLANTS_COUNT_SERIES_NAME, 0.0);
+        XYChart.Data<String, Double> averageAnimalsEnergyChartData = new XYChart.Data<>(AVERAGE_ANIMAL_ENERGY_SERIES_NAME, 0.0);
+        XYChart.Data<String, Double> averageAnimalLifeTimeChartData = new XYChart.Data<>(AVERAGE_ANIMAL_LIFE_TIME_SERIES_NAME, 0.0);
+        XYChart.Data<String, Double> averageAnimalChildrenCountChartData = new XYChart.Data<>(AVERAGE_ANIMAL_CHILDREN_COUNT_SERIES_NAME, 0.0);
+
         this.animalsCountSeries.getData().add(animalsCountChartData);
         this.plantsCountSeries.getData().add(plantsCountChartData);
         this.averageAnimalsEnergy.getData().add(averageAnimalsEnergyChartData);
         this.averageAnimalsLifeTime.getData().add(averageAnimalLifeTimeChartData);
         this.averageAnimalsChilderenCount.getData().add(averageAnimalChildrenCountChartData);
+
+        this.animalsCountSeries.setName(ANIMALS_COUNT_SERIES_NAME);
+        this.plantsCountSeries.setName(PLANTS_COUNT_SERIES_NAME);
+        this.averageAnimalsEnergy.setName(AVERAGE_ANIMAL_ENERGY_SERIES_NAME);
+        this.averageAnimalsLifeTime.setName(AVERAGE_ANIMAL_LIFE_TIME_SERIES_NAME);
+        this.averageAnimalsChilderenCount.setName(AVERAGE_ANIMAL_CHILDREN_COUNT_SERIES_NAME);
 
         this.simulationStatisticChart.getData().addAll(
                 animalsCountSeries,
