@@ -3,6 +3,7 @@ package project.model.util;
 import project.model.map.Sphere;
 import project.model.map.WorldMap;
 import project.model.simulation.Simulation;
+import project.model.simulation.SimulationDayStep;
 import project.model.worldelements.Animal;
 
 public class SimulationBuilder {
@@ -157,8 +158,7 @@ public class SimulationBuilder {
         this.createAndPlaceAnimalsOnMap();
         this.growPlants();
 
-        Simulation simulation = new Simulation(this);
-        sphere.subscribe(simulation);
+        Simulation simulation = new SimulationDayStep(this);
 
         return simulation;
     }

@@ -12,7 +12,7 @@ import project.model.worldelements.WorldElement;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class AbstractSimulation implements Runnable {
+public abstract class AbstractSimulation implements Simulation {
     protected final WorldMap worldMap;
     protected final int dailyPlantGrowth;
     protected final AnimalFactory animalFactory;
@@ -27,8 +27,6 @@ public abstract class AbstractSimulation implements Runnable {
     protected int simulationRefreshTime = 500;
     protected final List<Animal> deadAnimals = new ArrayList<>();
 
-    public static final String INTERRUPTION_MESSAGE_TEMPLATE = "Simulation of map %s interrupted!!!";
-    public static final String INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE = "Simulation of map %s interrupted during sleep!!!";
     public static final int ENERGY_DAILY_LOSS = 1;
     public static final int PARENTS_NEEDED_TO_BREED_COUNT = 2;
 
@@ -39,14 +37,6 @@ public abstract class AbstractSimulation implements Runnable {
         this.energyToReproduce = simulationBuilder.getEnergyToReproduce();
         this.animalMediator = simulationBuilder.getAnimalMediator();
         this.plantGrower = simulationBuilder.getPlantGrower();
-    }
-
-    protected String createInterruptionMessage() {
-        return String.format(Simulation.INTERRUPTION_MESSAGE_TEMPLATE, this.worldMap.getId());
-    }
-
-    protected String createInterruptionDuringSleepMessage() {
-        return String.format(Simulation.INTERRUPTION_DURING_SLEEP_MESSAGE_TEMPLATE, this.worldMap.getId());
     }
 
     protected void removeDeadAnimals() {
@@ -114,7 +104,7 @@ public abstract class AbstractSimulation implements Runnable {
 
     protected void consumeDailyEnergyAmount() {
         this.worldMap.getAnimals()
-                .forEach(animal -> animal.getStatistics().updateEnergy(-Simulation.ENERGY_DAILY_LOSS));
+                .forEach(animal -> animal.getStatistics().updateEnergy(-ENERGY_DAILY_LOSS));
     }
 
     protected void updateDaysAlive() {
@@ -126,10 +116,6 @@ public abstract class AbstractSimulation implements Runnable {
         this.consumeDailyEnergyAmount();
         this.updateDaysAlive();
         this.day++;
-
-        // TODO: move to subclass
-//        this.notifyListeners(SimulationEvent.MAP_CHANGED);
-//        this.notifyListeners(SimulationEvent.NEXT_DAY);
     }
 
     @Override
@@ -171,8 +157,7 @@ public abstract class AbstractSimulation implements Runnable {
             listener.simulationChanged(simulationEvent);
         }
 
-        // TODO: move to subclass
-//        this.simulationStep();
+        this.simulationStep();
     }
 
     // for subclasses use
