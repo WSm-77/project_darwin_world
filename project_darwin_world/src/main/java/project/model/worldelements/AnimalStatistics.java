@@ -29,6 +29,7 @@ public class AnimalStatistics {
     private int daysAlive = 0;
     private Integer deathDay = null;
     final private Set<Animal> children = new HashSet<>();
+    private Set<AnimalStatisticsListener> listeners = new HashSet<>();
 
     public AnimalStatistics(Vector2d position, Genome genome, int startEnergy, MapDirection startOrientation) {
         this.position = position;
@@ -43,6 +44,7 @@ public class AnimalStatistics {
 
     public void setPosition(Vector2d position) {
         this.position = position;
+        this.notifyListeners();
     }
 
     public MapDirection getOrientation() {
@@ -51,6 +53,7 @@ public class AnimalStatistics {
 
     public void setOrientation(MapDirection orientation) {
         this.orientation = orientation;
+        this.notifyListeners();
     }
 
     public Genome getGenome() {
@@ -59,6 +62,7 @@ public class AnimalStatistics {
 
     public void setGenome(Genome genome) {
         this.genome = genome;
+        this.notifyListeners();
     }
 
     public List<Integer> getGenesList() {
@@ -118,6 +122,7 @@ public class AnimalStatistics {
 
     public void setDeathDay(Integer deathDay) {
         this.deathDay = deathDay;
+        this.notifyListeners();
     }
 
     @Override
@@ -135,5 +140,19 @@ public class AnimalStatistics {
                     .map(Object::toString)
                     .orElse(AnimalStatistics.ALIVE_ANIMAL_STATUS_STRING)
         );
+    }
+
+    public void subscribe(AnimalStatisticsListener animalStatisticsListener) {
+        this.listeners.add(animalStatisticsListener);
+    }
+
+    public void unsubscribe(AnimalStatisticsListener animalStatisticsListener) {
+        this.listeners.remove(animalStatisticsListener);
+    }
+
+    public void notifyListeners() {
+        for (var listener : this.listeners) {
+            listener.statisticsChanged();
+        }
     }
 }
