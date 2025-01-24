@@ -15,7 +15,7 @@
     <children>
         <Accordion>
             <panes>
-                <TitledPane animated="false" text="simulation controls">
+                <TitledPane animated="false" text="Simulation controls">
                     <content>
                         <GridPane alignment="CENTER" prefHeight="110.0" prefWidth="284.0">
                             <columnConstraints>
@@ -40,7 +40,43 @@
                         </GridPane>
                     </content>
                 </TitledPane>
-                <TitledPane animated="false" text="untitled 2" />
+                <TitledPane animated="false" text="Animals">
+               <content>
+                  <GridPane alignment="CENTER" prefHeight="282.0" prefWidth="325.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="147.0" minWidth="95.0" prefWidth="95.0" />
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="210.0" minWidth="10.0" prefWidth="210.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="76.0" minHeight="32.0" percentHeight="12.5" prefHeight="58.0" vgrow="ALWAYS" />
+                        <RowConstraints maxHeight="66.0" minHeight="10.0" percentHeight="12.0" prefHeight="51.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints maxHeight="117.0" minHeight="10.0" percentHeight="12.0" prefHeight="60.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints maxHeight="117.0" minHeight="10.0" percentHeight="12.0" prefHeight="83.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints maxHeight="117.0" minHeight="10.0" prefHeight="83.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints maxHeight="117.0" minHeight="10.0" prefHeight="83.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints maxHeight="117.0" minHeight="10.0" percentHeight="12.5" prefHeight="62.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints maxHeight="117.0" minHeight="10.0" percentHeight="12.5" prefHeight="14.0" valignment="CENTER" vgrow="ALWAYS" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Track animal" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                        <Button fx:id="trackAniamlButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="71.0" text="Choose" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                        <Label text="Genome" GridPane.rowIndex="1" />
+                        <Label fx:id="trackedGenome" text="-" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                        <Label text="Energy" GridPane.rowIndex="2" />
+                        <Label fx:id="trackedEnergy" text="-" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                        <Label text="Eaten plants" GridPane.rowIndex="3" />
+                        <Label fx:id="trackedEatenPlants" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                        <Label text="Children count" GridPane.rowIndex="4" />
+                        <Label fx:id="trackedChildrenCount" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+                        <Label text="Descendants count" wrapText="true" GridPane.rowIndex="5" />
+                        <Label fx:id="trackedDescendantsCount" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+                        <Label text="Days alive" wrapText="true" GridPane.rowIndex="6" />
+                        <Label fx:id="trackedDaysAlive" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER" />
+                        <Label text="Death day" wrapText="true" GridPane.rowIndex="7" />
+                        <Label fx:id="trackedDeathDay" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" GridPane.valignment="CENTER" />
+                     </children>
+                  </GridPane>
+               </content></TitledPane>
             </panes>
         </Accordion>
     </children>
