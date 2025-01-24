@@ -38,6 +38,8 @@ public class SimulationWindowCreator {
         MapPaneController mapPaneController = simulationWindowController.getMapPaneController();
         ChartPaneController chartPaneController = simulationWindowController.getChartPaneController();
 
+        MapDrawer mapDrawer = new MapDrawer(mapPaneController.getMapGridPane(), simulation.getWorldMap());
+
         simulation.subscribe(settingsPaneController);
         simulation.subscribe(mapPaneController);
         simulation.subscribe(chartPaneController);
@@ -45,6 +47,9 @@ public class SimulationWindowCreator {
         settingsPaneController.setSimulation(simulation);
         mapPaneController.setSimulation(simulation);
         chartPaneController.setSimulation(simulation);
+
+        mapPaneController.setMapDrawer(mapDrawer);
+        mapDrawer.subscribe(settingsPaneController);
 
         simulation.start();
     }

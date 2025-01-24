@@ -7,9 +7,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import project.model.movement.Vector2d;
 import project.model.simulation.SimulationEvent;
+import project.model.util.AbstractSubscribable;
 
-public class SettingsPaneController extends AbstractController {
+public class SettingsPaneController extends AbstractController implements MapDrawerListener {
     @FXML
     private Button trackAniamlButton;
     @FXML
@@ -55,8 +57,18 @@ public class SettingsPaneController extends AbstractController {
         this.isPaused.set(!this.isPaused.get());
     }
 
+    @FXML
+    public void onTrackAnimalButtonClick(ActionEvent event) {
+
+    }
+
     @Override
     public void simulationChanged(SimulationEvent simulationEvent) {
 
+    }
+
+    @Override
+    public void mapFieldClicked(Vector2d mapPosition) {
+        System.out.println("Received MapDrawer change status " + mapPosition);
     }
 }

@@ -59,7 +59,7 @@
                      </rowConstraints>
                      <children>
                         <Label text="Track animal" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
-                        <Button fx:id="trackAniamlButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="71.0" text="Choose" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                        <Button fx:id="trackAniamlButton" mnemonicParsing="false" onAction="#onTrackAnimalButtonClick" prefHeight="26.0" prefWidth="71.0" text="Choose" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                         <Label text="Genome" GridPane.rowIndex="1" />
                         <Label fx:id="trackedGenome" text="-" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                         <Label text="Energy" GridPane.rowIndex="2" />
