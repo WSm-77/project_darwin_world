@@ -21,12 +21,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(23))
-    }
-}
-
 test {
     useJUnitPlatform()
 }
