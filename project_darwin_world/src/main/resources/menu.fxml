@@ -116,7 +116,8 @@
             <HBox alignment="CENTER" prefHeight="62.0" prefWidth="912.0" spacing="50.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#onStartButtonClick" text="Start Simulation" />
-                  <Button mnemonicParsing="false" text="Load Configuration" />
+                  <Button mnemonicParsing="false" onAction="#onSaveConfigurationClick" text="Save Configuration"/>
+                  <Button mnemonicParsing="false" onAction="#onLoadConfigurationClick" text="Load Configuration"/>
                </children></HBox>
          </children>
       </VBox>
