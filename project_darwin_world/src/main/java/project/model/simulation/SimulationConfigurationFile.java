@@ -1,5 +1,8 @@
 package project.model.simulation;
 
+import project.model.util.AnimalVariant;
+import project.model.util.PlantGrowerVariant;
+
 public class SimulationConfigurationFile {
     public double initialAnimalCount;
     public double initialAnimalEnergy;
@@ -14,4 +17,6 @@ public class SimulationConfigurationFile {
     public double mapWidth;
     public double mapHeight;
     public boolean simulationRefreshType;
+    public PlantGrowerVariant mapVariant;
+    public AnimalVariant animalVariant;
 }

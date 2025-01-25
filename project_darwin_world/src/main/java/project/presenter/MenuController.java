@@ -120,6 +120,8 @@ public class MenuController {
                 config.mapWidth = mapWidthSlider.getValue();
                 config.mapHeight = mapHeightSlider.getValue();
                 config.simulationRefreshType = simulationRefreshTypeCheckbox.isSelected();
+                config.mapVariant = mapVariantChoiceBox.getValue();
+                config.animalVariant = animalVariantChoiceBox.getValue();
 
                 gson.toJson(config, writer);
                 System.out.println(CONFIGURATION_SAVED_SUCCESSFULLY_TO + file.getAbsolutePath());
@@ -154,6 +156,8 @@ public class MenuController {
                 mapWidthSlider.setValue(config.mapWidth);
                 mapHeightSlider.setValue(config.mapHeight);
                 simulationRefreshTypeCheckbox.setSelected(config.simulationRefreshType);
+                mapVariantChoiceBox.setValue(config.mapVariant);
+                animalVariantChoiceBox.setValue(config.animalVariant);
 
                 System.out.println(CONFIGURATION_LOADED_SUCCESSFULLY_FROM + file.getAbsolutePath());
             } catch (IOException e) {
