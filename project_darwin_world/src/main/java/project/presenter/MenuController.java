@@ -135,7 +135,7 @@ public class MenuController {
                 gson.toJson(config, writer);
                 createAlertWindowInfo(CONFIGURATION_SAVED_SUCCESSFULLY_TO + file.getAbsolutePath());
             } catch (IOException e) {
-                createAlertWindowInfo(FAILED_TO_SAVE_CONFIGURATION + e.getMessage());
+                createAlertWindow(FAILED_TO_SAVE_CONFIGURATION + e.getMessage());
             }
         }
     }
@@ -170,7 +170,7 @@ public class MenuController {
 
                 createAlertWindowInfo(CONFIGURATION_LOADED_SUCCESSFULLY_FROM + file.getAbsolutePath());
             } catch (IOException | JsonParseException e) {
-                createAlertWindowInfo(INVALID_CONFIGURATION_FILE_THE_FILE_DOES_NOT_MATCH_THE_REQUIRED_FORMAT);
+                createAlertWindow(INVALID_CONFIGURATION_FILE_THE_FILE_DOES_NOT_MATCH_THE_REQUIRED_FORMAT);
             }
         }
     }
