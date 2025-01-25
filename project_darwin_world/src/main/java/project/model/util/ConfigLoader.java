@@ -26,8 +26,8 @@ public class ConfigLoader {
 
     public static SimulationConfigurationFile loadConfigFromJson(FileReader reader) throws JsonParseException {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(SimulationConfigurationFile.class, (JsonDeserializer<SimulationConfigurationFile>)
-                ConfigLoader::deserializeJsonFile);
+        gsonBuilder.registerTypeAdapter(SimulationConfigurationFile.class,
+                (JsonDeserializer<SimulationConfigurationFile>)ConfigLoader::deserializeJsonFile);
 
         Gson gson = gsonBuilder.create();
 

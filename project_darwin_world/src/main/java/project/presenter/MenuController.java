@@ -115,21 +115,21 @@ public class MenuController {
             try (FileWriter writer = new FileWriter(file)) {
                 Gson gson = new Gson();
                 SimulationConfigurationFile config = new SimulationConfigurationFile(
-                initialAnimalCountSlider.getValue(),
-                initialAnimalEnergySlider.getValue(),
-                energyToReproduceSlider.getValue(),
-                initialChildEnergySlider.getValue(),
-                genomeLengthSlider.getValue(),
-                minMutationsSlider.getValue(),
-                maxMutationsSlider.getValue(),
-                initialPlantCountSlider.getValue(),
-                plantNutritiousnessSlider.getValue(),
-                dailyPlantGrowthSlider.getValue(),
-                mapWidthSlider.getValue(),
-                mapHeightSlider.getValue(),
-                simulationRefreshTypeCheckbox.isSelected(),
-                mapVariantChoiceBox.getValue(),
-                animalVariantChoiceBox.getValue()
+                    initialAnimalCountSlider.getValue(),
+                    initialAnimalEnergySlider.getValue(),
+                    energyToReproduceSlider.getValue(),
+                    initialChildEnergySlider.getValue(),
+                    genomeLengthSlider.getValue(),
+                    minMutationsSlider.getValue(),
+                    maxMutationsSlider.getValue(),
+                    initialPlantCountSlider.getValue(),
+                    plantNutritiousnessSlider.getValue(),
+                    dailyPlantGrowthSlider.getValue(),
+                    mapWidthSlider.getValue(),
+                    mapHeightSlider.getValue(),
+                    simulationRefreshTypeCheckbox.isSelected(),
+                    mapVariantChoiceBox.getValue(),
+                    animalVariantChoiceBox.getValue()
                 );
 
                 gson.toJson(config, writer);
