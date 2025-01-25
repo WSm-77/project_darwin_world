@@ -3,20 +3,20 @@ package project.model.simulation;
 import project.model.util.AnimalVariant;
 import project.model.util.PlantGrowerVariant;
 
-public class SimulationConfigurationFile {
-    public double initialAnimalCount;
-    public double initialAnimalEnergy;
-    public double energyToReproduce;
-    public double initialChildEnergy;
-    public double genomeLength;
-    public double minMutations;
-    public double maxMutations;
-    public double initialPlantCount;
-    public double plantNutritiousness;
-    public double dailyPlantGrowth;
-    public double mapWidth;
-    public double mapHeight;
-    public boolean simulationRefreshType;
-    public PlantGrowerVariant mapVariant;
-    public AnimalVariant animalVariant;
-}
+public record SimulationConfigurationFile (
+    double initialAnimalCount,
+    double initialAnimalEnergy,
+    double energyToReproduce,
+    double initialChildEnergy,
+    double genomeLength,
+    double minMutations,
+    double maxMutations,
+    double initialPlantCount,
+    double plantNutritiousness,
+    double dailyPlantGrowth,
+    double mapWidth,
+    double mapHeight,
+    boolean simulationRefreshType,
+    PlantGrowerVariant mapVariant,
+    AnimalVariant animalVariant
+){}
