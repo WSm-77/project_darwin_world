@@ -169,7 +169,7 @@ public class MenuController {
                                 (JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) -> {
                                     JsonObject obj = json.getAsJsonObject();
                                     try {
-                                        return new SimulationConfigurationFile(
+                                        SimulationConfigurationFile config = new SimulationConfigurationFile(
                                                 obj.get(INITIAL_ANIMAL_COUNT).getAsDouble(),
                                                 obj.get(INITIAL_ANIMAL_ENERGY).getAsDouble(),
                                                 obj.get(ENERGY_TO_REPRODUCE).getAsDouble(),
@@ -186,6 +186,23 @@ public class MenuController {
                                                 PlantGrowerVariant.valueOf(obj.get(MAP_VARIANT).getAsString()),
                                                 AnimalVariant.valueOf(obj.get(ANIMAL_VARIANT).getAsString())
                                         );
+
+                                        if (!isValidRange(config.mapWidth(), 5, 35) ||
+                                                !isValidRange(config.mapHeight(), 5, 35) ||
+                                                !isValidRange(config.initialAnimalCount(), 0, 50) ||
+                                                !isValidRange(config.initialAnimalEnergy(), 0, 50) ||
+                                                !isValidRange(config.energyToReproduce(), 0, 50) ||
+                                                !isValidRange(config.initialChildEnergy(), 0, 50) ||
+                                                !isValidRange(config.genomeLength(), 0, 50) ||
+                                                !isValidRange(config.minMutations(), 0, 50) ||
+                                                !isValidRange(config.maxMutations(), 0, 50) ||
+                                                !isValidRange(config.initialPlantCount(), 0, 50) ||
+                                                !isValidRange(config.plantNutritiousness(), 0, 50) ||
+                                                !isValidRange(config.dailyPlantGrowth(), 0, 50)) {
+                                            throw new JsonParseException(INVALID_CONFIGURATION_FILE_FORMAT);
+                                        }
+
+                                        return config;
                                     } catch (Exception e) {
                                         throw new JsonParseException(INVALID_CONFIGURATION_FILE_FORMAT);
                                     }
@@ -214,6 +231,10 @@ public class MenuController {
                 createAlertWindowInfo(INVALID_CONFIGURATION_FILE_THE_FILE_DOES_NOT_MATCH_THE_REQUIRED_FORMAT);
             }
         }
+    }
+
+    private boolean isValidRange(double value, double min, double max) {
+        return value >= min && value <= max;
     }
 
     private void createAlertWindow(String message) {
