@@ -172,8 +172,6 @@ public abstract class AbstractSimulation implements Simulation {
         for (var listener : this.simulationListeners) {
             listener.simulationChanged(simulationEvent);
         }
-
-        this.simulationStep();
     }
 
     // for subclasses use
