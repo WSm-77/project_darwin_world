@@ -151,6 +151,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
             this.trackedAnimalStatistics = Optional.of(newTrackedAnimalStatistics);
             newTrackedAnimalStatistics.subscribe(this);
 
+            this.updateStatistics();
             this.isTrackingAnimal.set(true);
         });
     }
