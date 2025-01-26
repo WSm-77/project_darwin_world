@@ -113,6 +113,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
         this.trackedEnergy.setText(NO_INFORMATION_STRING);
         this.trackedEatenPlants.setText(NO_INFORMATION_STRING);
         this.trackedChildrenCount.setText(NO_INFORMATION_STRING);
+        this.trackedDescendantsCount.setText(NO_INFORMATION_STRING);
         this.trackedDaysAlive.setText(NO_INFORMATION_STRING);
         this.trackedDeathDay.setText(NO_INFORMATION_STRING);
     }
@@ -177,6 +178,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
         this.trackedEnergy.setText(Integer.toString(statistics.getEnergy()));
         this.trackedEatenPlants.setText(Integer.toString(statistics.getEatenPlants()));
         this.trackedChildrenCount.setText(Integer.toString(statistics.getChildrenCount()));
+        this.trackedDescendantsCount.setText(Integer.toString(statistics.getDescendantsCount()));
         this.trackedDaysAlive.setText(Integer.toString(statistics.getDaysAlive()));
         statistics.getDeathDay().ifPresent(
                 deathDay -> this.trackedDeathDay.setText(deathDay.toString())

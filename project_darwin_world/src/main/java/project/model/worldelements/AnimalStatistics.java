@@ -120,6 +120,26 @@ public class AnimalStatistics {
         return Optional.ofNullable(this.deathDay);
     }
 
+    public int getDescendantsCount() {
+        return this.getDescendantsCount(new HashSet<>());
+    }
+
+    public int getDescendantsCount(Set<Animal> checked) {
+        int descendantsCount = 0;
+
+        for (Animal child : this.children) {
+            if (checked.contains(child)) {
+                continue;
+            }
+
+            checked.add(child);
+            descendantsCount++;
+            descendantsCount += child.getStatistics().getDescendantsCount(checked);
+        }
+
+        return descendantsCount;
+    }
+
     public void setDeathDay(Integer deathDay) {
         this.deathDay = deathDay;
         this.notifyListeners();
