@@ -117,7 +117,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
 
         potentiallyTrackedAnimal.ifPresent(animal -> {
             // unsubscribe currently tracked statistics
-//            this.trackedAnimalStatistics.ifPresent(statistics -> statistics.unsubscribe(this));
+            this.trackedAnimalStatistics.ifPresent(statistics -> statistics.unsubscribe(this));
 
             // subscribe to chosen animal statistics
             AnimalStatistics newTrackedAnimalStatistics = animal.getStatistics();
