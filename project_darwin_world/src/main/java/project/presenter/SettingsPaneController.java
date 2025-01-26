@@ -22,6 +22,8 @@ import java.util.Vector;
 
 public class SettingsPaneController extends AbstractController implements MapDrawerListener, AnimalStatisticsListener {
     @FXML
+    private Button untrackAniamlButton;
+    @FXML
     private Label trackedPosition;
     @FXML
     private Label trackedDescendantsCount;
@@ -48,8 +50,10 @@ public class SettingsPaneController extends AbstractController implements MapDra
     private static final String RESUME_BUTTON_TEXT = "Resume";
     private static final String NO_TRACKED_STATISTICS_ERROR =
             "SettingsPaneController.statisticsChanged() but no statistics are tracked!!!";
+    private static final String NO_INFORMATION_STRING = "-";
     private BooleanProperty isPaused;
     private boolean choosingAnimalToTrack = false;
+    private BooleanProperty isTrackingAnimal;
     private Optional<AnimalStatistics> trackedAnimalStatistics = Optional.empty();
 
     @FXML
@@ -60,7 +64,9 @@ public class SettingsPaneController extends AbstractController implements MapDra
         });
 
         this.isPaused = new SimpleBooleanProperty(false);
+        this.isTrackingAnimal = new SimpleBooleanProperty(false);
         this.trackAniamlButton.disableProperty().bind(this.isPaused.not());
+        this.untrackAniamlButton.disableProperty().bind(this.isTrackingAnimal.not());
     }
 
     @FXML
@@ -90,6 +96,27 @@ public class SettingsPaneController extends AbstractController implements MapDra
         this.choosingAnimalToTrack = true;
     }
 
+    @FXML
+    public void onUntrackAnimalButtonClick(ActionEvent event) {
+        this.isTrackingAnimal.set(false);
+        this.unsubscribeStatistics();
+        this.clearStatistics();
+    }
+
+    private void unsubscribeStatistics() {
+        this.trackedAnimalStatistics.ifPresent(statistics -> statistics.unsubscribe(this));
+    }
+
+    private void clearStatistics() {
+        this.trackedPosition.setText(NO_INFORMATION_STRING);
+        this.trackedGenome.setText(NO_INFORMATION_STRING);
+        this.trackedEnergy.setText(NO_INFORMATION_STRING);
+        this.trackedEatenPlants.setText(NO_INFORMATION_STRING);
+        this.trackedChildrenCount.setText(NO_INFORMATION_STRING);
+        this.trackedDaysAlive.setText(NO_INFORMATION_STRING);
+        this.trackedDeathDay.setText(NO_INFORMATION_STRING);
+    }
+
     @Override
     public void simulationChanged(SimulationEvent simulationEvent) {
 
@@ -117,12 +144,14 @@ public class SettingsPaneController extends AbstractController implements MapDra
 
         potentiallyTrackedAnimal.ifPresent(animal -> {
             // unsubscribe currently tracked statistics
-            this.trackedAnimalStatistics.ifPresent(statistics -> statistics.unsubscribe(this));
+            this.unsubscribeStatistics();
 
             // subscribe to chosen animal statistics
             AnimalStatistics newTrackedAnimalStatistics = animal.getStatistics();
             this.trackedAnimalStatistics = Optional.of(newTrackedAnimalStatistics);
             newTrackedAnimalStatistics.subscribe(this);
+
+            this.isTrackingAnimal.set(true);
         });
     }
 

@@ -57,8 +57,13 @@
                   <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
                </rowConstraints>
                <children>
-                  <Label text="Track animal" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
-                  <Button fx:id="trackAniamlButton" mnemonicParsing="false" onAction="#onTrackAnimalButtonClick" prefHeight="26.0" prefWidth="71.0" text="Choose" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                  <Label text="Tracking" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                  <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <children>
+                        <Button fx:id="trackAniamlButton" mnemonicParsing="false" onAction="#onTrackAnimalButtonClick" prefHeight="26.0" prefWidth="71.0" text="Track" />
+                        <Button fx:id="untrackAniamlButton" mnemonicParsing="false" onAction="#onUntrackAnimalButtonClick" prefHeight="26.0" prefWidth="103.0" text="Untrack" />
+                     </children>
+                  </HBox>
                   <Label text="Genome" GridPane.rowIndex="2" />
                   <Label fx:id="trackedGenome" text="-" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                   <Label text="Energy" GridPane.rowIndex="3" />
