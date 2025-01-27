@@ -8,10 +8,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.stage.FileChooser;
-import project.model.simulation.SimulationConfigurationFile;
-import project.model.simulation.Simulation;
-import project.model.simulation.SimulationDayStep;
-import project.model.simulation.SimulationEachChangeStep;
+import project.model.simulation.*;
 import project.model.util.*;
 
 import java.io.File;
@@ -33,9 +30,16 @@ public class MenuController {
     public static final String INVALID_CONFIGURATION_FILE_THE_FILE_DOES_NOT_MATCH_THE_REQUIRED_FORMAT = "Invalid configuration file: The file does not match the required format.";
     public static final String CONFIGURATION_LOADED_SUCCESSFULLY_FROM = "Configuration loaded successfully from:\n";
     public static final String CONFIGURATION_SAVED_SUCCESSFULLY_TO = "Configuration saved successfully to:\n";
+    public static final String CSV_FILES = "CSV Files";
+    public static final String CSV = "*.csv";
+    public static final String SAVE_SIMULATION_STATISTICS = "Save Simulation Statistics";
+    public static final String SIMULATION_STATS_CSV = "simulation_stats.csv";
+    public static final String FILE_NOT_SELECTED_STATISTICS_WILL_NOT_BE_SAVED = "File not selected. Statistics will not be saved.";
 
     @FXML
     private CheckBox simulationRefreshTypeCheckbox;
+    @FXML
+    private CheckBox saveStatisticsCheckbox;
     @FXML
     private ChoiceBox<PlantGrowerVariant> mapVariantChoiceBox;
     @FXML
@@ -72,6 +76,8 @@ public class MenuController {
 
         this.mapVariantChoiceBox.setValue(PlantGrowerVariant.DEFAULT);
         this.animalVariantChoiceBox.setValue(AnimalVariant.DEFAULT);
+
+        saveStatisticsCheckbox.setSelected(false);
     }
 
     public void onStartButtonClick(ActionEvent actionEvent) {
@@ -97,6 +103,24 @@ public class MenuController {
                     .setPlantGrowerConstructor(this.mapVariantChoiceBox.getValue().toPlantGrowerConstructor())
                     .setSimulationConstructor(simulationType)
                     .build();
+
+            if (saveStatisticsCheckbox.isSelected()) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle(SAVE_SIMULATION_STATISTICS);
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(CSV_FILES, CSV));
+
+                fileChooser.setInitialFileName(SIMULATION_STATS_CSV);
+
+                File file = fileChooser.showSaveDialog(null);
+
+                if (file != null) {
+                    SimulationStatistics statistics = new SimulationStatistics(sphereSimulation);
+                    CSVStatisticsSaver csvSaver = new CSVStatisticsSaver(statistics, file.getAbsolutePath());
+                    sphereSimulation.subscribe(csvSaver);
+                } else {
+                    createAlertWindow(FILE_NOT_SELECTED_STATISTICS_WILL_NOT_BE_SAVED);
+                }
+            }
 
             SimulationWindowCreator.createNewSimulationWindow(sphereSimulation);
         } catch (Exception e) {
