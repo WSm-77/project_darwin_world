@@ -9,8 +9,9 @@ public class SimulationDayStep extends AbstractSimulation{
 
     @Override
     protected void finishDay() {
+        this.notifyListeners(SimulationEvent.MAP_CHANGED);
         super.finishDay();
 
-        this.notifyListeners(SimulationEvent.MAP_CHANGED);
+        this.simulationStep();
     }
 }

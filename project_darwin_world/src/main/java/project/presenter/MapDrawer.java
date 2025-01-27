@@ -1,6 +1,7 @@
 package project.presenter;
 
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
@@ -16,9 +17,7 @@ import project.model.util.AnimalMediatorStandardVariant;
 import project.model.worldelements.Animal;
 import project.model.worldelements.Plant;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class MapDrawer {
     private final static String AXIS_DESCRIPTION_STRING = "y/x";
@@ -27,6 +26,7 @@ public class MapDrawer {
     private final GridPane mapGridPane;
     private final WorldMap worldMap;
     private final AnimalMediator animalMediator = new AnimalMediatorStandardVariant();
+    private Set<MapDrawerListener> listeners = new HashSet<>();
 
     public MapDrawer(GridPane mapGridPane, WorldMap worldMap) {
         this.mapGridPane = mapGridPane;
@@ -138,6 +138,8 @@ public class MapDrawer {
         field.prefHeightProperty().bind(rowConstraints.prefHeightProperty());
         field.prefWidthProperty().bind(columnConstraints.prefWidthProperty());
 
+        field.setOnMouseClicked(event -> this.onMapFieldClicked(mapPosition));
+
         return field;
     }
 
@@ -167,5 +169,19 @@ public class MapDrawer {
         grassRectangle.heightProperty().bind(parentPane.heightProperty());
 
         return grassRectangle;
+    }
+
+    private void onMapFieldClicked(Vector2d mapPosition) {
+        for (var listener : this.listeners) {
+            listener.mapFieldClicked(mapPosition);
+        }
+    }
+
+    public void subscribe(MapDrawerListener mapDrawerListener) {
+        this.listeners.add(mapDrawerListener);
+    }
+
+    public void unsubscribe(MapDrawerListener mapDrawerListener) {
+        this.listeners.remove(mapDrawerListener);
     }
 }

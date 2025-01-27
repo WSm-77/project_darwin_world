@@ -11,7 +11,14 @@ public class SimulationEachChangeStep extends AbstractSimulation implements MapC
     }
 
     @Override
+    protected void finishDay() {
+        super.finishDay();
+        this.simulationStep();
+    }
+
+    @Override
     public void mapChanged(WorldMap worldMap, String message) {
         this.notifyListeners(SimulationEvent.MAP_CHANGED);
+        this.simulationStep();
     }
 }

@@ -77,6 +77,7 @@ public class Sphere implements WorldMap {
 
         int nutritionalValue = plant.getNutritiousness();
         animal.getStatistics().updateEnergy(nutritionalValue);
+        animal.getStatistics().updateEatenPlants(1);
 
         Vector2d plantPosition = plant.getPosition();
         removePlantFromMap(plantPosition);
