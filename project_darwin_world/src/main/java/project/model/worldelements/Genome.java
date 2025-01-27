@@ -1,12 +1,14 @@
 package project.model.worldelements;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Genome {
     public static final int GENE_MIN_VALUE = 0;
     public static final int GENE_MAX_VALUE = 7;
     public static final String INVALID_GENE_VALUE_MESSAGE_TEMPLATE = "Invalid gene value: %d; gene value must have " +
             "value in range: %d - %d";
+    public static final String HIGHLIGHT_ACTIVE_IDX_TEMPLATE = "<%s>";
     final private List<Integer> genome;
     private int activeGeneIdx;
 
@@ -39,9 +41,17 @@ public class Genome {
 
     @Override
     public String toString() {
-        return "Genome{" +
-                "genome=" + genome +
-                ", activeGeneIdx=" + activeGeneIdx +
-                '}';
+        if (this.activeGeneIdx < 0 || this.activeGeneIdx >= this.genome.size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds: " + this.activeGeneIdx);
+        }
+
+        List<String> highlightedActiveGenomeList = this.genome.stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
+
+        highlightedActiveGenomeList.set(this.activeGeneIdx,
+                String.format(HIGHLIGHT_ACTIVE_IDX_TEMPLATE, this.genome.get(this.activeGeneIdx)));
+
+        return highlightedActiveGenomeList.toString();
     }
 }

@@ -22,6 +22,8 @@ import java.util.Vector;
 
 public class SettingsPaneController extends AbstractController implements MapDrawerListener, AnimalStatisticsListener {
     @FXML
+    private Label trackedOrientation;
+    @FXML
     private Button untrackAniamlButton;
     @FXML
     private Label trackedPosition;
@@ -109,6 +111,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
 
     private void clearStatistics() {
         this.trackedPosition.setText(NO_INFORMATION_STRING);
+        this.trackedOrientation.setText(NO_INFORMATION_STRING);
         this.trackedGenome.setText(NO_INFORMATION_STRING);
         this.trackedEnergy.setText(NO_INFORMATION_STRING);
         this.trackedEatenPlants.setText(NO_INFORMATION_STRING);
@@ -174,7 +177,8 @@ public class SettingsPaneController extends AbstractController implements MapDra
         AnimalStatistics statistics = this.trackedAnimalStatistics.get();
 
         this.trackedPosition.setText(statistics.getPosition().toString());
-        this.trackedGenome.setText(statistics.getGenesList().toString());
+        this.trackedOrientation.setText(statistics.getOrientation().toString());
+        this.trackedGenome.setText(statistics.getGenome().toString());
         this.trackedEnergy.setText(Integer.toString(statistics.getEnergy()));
         this.trackedEatenPlants.setText(Integer.toString(statistics.getEatenPlants()));
         this.trackedChildrenCount.setText(Integer.toString(statistics.getChildrenCount()));

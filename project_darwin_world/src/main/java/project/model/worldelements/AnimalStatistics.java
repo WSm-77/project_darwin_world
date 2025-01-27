@@ -98,6 +98,7 @@ public class AnimalStatistics {
      */
     public void updateEatenPlants(int plantsAmount) {
         this.eatenPlants += plantsAmount;
+        this.notifyListeners();
     }
 
     public int getChildrenCount() {
