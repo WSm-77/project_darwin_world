@@ -11,7 +11,6 @@ import javafx.scene.control.Slider;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.simulation.SimulationEvent;
-import project.model.util.AbstractSubscribable;
 import project.model.worldelements.Animal;
 import project.model.worldelements.AnimalStatistics;
 import project.model.worldelements.AnimalStatisticsListener;
