@@ -175,10 +175,15 @@ public class SettingsPaneController extends AbstractController implements MapDra
     }
 
     private void highlightTrackedAnimal() {
-        this.trackedAnimalStatistics.ifPresent(statistics -> this.mapDrawer.highlightPositions(
-                List.of(statistics.getPosition()),
-                TRACKED_ANIMAL_HIGHLIGHT_COLOR
-        ));
+        this.trackedAnimalStatistics.ifPresent(statistics ->  {
+            // highlight animal only if it is still alive
+            if (statistics.getDeathDay().isEmpty()) {
+                this.mapDrawer.highlightPositions(
+                        List.of(statistics.getPosition()),
+                        TRACKED_ANIMAL_HIGHLIGHT_COLOR
+                );
+            }
+        });
     }
 
     private void highlightPreferredPlantsPositions() {
