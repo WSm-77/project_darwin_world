@@ -27,6 +27,7 @@ public class MapDrawer {
     private final WorldMap worldMap;
     private final AnimalMediator animalMediator = new AnimalMediatorStandardVariant();
     private Set<MapDrawerListener> listeners = new HashSet<>();
+    private Map<Vector2d, Pane> mapFieldsMap = new HashMap<>();
 
     public MapDrawer(GridPane mapGridPane, WorldMap worldMap) {
         this.mapGridPane = mapGridPane;
@@ -111,8 +112,9 @@ public class MapDrawer {
                 RowConstraints rowConstraints = this.mapGridPane.getRowConstraints().get(gridRow + 1);
                 ColumnConstraints columnConstraints = this.mapGridPane.getColumnConstraints().get(gridColumn + 1);
 
-                Node field = this.getFieldNode(mapPosition, rowConstraints, columnConstraints);
+                Pane field = this.getFieldPane(mapPosition, rowConstraints, columnConstraints);
                 this.mapGridPane.add(field, gridColumn + 1, gridRow + 1);
+                this.mapFieldsMap.put(mapPosition, field);
 
                 GridPane.setHalignment(field, HPos.CENTER);
                 GridPane.setValignment(field, VPos.CENTER);
@@ -120,7 +122,7 @@ public class MapDrawer {
         }
     }
 
-    private Node getFieldNode(Vector2d mapPosition, RowConstraints rowConstraints, ColumnConstraints columnConstraints) {
+    private Pane getFieldPane(Vector2d mapPosition, RowConstraints rowConstraints, ColumnConstraints columnConstraints) {
         StackPane field = new StackPane();
 
         Optional<Plant> plant = this.worldMap.plantAt(mapPosition);
@@ -169,6 +171,20 @@ public class MapDrawer {
         grassRectangle.heightProperty().bind(parentPane.heightProperty());
 
         return grassRectangle;
+    }
+
+    public void highlightPositions(List<Vector2d> mapPositions) {
+        for (var mapPosition : mapPositions) {
+            Pane parentPane = this.mapFieldsMap.get(mapPosition);
+
+            Rectangle highlightRectangle = new Rectangle();
+            highlightRectangle.setFill(new Color(0.8, 0.8, 0.8, 0.7));
+
+            highlightRectangle.widthProperty().bind(parentPane.widthProperty());
+            highlightRectangle.heightProperty().bind(parentPane.heightProperty());
+
+            parentPane.getChildren().add(highlightRectangle);
+        }
     }
 
     private void onMapFieldClicked(Vector2d mapPosition) {
