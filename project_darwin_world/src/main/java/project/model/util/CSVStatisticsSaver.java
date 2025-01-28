@@ -1,5 +1,6 @@
 package project.model.util;
 
+import javafx.scene.control.Alert;
 import project.model.simulation.SimulationEvent;
 import project.model.simulation.SimulationListener;
 import project.model.simulation.SimulationStatistics;
@@ -27,7 +28,7 @@ public class CSVStatisticsSaver implements SimulationListener {
         try (FileWriter writer = new FileWriter(filePath, false)) {
             writer.append(DAY_ANIMALS_COUNT_PLANTS_COUNT_AVERAGE_ENERGY_AVERAGE_LIFETIME_AVERAGE_CHILDREN_MOST_POPULAR_GENOME_EMPTY_SPACES);
         } catch (IOException e) {
-            System.err.println(ERROR_INITIALIZING_CSV_FILE + e.getMessage());
+            createAlertWindow(ERROR_INITIALIZING_CSV_FILE);
         }
     }
 
@@ -43,7 +44,13 @@ public class CSVStatisticsSaver implements SimulationListener {
             List<String> stats = statistics.getCurrentStatistics();
             writer.append(String.join(DELIMITER, stats)).append(LINE_BREAK);
         } catch (IOException e) {
-            System.err.println(ERROR_WRITING_TO_CSV_FILE + e.getMessage());
+            createAlertWindow(ERROR_WRITING_TO_CSV_FILE);
         }
+    }
+
+    private void createAlertWindow(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setContentText(message);
+        alert.show();
     }
 }
