@@ -87,6 +87,12 @@ public class ChartPaneController extends AbstractController implements Simulatio
         }
     }
 
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
+        this.statistics = new SimulationStatistics(simulation);
+//        simulation.subscribe(this);
+    }
+
     private void updateMapInformation() {
         this.updateCharts();
         this.updateEmptySpots();
