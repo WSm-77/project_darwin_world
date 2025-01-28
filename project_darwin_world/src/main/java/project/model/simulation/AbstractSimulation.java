@@ -161,6 +161,11 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     @Override
+    public PlantGrower getPlantGrower() {
+        return this.plantGrower;
+    }
+
+    @Override
     public int getDay() {
         return this.day;
     }

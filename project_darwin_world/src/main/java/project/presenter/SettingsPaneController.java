@@ -12,15 +12,19 @@ import javafx.scene.paint.Color;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.simulation.SimulationEvent;
+import project.model.util.PlantGrower;
 import project.model.worldelements.Animal;
 import project.model.worldelements.AnimalStatistics;
 import project.model.worldelements.AnimalStatisticsListener;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SettingsPaneController extends AbstractController implements MapDrawerListener, AnimalStatisticsListener {
+    @FXML
+    private Button showPreferredPlantsPositions;
+    @FXML
+    private Button hidePreferredPlantsPositions;
     @FXML
     private Label trackedOrientation;
     @FXML
@@ -57,6 +61,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
     private BooleanProperty isPaused;
     private boolean choosingAnimalToTrack = false;
     private BooleanProperty isTrackingAnimal;
+    private BooleanProperty isHighlightingPreferredPlantsPositions;
     private Optional<AnimalStatistics> trackedAnimalStatistics = Optional.empty();
     private MapDrawer mapDrawer;
 
@@ -69,8 +74,10 @@ public class SettingsPaneController extends AbstractController implements MapDra
 
         this.isPaused = new SimpleBooleanProperty(false);
         this.isTrackingAnimal = new SimpleBooleanProperty(false);
+        this.isHighlightingPreferredPlantsPositions = new SimpleBooleanProperty(false);
         this.trackAniamlButton.disableProperty().bind(this.isPaused.not());
         this.untrackAniamlButton.disableProperty().bind(this.isTrackingAnimal.not());
+        this.hidePreferredPlantsPositions.disableProperty().bind(this.isHighlightingPreferredPlantsPositions.not());
     }
 
     public void setMapDrawer(MapDrawer mapDrawer) {
@@ -174,10 +181,34 @@ public class SettingsPaneController extends AbstractController implements MapDra
         ));
     }
 
+    private void highlightPreferredPlantsPositions() {
+        PlantGrower plantGrower = this.simulation.getPlantGrower();
+
+        Map<Vector2d, Double> preferencesMap = plantGrower.getPreferencesMap();
+        if (preferencesMap.isEmpty()) {
+            return;
+        }
+
+        Double max = preferencesMap.values().stream()
+                .max(Double::compareTo)
+                .orElse(0.0);
+
+        List<Vector2d> positionsToHighlight = preferencesMap.entrySet().stream()
+                .filter(entry -> Objects.equals(entry.getValue(), max))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        this.mapDrawer.highlightPositions(positionsToHighlight);
+    }
+
     @Override
     public void mapDrawn() {
         if (this.isTrackingAnimal.get()) {
             Platform.runLater(this::highlightTrackedAnimal);
+        }
+
+        if (this.isHighlightingPreferredPlantsPositions.get()) {
+            Platform.runLater(this::highlightPreferredPlantsPositions);
         }
     }
 
@@ -208,5 +239,17 @@ public class SettingsPaneController extends AbstractController implements MapDra
         statistics.getDeathDay().ifPresent(
                 deathDay -> this.trackedDeathDay.setText(deathDay.toString())
         );
+    }
+
+    public void onShowPreferredPlantsPositionsClick(ActionEvent actionEvent) {
+        this.isHighlightingPreferredPlantsPositions.set(true);
+
+        Platform.runLater(this::highlightPreferredPlantsPositions);
+    }
+
+    public void onHidePreferredPlantsPositionsClick(ActionEvent actionEvent) {
+        this.isHighlightingPreferredPlantsPositions.set(false);
+
+        Platform.runLater(this.mapDrawer::drawMap);
     }
 }
