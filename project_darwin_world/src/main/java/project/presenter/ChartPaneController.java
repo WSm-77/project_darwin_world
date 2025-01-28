@@ -50,6 +50,18 @@ public class ChartPaneController extends AbstractController implements Simulatio
         xAxis.setLabel(SIMULATION_STATISTICS);
         yAxis.setLabel(VALUES);
 
+        XYChart.Data<String, Double> animalsCountChartData = new XYChart.Data<>(ANIMALS_COUNT_SERIES_NAME, 0.0);
+        XYChart.Data<String, Double> plantsCountChartData = new XYChart.Data<>(PLANTS_COUNT_SERIES_NAME, 0.0);
+        XYChart.Data<String, Double> averageAnimalsEnergyChartData = new XYChart.Data<>(AVERAGE_ANIMAL_ENERGY_SERIES_NAME, 0.0);
+        XYChart.Data<String, Double> averageAnimalLifeTimeChartData = new XYChart.Data<>(AVERAGE_ANIMAL_LIFE_TIME_SERIES_NAME, 0.0);
+        XYChart.Data<String, Double> averageAnimalChildrenCountChartData = new XYChart.Data<>(AVERAGE_ANIMAL_CHILDREN_COUNT_SERIES_NAME, 0.0);
+
+        this.animalsCountSeries.getData().add(animalsCountChartData);
+        this.plantsCountSeries.getData().add(plantsCountChartData);
+        this.averageAnimalsEnergy.getData().add(averageAnimalsEnergyChartData);
+        this.averageAnimalsLifeTime.getData().add(averageAnimalLifeTimeChartData);
+        this.averageAnimalsChildrenCount.getData().add(averageAnimalChildrenCountChartData);
+
         animalsCountSeries.setName(ANIMALS_COUNT_SERIES_NAME);
         plantsCountSeries.setName(PLANTS_COUNT_SERIES_NAME);
         averageAnimalsEnergy.setName(AVERAGE_ANIMAL_ENERGY_SERIES_NAME);
@@ -65,20 +77,20 @@ public class ChartPaneController extends AbstractController implements Simulatio
         );
     }
 
-    public void setSimulation(Simulation simulation) {
-        this.simulation = simulation;
-        this.statistics = new SimulationStatistics(simulation);
-        simulation.subscribe(this);
-    }
-
     @Override
     public void simulationChanged(SimulationEvent event) {
         if (event == SimulationEvent.NEXT_DAY) {
-            Platform.runLater(this::updateCharts);
-            Platform.runLater(this::updateEmptySpots);
-            Platform.runLater(this::updateMostPopularGenome);
+            Platform.runLater(this::updateMapInformation);
             Platform.runLater(this::updateDay);
+        } else if (event == SimulationEvent.MAP_CHANGED) {
+            Platform.runLater(this::updateMapInformation);
         }
+    }
+
+    private void updateMapInformation() {
+        this.updateCharts();
+        this.updateEmptySpots();
+        this.updateMostPopularGenome();
     }
 
     private void updateCharts() {
@@ -110,13 +122,7 @@ public class ChartPaneController extends AbstractController implements Simulatio
     }
 
     private void updateSeries(XYChart.Series<String, Double> series, Double value) {
-        XYChart.Data<String, Double> data = series.getData().isEmpty()
-                ? new XYChart.Data<>(series.getName(), value)
-                : series.getData().get(0);
-
+        var data = series.getData().getFirst();
         data.setYValue(value);
-        if (series.getData().isEmpty()) {
-            series.getData().add(data);
-        }
     }
 }

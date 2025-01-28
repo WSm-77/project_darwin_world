@@ -152,6 +152,7 @@ public class MenuController {
                     mapWidthSlider.getValue(),
                     mapHeightSlider.getValue(),
                     simulationRefreshTypeCheckbox.isSelected(),
+                    saveStatisticsCheckbox.isSelected(),
                     mapVariantChoiceBox.getValue(),
                     animalVariantChoiceBox.getValue()
                 );
@@ -189,6 +190,7 @@ public class MenuController {
                 mapWidthSlider.setValue(config.mapWidth());
                 mapHeightSlider.setValue(config.mapHeight());
                 simulationRefreshTypeCheckbox.setSelected(config.simulationRefreshType());
+                saveStatisticsCheckbox.setSelected(config.csvSaver());
                 mapVariantChoiceBox.setValue(config.mapVariant());
                 animalVariantChoiceBox.setValue(config.animalVariant());
 
