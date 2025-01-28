@@ -49,7 +49,7 @@ public class SimulationWindowCreator {
         chartPaneController.setSimulation(simulation);
 
         mapPaneController.setMapDrawer(mapDrawer);
-        mapDrawer.subscribe(settingsPaneController);
+        settingsPaneController.setMapDrawer(mapDrawer);
 
         simulation.start();
     }

@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.paint.Color;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.simulation.SimulationEvent;
@@ -16,8 +17,8 @@ import project.model.worldelements.AnimalStatistics;
 import project.model.worldelements.AnimalStatisticsListener;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
-import java.util.Vector;
 
 public class SettingsPaneController extends AbstractController implements MapDrawerListener, AnimalStatisticsListener {
     @FXML
@@ -52,10 +53,12 @@ public class SettingsPaneController extends AbstractController implements MapDra
     private static final String NO_TRACKED_STATISTICS_ERROR =
             "SettingsPaneController.statisticsChanged() but no statistics are tracked!!!";
     private static final String NO_INFORMATION_STRING = "-";
+    private static final Color TRACKED_ANIMAL_HIGHLIGHT_COLOR = new Color(1.0, 1.0, 0.0, 0.7);
     private BooleanProperty isPaused;
     private boolean choosingAnimalToTrack = false;
     private BooleanProperty isTrackingAnimal;
     private Optional<AnimalStatistics> trackedAnimalStatistics = Optional.empty();
+    private MapDrawer mapDrawer;
 
     @FXML
     public void initialize() {
@@ -68,6 +71,11 @@ public class SettingsPaneController extends AbstractController implements MapDra
         this.isTrackingAnimal = new SimpleBooleanProperty(false);
         this.trackAniamlButton.disableProperty().bind(this.isPaused.not());
         this.untrackAniamlButton.disableProperty().bind(this.isTrackingAnimal.not());
+    }
+
+    public void setMapDrawer(MapDrawer mapDrawer) {
+        this.mapDrawer = mapDrawer;
+        this.mapDrawer.subscribe(this);
     }
 
     @FXML
@@ -157,6 +165,20 @@ public class SettingsPaneController extends AbstractController implements MapDra
             this.updateStatistics();
             this.isTrackingAnimal.set(true);
         });
+    }
+
+    private void highlightTrackedAnimal() {
+        this.trackedAnimalStatistics.ifPresent(statistics -> this.mapDrawer.highlightPositions(
+                List.of(statistics.getPosition()),
+                TRACKED_ANIMAL_HIGHLIGHT_COLOR
+        ));
+    }
+
+    @Override
+    public void mapDrawn() {
+        if (this.isTrackingAnimal.get()) {
+            Platform.runLater(this::highlightTrackedAnimal);
+        }
     }
 
     @Override

@@ -23,6 +23,7 @@ public class MapDrawer {
     private final static String AXIS_DESCRIPTION_STRING = "y/x";
     private final static int MAX_ENERGY_COLOR = 100;
     private final static double MIN_ANIMAL_OPACITY = 0.1;
+    private final static Color DEFAULT_HIGHLIGHT_COLOR = new Color(0.8, 0.8, 0.8, 0.7);
     private final GridPane mapGridPane;
     private final WorldMap worldMap;
     private final AnimalMediator animalMediator = new AnimalMediatorStandardVariant();
@@ -37,6 +38,8 @@ public class MapDrawer {
     public void drawMap() {
         this.clearGrid();
         this.buildMapGrid();
+
+        this.notifyMapDrawn();
     }
 
     private void clearGrid() {
@@ -173,12 +176,12 @@ public class MapDrawer {
         return grassRectangle;
     }
 
-    public void highlightPositions(List<Vector2d> mapPositions) {
+    public void highlightPositions(List<Vector2d> mapPositions, Color color) {
         for (var mapPosition : mapPositions) {
             Pane parentPane = this.mapFieldsMap.get(mapPosition);
 
             Rectangle highlightRectangle = new Rectangle();
-            highlightRectangle.setFill(new Color(0.8, 0.8, 0.8, 0.7));
+            highlightRectangle.setFill(color);
 
             highlightRectangle.widthProperty().bind(parentPane.widthProperty());
             highlightRectangle.heightProperty().bind(parentPane.heightProperty());
@@ -187,9 +190,19 @@ public class MapDrawer {
         }
     }
 
+    public void highlightPositions(List<Vector2d> mapPositions) {
+        this.highlightPositions(mapPositions, DEFAULT_HIGHLIGHT_COLOR);
+    }
+
     private void onMapFieldClicked(Vector2d mapPosition) {
         for (var listener : this.listeners) {
             listener.mapFieldClicked(mapPosition);
+        }
+    }
+
+    private void notifyMapDrawn() {
+        for (var listener : this.listeners) {
+            listener.mapDrawn();
         }
     }
 
