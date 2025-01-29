@@ -12,15 +12,21 @@ import javafx.scene.paint.Color;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.simulation.SimulationEvent;
+import project.model.simulation.SimulationStatistics;
 import project.model.util.PlantGrower;
 import project.model.worldelements.Animal;
 import project.model.worldelements.AnimalStatistics;
 import project.model.worldelements.AnimalStatisticsListener;
+import project.model.worldelements.WorldElement;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SettingsPaneController extends AbstractController implements MapDrawerListener, AnimalStatisticsListener {
+    @FXML
+    private Button showMostPopularGenome;
+    @FXML
+    private Button hideMostPopularGenome;
     @FXML
     private Button showPreferredPlantsPositions;
     @FXML
@@ -58,10 +64,12 @@ public class SettingsPaneController extends AbstractController implements MapDra
             "SettingsPaneController.statisticsChanged() but no statistics are tracked!!!";
     private static final String NO_INFORMATION_STRING = "-";
     private static final Color TRACKED_ANIMAL_HIGHLIGHT_COLOR = new Color(1.0, 1.0, 0.0, 0.7);
+    private static final Color MOST_POPULAR_GENOME_HIGHLIGHT_COLOR = new Color(0.51, 0.0, 0.51, 0.5);
     private BooleanProperty isPaused;
     private boolean choosingAnimalToTrack = false;
     private BooleanProperty isTrackingAnimal;
     private BooleanProperty isHighlightingPreferredPlantsPositions;
+    private BooleanProperty isHighlightingMostPopularGenome;
     private Optional<AnimalStatistics> trackedAnimalStatistics = Optional.empty();
     private MapDrawer mapDrawer;
 
@@ -75,9 +83,11 @@ public class SettingsPaneController extends AbstractController implements MapDra
         this.isPaused = new SimpleBooleanProperty(false);
         this.isTrackingAnimal = new SimpleBooleanProperty(false);
         this.isHighlightingPreferredPlantsPositions = new SimpleBooleanProperty(false);
+        this.isHighlightingMostPopularGenome = new SimpleBooleanProperty(false);
         this.trackAniamlButton.disableProperty().bind(this.isPaused.not());
         this.untrackAniamlButton.disableProperty().bind(this.isTrackingAnimal.not());
         this.hidePreferredPlantsPositions.disableProperty().bind(this.isHighlightingPreferredPlantsPositions.not());
+        this.hideMostPopularGenome.disableProperty().bind(this.isHighlightingMostPopularGenome.not());
     }
 
     public void setMapDrawer(MapDrawer mapDrawer) {
@@ -206,6 +216,25 @@ public class SettingsPaneController extends AbstractController implements MapDra
         this.mapDrawer.highlightPositions(positionsToHighlight);
     }
 
+    private void highlightMostPopularGenome() {
+        SimulationStatistics simulationStatistics = this.simulation.getStatistics();
+        Optional<List<Integer>> mostPopularGenome = simulationStatistics.mostPopularGenome();
+
+        if (mostPopularGenome.isEmpty()) {
+            return;
+        }
+
+        WorldMap worldMap = this.simulation.getWorldMap();
+
+        List<Vector2d> positionsToHighlight = worldMap.getAnimals().stream()
+                .filter(animal -> Objects.equals(animal.getStatistics().getGenesList(), mostPopularGenome.get()))
+                .map(WorldElement::getPosition)
+                .distinct()
+                .collect(Collectors.toList());
+
+        this.mapDrawer.highlightPositions(positionsToHighlight, MOST_POPULAR_GENOME_HIGHLIGHT_COLOR);
+    }
+
     @Override
     public void mapDrawn() {
         if (this.isTrackingAnimal.get()) {
@@ -214,6 +243,10 @@ public class SettingsPaneController extends AbstractController implements MapDra
 
         if (this.isHighlightingPreferredPlantsPositions.get()) {
             Platform.runLater(this::highlightPreferredPlantsPositions);
+        }
+
+        if (this.isHighlightingMostPopularGenome.get()) {
+            Platform.runLater(this::highlightMostPopularGenome);
         }
     }
 
@@ -254,6 +287,18 @@ public class SettingsPaneController extends AbstractController implements MapDra
 
     public void onHidePreferredPlantsPositionsClick(ActionEvent actionEvent) {
         this.isHighlightingPreferredPlantsPositions.set(false);
+
+        Platform.runLater(this.mapDrawer::drawMap);
+    }
+
+    public void onShowMostPopularGenomeClick(ActionEvent actionEvent) {
+        this.isHighlightingMostPopularGenome.set(true);
+
+        Platform.runLater(this::highlightMostPopularGenome);
+    }
+
+    public void onHideMostPopularGenomeClick(ActionEvent actionEvent) {
+        this.isHighlightingMostPopularGenome.set(false);
 
         Platform.runLater(this.mapDrawer::drawMap);
     }

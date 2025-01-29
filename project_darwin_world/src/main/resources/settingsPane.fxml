@@ -108,6 +108,13 @@
                               <Button fx:id="hidePreferredPlantsPositions" mnemonicParsing="false" onAction="#onHidePreferredPlantsPositionsClick" prefHeight="26.0" prefWidth="85.0" text="Hide" />
                            </children>
                         </HBox>
+                        <Label text="Highlight animals with most popular genome" wrapText="true" GridPane.rowIndex="1" />
+                        <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <children>
+                              <Button fx:id="showMostPopularGenome" mnemonicParsing="false" onAction="#onShowMostPopularGenomeClick" prefHeight="26.0" prefWidth="71.0" text="Show" />
+                              <Button fx:id="hideMostPopularGenome" mnemonicParsing="false" onAction="#onHideMostPopularGenomeClick" prefHeight="26.0" prefWidth="85.0" text="Hide" />
+                           </children>
+                        </HBox>
                      </children>
                   </GridPane>
                </content>
