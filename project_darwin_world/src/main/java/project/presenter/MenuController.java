@@ -11,10 +11,7 @@ import javafx.stage.FileChooser;
 import project.model.simulation.*;
 import project.model.util.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 import project.model.util.AnimalVariant;
 import project.model.util.PlantGrowerVariant;
@@ -114,7 +111,7 @@ public class MenuController {
         }
     }
 
-    private void selectFileForStatisticsSaving(Simulation simulation) {
+    private void selectFileForStatisticsSaving(Simulation simulation) throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(SAVE_SIMULATION_STATISTICS);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(CSV_FILES, CSV));
@@ -123,13 +120,13 @@ public class MenuController {
 
         File file = fileChooser.showSaveDialog(null);
 
-        if (file != null) {
-            SimulationStatistics statistics = new SimulationStatistics(simulation);
-            CSVStatisticsSaver csvSaver = new CSVStatisticsSaver(statistics, file.getAbsolutePath());
-            simulation.subscribe(csvSaver);
-        } else {
-            createAlertWindow(FILE_NOT_SELECTED_STATISTICS_WILL_NOT_BE_SAVED);
+        if (file == null) {
+            throw new FileNotFoundException(FILE_NOT_SELECTED_STATISTICS_WILL_NOT_BE_SAVED);
         }
+
+        SimulationStatistics statistics = new SimulationStatistics(simulation);
+        CSVStatisticsSaver csvSaver = new CSVStatisticsSaver(statistics, file.getAbsolutePath());
+        simulation.subscribe(csvSaver);
     }
 
     @FXML
