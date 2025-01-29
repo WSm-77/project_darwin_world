@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.chart.*;
 import javafx.scene.control.Label;
-import project.model.simulation.Simulation;
 import project.model.simulation.SimulationEvent;
 import project.model.simulation.SimulationListener;
 import project.model.simulation.SimulationStatistics;
@@ -39,9 +38,6 @@ public class ChartPaneController extends AbstractController implements Simulatio
     private XYChart.Series<String, Double> averageAnimalsLifeTime = new XYChart.Series<>();
     private XYChart.Series<String, Double> averageAnimalsChildrenCount = new XYChart.Series<>();
 
-    private Simulation simulation;
-    private SimulationStatistics statistics;
-
     @FXML
     public void initialize() {
         Axis<String> xAxis = this.simulationStatisticChart.getXAxis();
@@ -62,35 +58,27 @@ public class ChartPaneController extends AbstractController implements Simulatio
         this.averageAnimalsLifeTime.getData().add(averageAnimalLifeTimeChartData);
         this.averageAnimalsChildrenCount.getData().add(averageAnimalChildrenCountChartData);
 
-        animalsCountSeries.setName(ANIMALS_COUNT_SERIES_NAME);
-        plantsCountSeries.setName(PLANTS_COUNT_SERIES_NAME);
-        averageAnimalsEnergy.setName(AVERAGE_ANIMAL_ENERGY_SERIES_NAME);
-        averageAnimalsLifeTime.setName(AVERAGE_ANIMAL_LIFE_TIME_SERIES_NAME);
-        averageAnimalsChildrenCount.setName(AVERAGE_ANIMAL_CHILDREN_COUNT_SERIES_NAME);
+        this.animalsCountSeries.setName(ANIMALS_COUNT_SERIES_NAME);
+        this.plantsCountSeries.setName(PLANTS_COUNT_SERIES_NAME);
+        this.averageAnimalsEnergy.setName(AVERAGE_ANIMAL_ENERGY_SERIES_NAME);
+        this.averageAnimalsLifeTime.setName(AVERAGE_ANIMAL_LIFE_TIME_SERIES_NAME);
+        this.averageAnimalsChildrenCount.setName(AVERAGE_ANIMAL_CHILDREN_COUNT_SERIES_NAME);
 
         this.simulationStatisticChart.getData().addAll(
-                animalsCountSeries,
-                plantsCountSeries,
-                averageAnimalsEnergy,
-                averageAnimalsLifeTime,
-                averageAnimalsChildrenCount
+                this.animalsCountSeries,
+                this.plantsCountSeries,
+                this.averageAnimalsEnergy,
+                this.averageAnimalsLifeTime,
+                this.averageAnimalsChildrenCount
         );
     }
 
     @Override
-    public void simulationChanged(SimulationEvent event) {
-        if (event == SimulationEvent.NEXT_DAY) {
-            Platform.runLater(this::updateMapInformation);
-            Platform.runLater(this::updateDay);
-        } else if (event == SimulationEvent.MAP_CHANGED) {
-            Platform.runLater(this::updateMapInformation);
+    public void simulationChanged(SimulationEvent simulationEvent) {
+        switch (simulationEvent) {
+            case MAP_CHANGED -> Platform.runLater(this::updateMapInformation);
+            case NEXT_DAY -> Platform.runLater(this::updateDay);
         }
-    }
-
-    public void setSimulation(Simulation simulation) {
-        this.simulation = simulation;
-        this.statistics = new SimulationStatistics(simulation);
-//        simulation.subscribe(this);
     }
 
     private void updateMapInformation() {
@@ -100,6 +88,8 @@ public class ChartPaneController extends AbstractController implements Simulatio
     }
 
     private void updateCharts() {
+        SimulationStatistics statistics = this.simulation.getStatistics();
+
         this.updateSeries(animalsCountSeries, (double) statistics.getAnimalsCount());
         this.updateSeries(plantsCountSeries, (double) statistics.getPlantsCount());
         this.updateSeries(averageAnimalsEnergy, statistics.calculateAverageEnergy());
@@ -108,11 +98,15 @@ public class ChartPaneController extends AbstractController implements Simulatio
     }
 
     private void updateEmptySpots() {
+        SimulationStatistics statistics = this.simulation.getStatistics();
+
         int emptySpots = statistics.calculateNumberOfEmptySpots();
         this.numberOfEmptySpotsLabel.setText(String.format(EMPTY_SPOTS_TEMPLATE, emptySpots));
     }
 
     private void updateMostPopularGenome() {
+        SimulationStatistics statistics = this.simulation.getStatistics();
+
         Optional<List<Integer>> mostPopularOptionalGenesList = statistics.mostPopularGenome();
         String genomeString = mostPopularOptionalGenesList
                 .map(Objects::toString)
