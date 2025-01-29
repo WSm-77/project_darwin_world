@@ -90,9 +90,9 @@ public class Sphere implements WorldMap {
             } else {
                 throw new IncorrectPositionException(position);
             }
-
-            this.mapChanged(String.format(PLANT_REMOVED_MESSAGE_TEMPLATE, position));
         }
+
+        this.mapChanged(String.format(PLANT_REMOVED_MESSAGE_TEMPLATE, position));
     }
 
     private String createIncorrectAnimalToRemoveMessage(Animal animal) {
@@ -101,10 +101,10 @@ public class Sphere implements WorldMap {
 
     @Override
     public void removeAnimal(Animal animal) throws IllegalArgumentException {
-        synchronized (this.animals) {
-            Vector2d animalPosition = animal.getPosition();
+        Vector2d animalPosition = animal.getPosition();
 
-            Consumer<? super Set<Animal>> actionIfPresent = (animalSet) -> {
+        Consumer<? super Set<Animal>> actionIfPresent = (animalSet) -> {
+            synchronized (this.animals) {
                 if (!animalSet.contains(animal)) {
                     throw new IllegalArgumentException();
                 }
@@ -114,18 +114,18 @@ public class Sphere implements WorldMap {
                 if (animalSet.isEmpty()) {
                     this.animals.remove(animalPosition);
                 }
+            }
 
-                if (!this.isInMoveState) {
-                    this.mapChanged(String.format(ANIMAL_REMOVED_MESSAGE_TEMPLATE, animal.getStatistics().getPosition()));
-                }
-            };
+            if (!this.isInMoveState) {
+                this.mapChanged(String.format(ANIMAL_REMOVED_MESSAGE_TEMPLATE, animal.getStatistics().getPosition()));
+            }
+        };
 
-            Runnable actionIfNotPresent = () -> {
-                throw new IllegalArgumentException(this.createIncorrectAnimalToRemoveMessage(animal));
-            };
+        Runnable actionIfNotPresent = () -> {
+            throw new IllegalArgumentException(this.createIncorrectAnimalToRemoveMessage(animal));
+        };
 
-            this.animalsAt(animalPosition).ifPresentOrElse(actionIfPresent, actionIfNotPresent);
-        }
+        this.animalsAt(animalPosition).ifPresentOrElse(actionIfPresent, actionIfNotPresent);
     }
 
     @Override
