@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="386.0" prefWidth="327.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.presenter.SettingsPaneController">
+    <children>
+          <TitledPane animated="false" text="Simulation controls">
+              <content>
+                  <GridPane alignment="CENTER" prefHeight="110.0" prefWidth="284.0">
+                      <columnConstraints>
+                          <ColumnConstraints hgrow="ALWAYS" maxWidth="147.0" minWidth="103.0" prefWidth="103.0" />
+                          <ColumnConstraints hgrow="ALWAYS" maxWidth="202.0" minWidth="10.0" prefWidth="202.0" />
+                      </columnConstraints>
+                      <rowConstraints>
+                          <RowConstraints percentHeight="50.0" vgrow="ALWAYS" />
+                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                      </rowConstraints>
+                      <children>
+                          <Label text="Refresh time" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+              <Button fx:id="pauseResumeButton" mnemonicParsing="false" onAction="#onPauseResumeButtonClick" prefHeight="26.0" prefWidth="71.0" text="Puase" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+              <Label prefHeight="18.0" prefWidth="108.0" text="Pause/Resume" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <HBox alignment="CENTER" prefHeight="45.0" prefWidth="140.0" spacing="15.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                     <children>
+                        <Slider fx:id="refreshTimeSlider" blockIncrement="100.0" majorTickUnit="990.0" max="1000.0" min="10.0" minorTickCount="10" prefHeight="21.0" prefWidth="133.0" showTickLabels="true" showTickMarks="true" value="500.0" />
+                        <Label text="ms" />
+                     </children>
+                  </HBox>
+                      </children>
+                  </GridPane>
+              </content>
+          </TitledPane>
+      <Accordion>
+        <panes>
+                <TitledPane animated="false" text="Animals">
+               <content>
+                  <GridPane alignment="CENTER" prefHeight="282.0" prefWidth="325.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="147.0" minWidth="95.0" prefWidth="95.0" />
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="210.0" minWidth="10.0" prefWidth="210.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Tracking" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                        <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                           <children>
+                              <Button fx:id="trackAniamlButton" mnemonicParsing="false" onAction="#onTrackAnimalButtonClick" prefHeight="26.0" prefWidth="71.0" text="Track" />
+                              <Button fx:id="untrackAniamlButton" mnemonicParsing="false" onAction="#onUntrackAnimalButtonClick" prefHeight="26.0" prefWidth="103.0" text="Untrack" />
+                           </children>
+                        </HBox>
+                        <Label text="Genome" GridPane.rowIndex="3" />
+                        <Label fx:id="trackedGenome" text="-" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                        <Label text="Energy" GridPane.rowIndex="4" />
+                        <Label fx:id="trackedEnergy" text="-" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+                        <Label text="Eaten plants" GridPane.rowIndex="5" />
+                        <Label fx:id="trackedEatenPlants" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+                        <Label text="Children count" GridPane.rowIndex="6" />
+                        <Label fx:id="trackedChildrenCount" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER" />
+                        <Label text="Descendants count" wrapText="true" GridPane.rowIndex="7" />
+                        <Label fx:id="trackedDescendantsCount" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" GridPane.valignment="CENTER" />
+                        <Label text="Days alive" wrapText="true" GridPane.rowIndex="8" />
+                        <Label fx:id="trackedDaysAlive" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
+                        <Label text="Death day" wrapText="true" GridPane.rowIndex="9" />
+                        <Label fx:id="trackedDeathDay" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
+                        <Label text="Position" GridPane.rowIndex="1" />
+                        <Label fx:id="trackedPosition" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                        <Label text="Orientation" GridPane.rowIndex="2" />
+                        <Label fx:id="trackedOrientation" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                     </children>
+                  </GridPane>
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="Highlighting">
+               <content>
+                  <GridPane alignment="CENTER" prefHeight="282.0" prefWidth="325.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="147.0" minWidth="95.0" prefWidth="95.0" />
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="210.0" minWidth="10.0" prefWidth="210.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="ALWAYS" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Highlight plants preferred positions" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                        <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                           <children>
+                              <Button fx:id="showPreferredPlantsPositions" mnemonicParsing="false" onAction="#onShowPreferredPlantsPositionsClick" prefHeight="26.0" prefWidth="71.0" text="Show" />
+                              <Button fx:id="hidePreferredPlantsPositions" mnemonicParsing="false" onAction="#onHidePreferredPlantsPositionsClick" prefHeight="26.0" prefWidth="85.0" text="Hide" />
+                           </children>
+                        </HBox>
+                        <Label text="Highlight animals with most popular genome" wrapText="true" GridPane.rowIndex="1" />
+                        <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <children>
+                              <Button fx:id="showMostPopularGenome" mnemonicParsing="false" onAction="#onShowMostPopularGenomeClick" prefHeight="26.0" prefWidth="71.0" text="Show" />
+                              <Button fx:id="hideMostPopularGenome" mnemonicParsing="false" onAction="#onHideMostPopularGenomeClick" prefHeight="26.0" prefWidth="85.0" text="Hide" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </GridPane>
+               </content>
+            </TitledPane>
+        </panes>
+      </Accordion>
+    </children>
+</VBox>
