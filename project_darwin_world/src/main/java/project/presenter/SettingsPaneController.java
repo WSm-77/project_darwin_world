@@ -86,7 +86,11 @@ public class SettingsPaneController extends AbstractController implements MapDra
         this.isHighlightingMostPopularGenome = new SimpleBooleanProperty(false);
         this.trackAniamlButton.disableProperty().bind(this.isPaused.not());
         this.untrackAniamlButton.disableProperty().bind(this.isTrackingAnimal.not());
+        this.showPreferredPlantsPositions.disableProperty().bind(
+                this.isHighlightingPreferredPlantsPositions.or(this.isPaused.not()));
         this.hidePreferredPlantsPositions.disableProperty().bind(this.isHighlightingPreferredPlantsPositions.not());
+        this.showMostPopularGenome.disableProperty().bind(
+                this.isHighlightingMostPopularGenome.or(this.isPaused.not()));
         this.hideMostPopularGenome.disableProperty().bind(this.isHighlightingMostPopularGenome.not());
     }
 
@@ -110,6 +114,8 @@ public class SettingsPaneController extends AbstractController implements MapDra
         this.simulation.resume();
         this.pauseResumeButton.setText(PAUSE_BUTTON_TEXT);
         this.choosingAnimalToTrack = false;
+        this.isHighlightingPreferredPlantsPositions.set(false);
+        this.isHighlightingMostPopularGenome.set(false);
     }
 
     private void pauseSimulation() {
