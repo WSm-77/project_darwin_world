@@ -66,7 +66,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
     private static final Color TRACKED_ANIMAL_HIGHLIGHT_COLOR = new Color(1.0, 1.0, 0.0, 0.7);
     private static final Color MOST_POPULAR_GENOME_HIGHLIGHT_COLOR = new Color(0.51, 0.0, 0.51, 0.5);
     private BooleanProperty isPaused;
-    private boolean choosingAnimalToTrack = false;
+    private BooleanProperty choosingAnimalToTrack;
     private BooleanProperty isTrackingAnimal;
     private BooleanProperty isHighlightingPreferredPlantsPositions;
     private BooleanProperty isHighlightingMostPopularGenome;
@@ -81,10 +81,12 @@ public class SettingsPaneController extends AbstractController implements MapDra
         });
 
         this.isPaused = new SimpleBooleanProperty(false);
+        this.choosingAnimalToTrack = new SimpleBooleanProperty(false);
         this.isTrackingAnimal = new SimpleBooleanProperty(false);
         this.isHighlightingPreferredPlantsPositions = new SimpleBooleanProperty(false);
         this.isHighlightingMostPopularGenome = new SimpleBooleanProperty(false);
-        this.trackAniamlButton.disableProperty().bind(this.isPaused.not());
+        this.trackAniamlButton.disableProperty().bind(
+                this.choosingAnimalToTrack.or(this.isPaused.not()));
         this.untrackAniamlButton.disableProperty().bind(this.isTrackingAnimal.not());
         this.showPreferredPlantsPositions.disableProperty().bind(
                 this.isHighlightingPreferredPlantsPositions.or(this.isPaused.not()));
@@ -113,7 +115,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
     private void resumeSimulation() {
         this.simulation.resume();
         this.pauseResumeButton.setText(PAUSE_BUTTON_TEXT);
-        this.choosingAnimalToTrack = false;
+        this.choosingAnimalToTrack.set(false);
         this.isHighlightingPreferredPlantsPositions.set(false);
         this.isHighlightingMostPopularGenome.set(false);
     }
@@ -125,7 +127,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
 
     @FXML
     public void onTrackAnimalButtonClick(ActionEvent event) {
-        this.choosingAnimalToTrack = true;
+        this.choosingAnimalToTrack.set(true);
     }
 
     @FXML
@@ -133,6 +135,8 @@ public class SettingsPaneController extends AbstractController implements MapDra
         this.isTrackingAnimal.set(false);
         this.unsubscribeStatistics();
         this.clearStatistics();
+
+        Platform.runLater(this.mapDrawer::drawMap);
     }
 
     private void unsubscribeStatistics() {
@@ -170,7 +174,7 @@ public class SettingsPaneController extends AbstractController implements MapDra
 
     @Override
     public void mapFieldClicked(Vector2d mapPosition) {
-        if (!this.choosingAnimalToTrack) {
+        if (!this.choosingAnimalToTrack.get()) {
             return;
         }
 
@@ -187,6 +191,9 @@ public class SettingsPaneController extends AbstractController implements MapDra
 
             this.updateStatistics();
             this.isTrackingAnimal.set(true);
+            this.choosingAnimalToTrack.set(false);
+
+            this.mapDrawer.drawMap();
         });
     }
 
