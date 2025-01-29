@@ -14,5 +14,10 @@ public interface PlantGrower {
      */
     void growPlants(int number);
 
+    /**
+     * Return map which associates each plant free spot with preference factor
+     *
+     * @return Map of preference factor for each plant free spot
+     */
     Map<Vector2d, Double> getPreferencesMap();
 }
