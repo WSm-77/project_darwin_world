@@ -1,5 +1,7 @@
 package project.model.util;
 
+import gr.james.sampling.ChaoSampling;
+import gr.james.sampling.WeightedRandomSamplingCollector;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.worldelements.Grass;
@@ -15,10 +17,8 @@ public class PlantGrowerStandardVariant implements PlantGrower {
     public static final double EQUATOR_STOP = 0.6;
     public static final int DEFAULT_NUTRITIOUSNESS = 5;
     protected final WorldMap worldMap;
-    private final Random random = new Random();
     protected Set<Vector2d> occupiedPositions;
     protected Set<Vector2d> notOccupiedPositions;
-    protected Map<Vector2d, Double> positionsPreferenceMap;
     protected int plantNutritiousness;
 
     public PlantGrowerStandardVariant(WorldMap worldMap) {
@@ -54,36 +54,34 @@ public class PlantGrowerStandardVariant implements PlantGrower {
         this.notOccupiedPositions = positions;
     }
 
-    protected void setPreferencesMap() {
-        Map<Vector2d, Double> newPositionsPreferenceMap = new HashMap<>();
+    @Override
+    public Map<Vector2d, Double> getPreferencesMap() {
+        this.setOccupiedPositions();
+        this.setNotOccupiedPositions();
 
-        notOccupiedPositions
-                .forEach(position -> {
-                    var randomPreference = this.preference(position) * this.random.nextDouble();
-                    newPositionsPreferenceMap.put(position, randomPreference);
-                });
-
-        this.positionsPreferenceMap = newPositionsPreferenceMap;
+        return notOccupiedPositions.stream()
+                .collect(Collectors.toMap(
+                   position -> position,
+                   position -> this.preference(position)
+                ));
     }
 
     public void growPlants(int number) {
-        this.setOccupiedPositions();
-        this.setNotOccupiedPositions();
-        this.setPreferencesMap();
+        if (number <= 0)
+            return;
+        Map<Vector2d, Double> positionsPreferenceMap = this.getPreferencesMap();
 
-        notOccupiedPositions.stream()
-                .sorted(Comparator.comparingDouble(this.positionsPreferenceMap::get).reversed())
-                .limit(number)
+        WeightedRandomSamplingCollector<Vector2d> collector = ChaoSampling.weightedCollector(number, new Random());
+
+        Collection<Vector2d> randomPositions = positionsPreferenceMap.entrySet().stream().collect(collector);
+
+        randomPositions.stream()
                 .map(position -> new Grass(position, this.plantNutritiousness))
-                .forEach(plant -> worldMap.growPlants(plant));
+                .forEach(plant -> this.worldMap.growPlants(plant));
     }
 
     protected double preference(Vector2d position) {
-        boolean isNearEquator = isPositionNearEquator(position);
-        double preferenceFactor = 1;
-        preferenceFactor *= isNearEquator ? PREFERRED_POSITION_FACTOR : NOT_PREFERRED_POSITION_FACTOR;
-
-        return preferenceFactor;
+        return isPositionNearEquator(position) ? PREFERRED_POSITION_FACTOR : NOT_PREFERRED_POSITION_FACTOR;
     }
 
     protected boolean isPositionNearEquator(Vector2d position) {
