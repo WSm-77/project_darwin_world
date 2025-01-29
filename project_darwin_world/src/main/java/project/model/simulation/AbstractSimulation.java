@@ -27,6 +27,7 @@ public abstract class AbstractSimulation implements Simulation {
     protected Optional<Thread> simulationThread = Optional.empty();
     protected int simulationRefreshTime = 500;
     protected final List<Animal> deadAnimals = new ArrayList<>();
+    protected final SimulationStatistics statistics;
 
     public static final int ENERGY_DAILY_LOSS = 1;
     public static final int PARENTS_NEEDED_TO_BREED_COUNT = 2;
@@ -38,6 +39,8 @@ public abstract class AbstractSimulation implements Simulation {
         this.energyToReproduce = simulationBuilder.getEnergyToReproduce();
         this.animalMediator = simulationBuilder.getAnimalMediator();
         this.plantGrower = simulationBuilder.getPlantGrower();
+
+        this.statistics = new SimulationStatistics(this);
     }
 
     protected void removeDeadAnimals() {
@@ -152,18 +155,27 @@ public abstract class AbstractSimulation implements Simulation {
         }
     }
 
+    @Override
     public WorldMap getWorldMap() {
         return this.worldMap;
     }
 
+    @Override
     public int getDay() {
         return this.day;
     }
 
+    @Override
     public List<Animal> getDeadAnimals() {
         return this.deadAnimals;
     }
 
+    @Override
+    public SimulationStatistics getStatistics() {
+        return this.statistics;
+    }
+
+    @Override
     public void subscribe(SimulationListener simulationListener) {
         this.simulationListeners.add(simulationListener);
     }
@@ -175,6 +187,7 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     // for subclasses use
+    @Override
     public void simulationStep() {
         try {
             synchronized (this) {
@@ -191,15 +204,18 @@ public abstract class AbstractSimulation implements Simulation {
         }
     }
 
+    @Override
     public void setSimulationRefreshTime(int ms) {
         this.simulationRefreshTime = ms;
     }
 
+    @Override
     public void start() {
         this.simulationThread = Optional.of(new Thread(this));
         this.simulationThread.ifPresent(Thread::start);
     }
 
+    @Override
     public void terminate() {
         if (this.simulationThread.isEmpty()) {
             throw new IllegalThreadStateException("Thread not Started!!!");
@@ -209,15 +225,18 @@ public abstract class AbstractSimulation implements Simulation {
         this.running = false;
     }
 
+    @Override
     public synchronized void pause() {
         this.paused = true;
     }
 
+    @Override
     public synchronized void resume() {
         this.paused = false;
         this.notifyAll();
     }
 
+    @Override
     public synchronized boolean isPaused() {
         return this.paused;
     }

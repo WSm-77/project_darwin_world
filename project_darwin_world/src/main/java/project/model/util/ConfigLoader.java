@@ -23,6 +23,7 @@ public class ConfigLoader {
     public static final String SIMULATION_REFRESH_TYPE = "simulationRefreshType";
     public static final String MAP_VARIANT = "mapVariant";
     public static final String ANIMAL_VARIANT = "animalVariant";
+    public static final String CSV_SAVER = "csvSaver";
 
     public static SimulationConfigurationFile loadConfigFromJson(FileReader reader) throws JsonParseException {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -56,6 +57,7 @@ public class ConfigLoader {
                     obj.get(MAP_WIDTH).getAsDouble(),
                     obj.get(MAP_HEIGHT).getAsDouble(),
                     obj.get(SIMULATION_REFRESH_TYPE).getAsBoolean(),
+                    obj.get(CSV_SAVER).getAsBoolean(),
                     PlantGrowerVariant.valueOf(obj.get(MAP_VARIANT).getAsString()),
                     AnimalVariant.valueOf(obj.get(ANIMAL_VARIANT).getAsString())
             );

@@ -108,9 +108,10 @@
                   </VBox>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="32.0" prefWidth="912.0">
+            <HBox alignment="CENTER" prefHeight="32.0" prefWidth="912.0" spacing="10.0">
                <children>
                   <CheckBox fx:id="simulationRefreshTypeCheckbox" mnemonicParsing="false" text="Refresh Simulation Each Step" />
+                  <CheckBox fx:id="saveStatisticsCheckbox" mnemonicParsing="false" text="Save statistics to CSV" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="62.0" prefWidth="912.0" spacing="50.0">

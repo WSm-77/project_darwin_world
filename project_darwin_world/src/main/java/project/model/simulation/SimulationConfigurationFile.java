@@ -17,6 +17,7 @@ public record SimulationConfigurationFile (
     double mapWidth,
     double mapHeight,
     boolean simulationRefreshType,
+    boolean csvSaver,
     PlantGrowerVariant mapVariant,
     AnimalVariant animalVariant
 ){}

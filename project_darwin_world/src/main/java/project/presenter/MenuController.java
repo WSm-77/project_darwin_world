@@ -8,16 +8,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.stage.FileChooser;
-import project.model.simulation.SimulationConfigurationFile;
-import project.model.simulation.Simulation;
-import project.model.simulation.SimulationDayStep;
-import project.model.simulation.SimulationEachChangeStep;
+import project.model.simulation.*;
 import project.model.util.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 import project.model.util.AnimalVariant;
 import project.model.util.PlantGrowerVariant;
@@ -33,9 +27,16 @@ public class MenuController {
     public static final String INVALID_CONFIGURATION_FILE_THE_FILE_DOES_NOT_MATCH_THE_REQUIRED_FORMAT = "Invalid configuration file: The file does not match the required format.";
     public static final String CONFIGURATION_LOADED_SUCCESSFULLY_FROM = "Configuration loaded successfully from:\n";
     public static final String CONFIGURATION_SAVED_SUCCESSFULLY_TO = "Configuration saved successfully to:\n";
+    public static final String CSV_FILES = "CSV Files";
+    public static final String CSV = "*.csv";
+    public static final String SAVE_SIMULATION_STATISTICS = "Save Simulation Statistics";
+    public static final String SIMULATION_STATS_CSV = "simulation_stats.csv";
+    public static final String FILE_NOT_SELECTED_STATISTICS_WILL_NOT_BE_SAVED = "File not selected. Statistics will not be saved.";
 
     @FXML
     private CheckBox simulationRefreshTypeCheckbox;
+    @FXML
+    private CheckBox saveStatisticsCheckbox;
     @FXML
     private ChoiceBox<PlantGrowerVariant> mapVariantChoiceBox;
     @FXML
@@ -72,6 +73,8 @@ public class MenuController {
 
         this.mapVariantChoiceBox.setValue(PlantGrowerVariant.DEFAULT);
         this.animalVariantChoiceBox.setValue(AnimalVariant.DEFAULT);
+
+        this.saveStatisticsCheckbox.setSelected(false);
     }
 
     public void onStartButtonClick(ActionEvent actionEvent) {
@@ -98,10 +101,32 @@ public class MenuController {
                     .setSimulationConstructor(simulationType)
                     .build();
 
+            if (this.saveStatisticsCheckbox.isSelected()) {
+                this.selectFileForStatisticsSaving(sphereSimulation);
+            }
+
             SimulationWindowCreator.createNewSimulationWindow(sphereSimulation);
         } catch (Exception e) {
             this.createAlertWindow(e.getMessage());
         }
+    }
+
+    private void selectFileForStatisticsSaving(Simulation simulation) throws FileNotFoundException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(SAVE_SIMULATION_STATISTICS);
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(CSV_FILES, CSV));
+
+        fileChooser.setInitialFileName(SIMULATION_STATS_CSV);
+
+        File file = fileChooser.showSaveDialog(null);
+
+        if (file == null) {
+            throw new FileNotFoundException(FILE_NOT_SELECTED_STATISTICS_WILL_NOT_BE_SAVED);
+        }
+
+        SimulationStatistics statistics = new SimulationStatistics(simulation);
+        CSVStatisticsSaver csvSaver = new CSVStatisticsSaver(statistics, file.getAbsolutePath());
+        simulation.subscribe(csvSaver);
     }
 
     @FXML
@@ -128,6 +153,7 @@ public class MenuController {
                     mapWidthSlider.getValue(),
                     mapHeightSlider.getValue(),
                     simulationRefreshTypeCheckbox.isSelected(),
+                    saveStatisticsCheckbox.isSelected(),
                     mapVariantChoiceBox.getValue(),
                     animalVariantChoiceBox.getValue()
                 );
@@ -165,6 +191,7 @@ public class MenuController {
                 mapWidthSlider.setValue(config.mapWidth());
                 mapHeightSlider.setValue(config.mapHeight());
                 simulationRefreshTypeCheckbox.setSelected(config.simulationRefreshType());
+                saveStatisticsCheckbox.setSelected(config.csvSaver());
                 mapVariantChoiceBox.setValue(config.mapVariant());
                 animalVariantChoiceBox.setValue(config.animalVariant());
 

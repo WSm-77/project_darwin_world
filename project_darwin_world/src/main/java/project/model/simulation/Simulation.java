@@ -9,6 +9,7 @@ public interface Simulation extends Runnable {
     WorldMap getWorldMap();
     int getDay();
     List<Animal> getDeadAnimals();
+    SimulationStatistics getStatistics();
     void subscribe(SimulationListener simulationListener);
     void simulationStep();
     void setSimulationRefreshTime(int ms);
