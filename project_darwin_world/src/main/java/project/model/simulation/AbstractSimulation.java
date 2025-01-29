@@ -140,11 +140,6 @@ public abstract class AbstractSimulation implements Simulation {
     @Override
     public void run() {
         while (this.running) {
-            System.out.println();
-            System.out.printf("Simulation day: %d\n", this.day);
-            System.out.printf("Animals on the map: %s\n", this.worldMap.getAnimals());
-            System.out.println();
-
             this.removeDeadAnimals();
             this.moveAnimals();
             this.consumePlants();

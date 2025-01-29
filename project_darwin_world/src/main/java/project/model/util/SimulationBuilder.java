@@ -149,9 +149,6 @@ public class SimulationBuilder {
         PlantGrower plantGrower = this.plantGrowerConstructor.construct(sphere, this.energyPerPlant);
         AnimalMediator animalMediatorVariant = this.animalMediatorConstructor.construct();
 
-        MapChangeListener consoleLog = new ConsoleMapDisplay();
-        sphere.subscribe(consoleLog);
-
         this.worldMap = sphere;
         this.animalFactory = new AnimalFactory(
                 genomeFactory,

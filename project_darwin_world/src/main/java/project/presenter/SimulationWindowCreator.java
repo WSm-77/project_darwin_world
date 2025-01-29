@@ -29,8 +29,6 @@ public class SimulationWindowCreator {
         simulationStage.setTitle(WINDOW_TITLE);
         simulationStage.setScene(new Scene(simulationRoot));
         simulationStage.show();
-
-        System.out.println("Window created");
     }
 
     private static void initializeChildControllers(SimulationWindowController simulationWindowController, Simulation simulation) {
