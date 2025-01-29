@@ -77,7 +77,7 @@ public class MenuController {
         this.mapVariantChoiceBox.setValue(PlantGrowerVariant.DEFAULT);
         this.animalVariantChoiceBox.setValue(AnimalVariant.DEFAULT);
 
-        saveStatisticsCheckbox.setSelected(false);
+        this.saveStatisticsCheckbox.setSelected(false);
     }
 
     public void onStartButtonClick(ActionEvent actionEvent) {
@@ -104,27 +104,31 @@ public class MenuController {
                     .setSimulationConstructor(simulationType)
                     .build();
 
-            if (saveStatisticsCheckbox.isSelected()) {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle(SAVE_SIMULATION_STATISTICS);
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(CSV_FILES, CSV));
-
-                fileChooser.setInitialFileName(SIMULATION_STATS_CSV);
-
-                File file = fileChooser.showSaveDialog(null);
-
-                if (file != null) {
-                    SimulationStatistics statistics = new SimulationStatistics(sphereSimulation);
-                    CSVStatisticsSaver csvSaver = new CSVStatisticsSaver(statistics, file.getAbsolutePath());
-                    sphereSimulation.subscribe(csvSaver);
-                } else {
-                    createAlertWindow(FILE_NOT_SELECTED_STATISTICS_WILL_NOT_BE_SAVED);
-                }
+            if (this.saveStatisticsCheckbox.isSelected()) {
+                this.selectFileForStatisticsSaving(sphereSimulation);
             }
 
             SimulationWindowCreator.createNewSimulationWindow(sphereSimulation);
         } catch (Exception e) {
             this.createAlertWindow(e.getMessage());
+        }
+    }
+
+    private void selectFileForStatisticsSaving(Simulation simulation) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(SAVE_SIMULATION_STATISTICS);
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(CSV_FILES, CSV));
+
+        fileChooser.setInitialFileName(SIMULATION_STATS_CSV);
+
+        File file = fileChooser.showSaveDialog(null);
+
+        if (file != null) {
+            SimulationStatistics statistics = new SimulationStatistics(simulation);
+            CSVStatisticsSaver csvSaver = new CSVStatisticsSaver(statistics, file.getAbsolutePath());
+            simulation.subscribe(csvSaver);
+        } else {
+            createAlertWindow(FILE_NOT_SELECTED_STATISTICS_WILL_NOT_BE_SAVED);
         }
     }
 
