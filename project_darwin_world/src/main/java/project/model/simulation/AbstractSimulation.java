@@ -26,7 +26,7 @@ public abstract class AbstractSimulation implements Simulation {
     protected final List<SimulationListener> simulationListeners = new ArrayList<>();
     protected Optional<Thread> simulationThread = Optional.empty();
     protected int simulationRefreshTime = 500;
-    protected final List<Animal> deadAnimals = new ArrayList<>();
+    protected final List<Animal> deadAnimals = Collections.synchronizedList(new ArrayList<>());
     protected final SimulationStatistics statistics;
 
     public static final int ENERGY_DAILY_LOSS = 1;
@@ -44,15 +44,17 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     protected void removeDeadAnimals() {
-        this.worldMap.getAnimals().stream()
-                .filter(animal -> !animal.isAlive())
-                .forEach(animal -> {
-                            var animalStatistics = animal.getStatistics();
-                            animalStatistics.setDeathDay(this.day);
-                            this.worldMap.removeAnimal(animal);
-                            this.deadAnimals.add(animal);
-                        }
-                );
+        synchronized (this.deadAnimals) {
+            this.worldMap.getAnimals().stream()
+                    .filter(animal -> !animal.isAlive())
+                    .forEach(animal -> {
+                                var animalStatistics = animal.getStatistics();
+                                animalStatistics.setDeathDay(this.day);
+                                this.worldMap.removeAnimal(animal);
+                                this.deadAnimals.add(animal);
+                            }
+                    );
+        }
     }
 
     protected Set<Vector2d> getWorldElementsPositions(Collection<? extends WorldElement> worldElements) {
@@ -140,11 +142,6 @@ public abstract class AbstractSimulation implements Simulation {
     @Override
     public void run() {
         while (this.running) {
-            System.out.println();
-            System.out.printf("Simulation day: %d\n", this.day);
-            System.out.printf("Animals on the map: %s\n", this.worldMap.getAnimals());
-            System.out.println();
-
             this.removeDeadAnimals();
             this.moveAnimals();
             this.consumePlants();
@@ -172,7 +169,9 @@ public abstract class AbstractSimulation implements Simulation {
 
     @Override
     public List<Animal> getDeadAnimals() {
-        return this.deadAnimals;
+        synchronized (this.deadAnimals) {
+            return Collections.unmodifiableList(this.deadAnimals);
+        }
     }
 
     @Override

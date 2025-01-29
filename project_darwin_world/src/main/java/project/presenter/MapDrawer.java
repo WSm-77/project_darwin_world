@@ -136,8 +136,11 @@ public class MapDrawer {
         Optional<Set<Animal>> animals = this.worldMap.animalsAt(mapPosition);
         if (animals.isPresent()) {
             List<Animal> strongestAnimalList = this.animalMediator.resolveAnimalsConflict(animals.get(), 1);
-            Node animalNode = this.getAnimalNode(field, strongestAnimalList.getFirst());
-            field.getChildren().add(animalNode);
+
+            if (strongestAnimalList.size() == 1) {
+                Node animalNode = this.getAnimalNode(field, strongestAnimalList.getFirst());
+                field.getChildren().add(animalNode);
+            }
         }
 
         field.prefHeightProperty().bind(rowConstraints.prefHeightProperty());

@@ -32,8 +32,8 @@ public class Sphere implements WorldMap {
     public static final String ANIMAL_AND_PLANT_MUST_NOT_BE_NULL = "Animal and Plant must not be null.";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
-    final private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
-    final private Map<Vector2d, Plant> grass = new HashMap<>();
+    final private Map<Vector2d, Set<Animal>> animals = Collections.synchronizedMap(new HashMap<>());
+    final private Map<Vector2d, Plant> grass = Collections.synchronizedMap(new HashMap<>());
     final private Boundary boundary;
     final private UUID id;
     final private List<MapChangeListener> listeners = new ArrayList<>();
@@ -84,10 +84,12 @@ public class Sphere implements WorldMap {
     }
 
     public void removePlantFromMap(Vector2d position) {
-        if (this.grass.containsKey(position)) {
-            this.grass.remove(position);
-        } else {
-            throw new IncorrectPositionException(position);
+        synchronized (this.grass) {
+            if (this.grass.containsKey(position)) {
+                this.grass.remove(position);
+            } else {
+                throw new IncorrectPositionException(position);
+            }
         }
 
         this.mapChanged(String.format(PLANT_REMOVED_MESSAGE_TEMPLATE, position));
@@ -102,14 +104,16 @@ public class Sphere implements WorldMap {
         Vector2d animalPosition = animal.getPosition();
 
         Consumer<? super Set<Animal>> actionIfPresent = (animalSet) -> {
-            if (!animalSet.contains(animal)) {
-                throw new IllegalArgumentException();
-            }
+            synchronized (this.animals) {
+                if (!animalSet.contains(animal)) {
+                    throw new IllegalArgumentException();
+                }
 
-            animalSet.remove(animal);
+                animalSet.remove(animal);
 
-            if (animalSet.isEmpty()) {
-                this.animals.remove(animalPosition);
+                if (animalSet.isEmpty()) {
+                    this.animals.remove(animalPosition);
+                }
             }
 
             if (!this.isInMoveState) {
@@ -126,77 +130,88 @@ public class Sphere implements WorldMap {
 
     @Override
     public void place(Animal animal) throws IncorrectPositionException {
-        Vector2d position = animal.getPosition();
+        synchronized (this.animals) {
+            Vector2d position = animal.getPosition();
 
-        if (this.isOnMap(position)) {
-            Optional<Set<Animal>> optionalAnimals = this.animalsAt(position);
+            if (this.isOnMap(position)) {
+                Optional<Set<Animal>> optionalAnimals = this.animalsAt(position);
 
-            if (optionalAnimals.isPresent()) {
-                optionalAnimals.get().add(animal);
+                if (optionalAnimals.isPresent()) {
+                    optionalAnimals.get().add(animal);
+                }
+                else {
+                    Set<Animal> animalSet = new HashSet<>();
+                    animalSet.add(animal);
+                    this.animals.put(position, animalSet);
+                }
             }
             else {
-                Set<Animal> animalSet = new HashSet<>();
-                animalSet.add(animal);
-                this.animals.put(position, animalSet);
+                throw new IncorrectPositionException(position);
             }
-        }
-        else {
-            throw new IncorrectPositionException(position);
-        }
 
-        if (!this.isInMoveState) {
-            this.mapChanged(String.format(ANIMAL_PLACE_MESSAGE_TEMPLATE, animal.getPosition(), animal.getStatistics().getOrientation()));
+            if (!this.isInMoveState) {
+                this.mapChanged(String.format(ANIMAL_PLACE_MESSAGE_TEMPLATE, animal.getPosition(), animal.getStatistics().getOrientation()));
+            }
         }
     }
 
     @Override
     public List<Plant> getPlants() {
-        return new ArrayList<>(this.grass.values());
+        synchronized (this.grass) {
+            return new ArrayList<>(this.grass.values());
+        }
     }
 
     @Override
     public Optional<Plant> plantAt(Vector2d position) {
-        return Optional.ofNullable(this.grass.get(position));
+        synchronized (this.grass) {
+            return Optional.ofNullable(this.grass.get(position));
+        }
     }
 
     @Override
     public void move(Animal animal) {
-        this.isInMoveState = true;
-        Vector2d prevPosition = animal.getPosition();
-        MapDirection prevOrientation = animal.getStatistics().getOrientation();
+            this.isInMoveState = true;
+            Vector2d prevPosition = animal.getPosition();
+            MapDirection prevOrientation = animal.getStatistics().getOrientation();
 
-        if (animal.move(this)) {
-            Set<Animal> animalSet = this.animals.get(prevPosition);
-            animalSet.remove(animal);
+            if (animal.move(this)) {
+                synchronized (this.animals) {
+                    Set<Animal> animalSet = this.animals.get(prevPosition);
+                    animalSet.remove(animal);
 
-            if (animalSet.isEmpty()) {
-                this.animals.remove(prevPosition);
+                    if (animalSet.isEmpty()) {
+                        this.animals.remove(prevPosition);
+                    }
+                }
+
+                this.place(animal);
             }
 
-            this.place(animal);
-        }
+            this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getStatistics().getOrientation(),
+                    prevPosition, animal.getPosition()));
 
-        this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getStatistics().getOrientation(),
-                prevPosition, animal.getPosition()));
-
-        this.isInMoveState = false;
+            this.isInMoveState = false;
     }
 
     @Override
     public Optional<Set<Animal>> animalsAt(Vector2d position) {
-        return this.animals.containsKey(position) ? Optional.of(this.animals.get(position)) : Optional.empty();
+        synchronized (this.animals) {
+            return this.animals.containsKey(position) ? Optional.of(new HashSet<>(this.animals.get(position))) : Optional.empty();
+        }
     }
 
     @Override
     public Optional<WorldElement> objectAt(Vector2d position) {
-        var animalsAtPosition = this.animalsAt(position);
-        Optional<WorldElement> optionalObject = Optional.ofNullable(this.grass.get(position));
+        synchronized (this.animals) {
+            var animalsAtPosition = this.animalsAt(position);
+            Optional<WorldElement> optionalObject = Optional.ofNullable(this.grass.get(position));
 
-        if (animalsAtPosition.isPresent()) {
-            optionalObject = animalsAtPosition.flatMap(set -> set.stream().findFirst());
+            if (animalsAtPosition.isPresent()) {
+                optionalObject = animalsAtPosition.flatMap(set -> set.stream().findFirst());
+            }
+            return optionalObject;
         }
-
-        return optionalObject;
     }
 
     @Override
@@ -206,9 +221,11 @@ public class Sphere implements WorldMap {
 
     @Override
     public List<Animal> getAnimals() {
-        return this.animals.values().stream()
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+        synchronized (this.animals) {
+            return this.animals.values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+        }
     }
 
     @Override
