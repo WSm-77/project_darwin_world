@@ -170,7 +170,7 @@ public abstract class AbstractSimulation implements Simulation {
     @Override
     public List<Animal> getDeadAnimals() {
         synchronized (this.deadAnimals) {
-            return this.deadAnimals;
+            return Collections.unmodifiableList(this.deadAnimals);
         }
     }
 

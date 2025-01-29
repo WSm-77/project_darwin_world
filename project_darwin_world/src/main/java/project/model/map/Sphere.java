@@ -33,7 +33,7 @@ public class Sphere implements WorldMap {
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
     final private Map<Vector2d, Set<Animal>> animals = Collections.synchronizedMap(new HashMap<>());
-    final private Map<Vector2d, Plant> grass = new HashMap<>();
+    final private Map<Vector2d, Plant> grass = Collections.synchronizedMap(new HashMap<>());
     final private Boundary boundary;
     final private UUID id;
     final private List<MapChangeListener> listeners = new ArrayList<>();
@@ -84,13 +84,15 @@ public class Sphere implements WorldMap {
     }
 
     public void removePlantFromMap(Vector2d position) {
-        if (this.grass.containsKey(position)) {
-            this.grass.remove(position);
-        } else {
-            throw new IncorrectPositionException(position);
-        }
+        synchronized (this.grass) {
+            if (this.grass.containsKey(position)) {
+                this.grass.remove(position);
+            } else {
+                throw new IncorrectPositionException(position);
+            }
 
-        this.mapChanged(String.format(PLANT_REMOVED_MESSAGE_TEMPLATE, position));
+            this.mapChanged(String.format(PLANT_REMOVED_MESSAGE_TEMPLATE, position));
+        }
     }
 
     private String createIncorrectAnimalToRemoveMessage(Animal animal) {
@@ -155,35 +157,41 @@ public class Sphere implements WorldMap {
 
     @Override
     public List<Plant> getPlants() {
-        return new ArrayList<>(this.grass.values());
+        synchronized (this.grass) {
+            return new ArrayList<>(this.grass.values());
+        }
     }
 
     @Override
     public Optional<Plant> plantAt(Vector2d position) {
-        return Optional.ofNullable(this.grass.get(position));
+        synchronized (this.grass) {
+            return Optional.ofNullable(this.grass.get(position));
+        }
     }
 
     @Override
     public void move(Animal animal) {
-        this.isInMoveState = true;
-        Vector2d prevPosition = animal.getPosition();
-        MapDirection prevOrientation = animal.getStatistics().getOrientation();
+            this.isInMoveState = true;
+            Vector2d prevPosition = animal.getPosition();
+            MapDirection prevOrientation = animal.getStatistics().getOrientation();
 
-        if (animal.move(this)) {
-            Set<Animal> animalSet = this.animals.get(prevPosition);
-            animalSet.remove(animal);
+            if (animal.move(this)) {
+                synchronized (this.animals) {
+                    Set<Animal> animalSet = this.animals.get(prevPosition);
+                    animalSet.remove(animal);
 
-            if (animalSet.isEmpty()) {
-                this.animals.remove(prevPosition);
+                    if (animalSet.isEmpty()) {
+                        this.animals.remove(prevPosition);
+                    }
+                }
+
+                this.place(animal);
             }
 
-            this.place(animal);
-        }
+            this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getStatistics().getOrientation(),
+                    prevPosition, animal.getPosition()));
 
-        this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getStatistics().getOrientation(),
-                prevPosition, animal.getPosition()));
-
-        this.isInMoveState = false;
+            this.isInMoveState = false;
     }
 
     @Override
