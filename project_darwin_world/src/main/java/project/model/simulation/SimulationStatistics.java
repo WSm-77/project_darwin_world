@@ -79,10 +79,12 @@ public class SimulationStatistics {
 
     public double calculateAverageLifeTime() {
         List<Animal> deadAnimals = simulation.getDeadAnimals();
-        return deadAnimals.stream()
-                .mapToDouble(animal -> (double) animal.getStatistics().getDaysAlive())
-                .average()
-                .orElse(0.0);
+        synchronized (deadAnimals) {
+            return deadAnimals.stream()
+                    .mapToDouble(animal -> (double) animal.getStatistics().getDaysAlive())
+                    .average()
+                    .orElse(0.0);
+        }
     }
 
     public double calculateAverageAnimalChildrenCount() {

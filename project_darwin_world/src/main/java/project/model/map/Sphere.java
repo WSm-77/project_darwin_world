@@ -32,7 +32,7 @@ public class Sphere implements WorldMap {
     public static final String ANIMAL_AND_PLANT_MUST_NOT_BE_NULL = "Animal and Plant must not be null.";
     final private Vector2d lowerLeft = Sphere.DEFAULT_LOWER_LEFT;
     final private Vector2d upperRight;
-    final private Map<Vector2d, Set<Animal>> animals = new HashMap<>();
+    final private Map<Vector2d, Set<Animal>> animals = Collections.synchronizedMap(new HashMap<>());
     final private Map<Vector2d, Plant> grass = new HashMap<>();
     final private Boundary boundary;
     final private UUID id;
@@ -99,53 +99,57 @@ public class Sphere implements WorldMap {
 
     @Override
     public void removeAnimal(Animal animal) throws IllegalArgumentException {
-        Vector2d animalPosition = animal.getPosition();
+        synchronized (this.animals) {
+            Vector2d animalPosition = animal.getPosition();
 
-        Consumer<? super Set<Animal>> actionIfPresent = (animalSet) -> {
-            if (!animalSet.contains(animal)) {
-                throw new IllegalArgumentException();
-            }
+            Consumer<? super Set<Animal>> actionIfPresent = (animalSet) -> {
+                if (!animalSet.contains(animal)) {
+                    throw new IllegalArgumentException();
+                }
 
-            animalSet.remove(animal);
+                animalSet.remove(animal);
 
-            if (animalSet.isEmpty()) {
-                this.animals.remove(animalPosition);
-            }
+                if (animalSet.isEmpty()) {
+                    this.animals.remove(animalPosition);
+                }
 
-            if (!this.isInMoveState) {
-                this.mapChanged(String.format(ANIMAL_REMOVED_MESSAGE_TEMPLATE, animal.getStatistics().getPosition()));
-            }
-        };
+                if (!this.isInMoveState) {
+                    this.mapChanged(String.format(ANIMAL_REMOVED_MESSAGE_TEMPLATE, animal.getStatistics().getPosition()));
+                }
+            };
 
-        Runnable actionIfNotPresent = () -> {
-            throw new IllegalArgumentException(this.createIncorrectAnimalToRemoveMessage(animal));
-        };
+            Runnable actionIfNotPresent = () -> {
+                throw new IllegalArgumentException(this.createIncorrectAnimalToRemoveMessage(animal));
+            };
 
-        this.animalsAt(animalPosition).ifPresentOrElse(actionIfPresent, actionIfNotPresent);
+            this.animalsAt(animalPosition).ifPresentOrElse(actionIfPresent, actionIfNotPresent);
+        }
     }
 
     @Override
     public void place(Animal animal) throws IncorrectPositionException {
-        Vector2d position = animal.getPosition();
+        synchronized (this.animals) {
+            Vector2d position = animal.getPosition();
 
-        if (this.isOnMap(position)) {
-            Optional<Set<Animal>> optionalAnimals = this.animalsAt(position);
+            if (this.isOnMap(position)) {
+                Optional<Set<Animal>> optionalAnimals = this.animalsAt(position);
 
-            if (optionalAnimals.isPresent()) {
-                optionalAnimals.get().add(animal);
+                if (optionalAnimals.isPresent()) {
+                    optionalAnimals.get().add(animal);
+                }
+                else {
+                    Set<Animal> animalSet = new HashSet<>();
+                    animalSet.add(animal);
+                    this.animals.put(position, animalSet);
+                }
             }
             else {
-                Set<Animal> animalSet = new HashSet<>();
-                animalSet.add(animal);
-                this.animals.put(position, animalSet);
+                throw new IncorrectPositionException(position);
             }
-        }
-        else {
-            throw new IncorrectPositionException(position);
-        }
 
-        if (!this.isInMoveState) {
-            this.mapChanged(String.format(ANIMAL_PLACE_MESSAGE_TEMPLATE, animal.getPosition(), animal.getStatistics().getOrientation()));
+            if (!this.isInMoveState) {
+                this.mapChanged(String.format(ANIMAL_PLACE_MESSAGE_TEMPLATE, animal.getPosition(), animal.getStatistics().getOrientation()));
+            }
         }
     }
 
@@ -184,19 +188,22 @@ public class Sphere implements WorldMap {
 
     @Override
     public Optional<Set<Animal>> animalsAt(Vector2d position) {
-        return this.animals.containsKey(position) ? Optional.of(this.animals.get(position)) : Optional.empty();
+        synchronized (this.animals) {
+            return this.animals.containsKey(position) ? Optional.of(new HashSet<>(this.animals.get(position))) : Optional.empty();
+        }
     }
 
     @Override
     public Optional<WorldElement> objectAt(Vector2d position) {
-        var animalsAtPosition = this.animalsAt(position);
-        Optional<WorldElement> optionalObject = Optional.ofNullable(this.grass.get(position));
+        synchronized (this.animals) {
+            var animalsAtPosition = this.animalsAt(position);
+            Optional<WorldElement> optionalObject = Optional.ofNullable(this.grass.get(position));
 
-        if (animalsAtPosition.isPresent()) {
-            optionalObject = animalsAtPosition.flatMap(set -> set.stream().findFirst());
+            if (animalsAtPosition.isPresent()) {
+                optionalObject = animalsAtPosition.flatMap(set -> set.stream().findFirst());
+            }
+            return optionalObject;
         }
-
-        return optionalObject;
     }
 
     @Override
@@ -206,9 +213,11 @@ public class Sphere implements WorldMap {
 
     @Override
     public List<Animal> getAnimals() {
-        return this.animals.values().stream()
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+        synchronized (this.animals) {
+            return this.animals.values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+        }
     }
 
     @Override

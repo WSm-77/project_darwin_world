@@ -28,7 +28,7 @@ public class AnimalStatistics {
     private int eatenPlants = 0;
     private int daysAlive = 0;
     private Integer deathDay = null;
-    final private Set<Animal> children = new HashSet<>();
+    final private Set<Animal> children = Collections.synchronizedSet(new HashSet<>());
     private Set<AnimalStatisticsListener> listeners = new HashSet<>();
 
     public AnimalStatistics(Vector2d position, Genome genome, int startEnergy, MapDirection startOrientation) {
@@ -126,19 +126,21 @@ public class AnimalStatistics {
     }
 
     public int getDescendantsCount(Set<Animal> checked) {
-        int descendantsCount = 0;
+        synchronized (this.children) {
+            int descendantsCount = 0;
 
-        for (Animal child : this.children) {
-            if (checked.contains(child)) {
-                continue;
+            for (Animal child : this.children) {
+                if (checked.contains(child)) {
+                    continue;
+                }
+
+                checked.add(child);
+                descendantsCount++;
+                descendantsCount += child.getStatistics().getDescendantsCount(checked);
             }
 
-            checked.add(child);
-            descendantsCount++;
-            descendantsCount += child.getStatistics().getDescendantsCount(checked);
+            return descendantsCount;
         }
-
-        return descendantsCount;
     }
 
     public void setDeathDay(Integer deathDay) {
