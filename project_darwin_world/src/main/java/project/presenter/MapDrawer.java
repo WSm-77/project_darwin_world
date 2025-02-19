@@ -27,6 +27,8 @@ public class MapDrawer {
     private final static int MAX_ENERGY_COLOR = 100;
     private final static double MIN_ANIMAL_OPACITY = 0.1;
     private final static Color DEFAULT_HIGHLIGHT_COLOR = new Color(0.8, 0.8, 0.8, 0.7);
+    private final static Image GRASS_TILE_IMAGE = new Image(MapDrawer.class.getResource("/images/tiles/grass_tile.jpg").toExternalForm());
+    private final static Image DIRT_TILE_IMAGE = new Image(MapDrawer.class.getResource("/images/tiles/dirt_tile.png").toExternalForm());
     private final GridPane mapGridPane;
     private final WorldMap worldMap;
     private final AnimalMediator animalMediator = new AnimalMediatorStandardVariant();
@@ -62,6 +64,7 @@ public class MapDrawer {
         this.setGridCellsSize(mapRowsCnt + 1, mapColumnsCnt + 1);
         this.addRowsAndColumnsHeaders(mapRowsCnt, mapColumnsCnt, upperLeft);
         this.fillGridCells(upperLeft);
+        this.mapGridPane.setGridLinesVisible(true);
     }
 
 
@@ -131,16 +134,19 @@ public class MapDrawer {
     private Pane getFieldPane(Vector2d mapPosition, RowConstraints rowConstraints, ColumnConstraints columnConstraints) {
         StackPane field = new StackPane();
 
-        System.out.println("mapGridPane height property: " + this.mapGridPane.heightProperty().doubleValue());
-        System.out.println("rowconstraint height property: " + rowConstraints.percentHeightProperty().doubleValue());
-        System.out.println(this.mapGridPane.widthProperty());
         field.prefHeightProperty().bind(this.mapGridPane.heightProperty().multiply(rowConstraints.percentHeightProperty()).divide(100.0));
         field.prefWidthProperty().bind(this.mapGridPane.widthProperty().multiply(columnConstraints.percentWidthProperty()).divide(100.0));
 
+        Node fieldTile;
         Optional<Plant> plant = this.worldMap.plantAt(mapPosition);
+
         if (plant.isPresent()) {
-            field.getChildren().add(this.getGrassNode(field));
+            fieldTile = this.getGrassTile(field);
+        } else {
+            fieldTile = this.getDirtTile(field);
         }
+
+        field.getChildren().add(fieldTile);
 
         Optional<Set<Animal>> animals = this.worldMap.animalsAt(mapPosition);
         if (animals.isPresent()) {
@@ -151,11 +157,6 @@ public class MapDrawer {
                 field.getChildren().add(animalNode);
             }
         }
-
-        System.out.println("RowConstraint height property: " + rowConstraints.prefHeightProperty().doubleValue());
-        System.out.println("RowConstraint percent height property: " + rowConstraints.percentHeightProperty().doubleValue());
-        System.out.println("RowConstraint max height property: " + rowConstraints.maxHeightProperty().doubleValue());
-        System.out.println("RowConstraint min height property: " + rowConstraints.minHeightProperty().doubleValue());
 
         field.setOnMouseClicked(event -> this.onMapFieldClicked(mapPosition));
 
@@ -180,45 +181,25 @@ public class MapDrawer {
         return animalCircle;
     }
 
-//    private Node getGrassNode(Pane parentPane) {
-//        System.out.println("Parent height property: " + parentPane.prefHeightProperty().doubleValue());
-//
-////        Image grassTileImage = new Image("images/tiles/dirt_tile.png");
-//        Image grassTileImage = new Image("images/animals/single_animal.png");
-//        ImageView grassTile = new ImageView(grassTileImage);
-//
-////        grassTile.setPreserveRatio(true);
-//        grassTile.fitWidthProperty().bind(parentPane.widthProperty());
-//        grassTile.fitHeightProperty().bind(parentPane.heightProperty());
-//
-//        return grassTile;
-//    }
-
-    private Node getGrassNode(Pane parentPane) {
-        System.out.println("Parent height property: " + parentPane.heightProperty().doubleValue());
-        System.out.println("Parent prefheight property: " + parentPane.prefHeightProperty().doubleValue());
-
-        Image grassTileImage = new Image(getClass().getResource("/images/animals/single_animal.png").toExternalForm());
-        ImageView grassTile = new ImageView(grassTileImage);
-
-        grassTile.setPreserveRatio(true);
-
-        // Properly bind width & height
-        grassTile.fitWidthProperty().bind(parentPane.prefWidthProperty());
-        grassTile.fitHeightProperty().bind(parentPane.prefHeightProperty());
-
-        return grassTile;
+    private Node getGrassTile(Pane parentPane) {
+        return this.getMapTile(parentPane, GRASS_TILE_IMAGE);
     }
 
-//    private Node getGrassNode(Pane parentPane) {
-//        Rectangle grassRectangle = new Rectangle();
-//        grassRectangle.setFill(new Color(0, 0.8, 0.05, 0.5));
-//
-//        grassRectangle.widthProperty().bind(parentPane.widthProperty());
-//        grassRectangle.heightProperty().bind(parentPane.heightProperty());
-//
-//        return grassRectangle;
-//    }
+    private Node getDirtTile(Pane parentPane) {
+        return this.getMapTile(parentPane, DIRT_TILE_IMAGE);
+    }
+
+    private Node getMapTile(Pane parentPane, Image grassTileImage) {
+        ImageView mapTile = new ImageView(grassTileImage);
+
+        mapTile.setPreserveRatio(false);
+
+        // Properly bind width & height
+        mapTile.fitWidthProperty().bind(parentPane.prefWidthProperty());
+        mapTile.fitHeightProperty().bind(parentPane.prefHeightProperty());
+
+        return mapTile;
+    }
 
     public void highlightPositions(List<Vector2d> mapPositions, Color color) {
         for (var mapPosition : mapPositions) {
