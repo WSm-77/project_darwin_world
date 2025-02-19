@@ -6,10 +6,13 @@ import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import project.app.DarwinWorldApp;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.util.AnimalMediator;
@@ -70,7 +73,7 @@ public class MapDrawer {
     private void setRowsSize(int rows) {
         for (int i = 0; i < rows; i++){
             RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setPrefHeight(100.0 / rows);
+            rowConstraints.setPercentHeight(100.0 / rows);
             rowConstraints.setVgrow(Priority.ALWAYS);
             this.mapGridPane.getRowConstraints().add(rowConstraints);
         }
@@ -128,6 +131,12 @@ public class MapDrawer {
     private Pane getFieldPane(Vector2d mapPosition, RowConstraints rowConstraints, ColumnConstraints columnConstraints) {
         StackPane field = new StackPane();
 
+        System.out.println("mapGridPane height property: " + this.mapGridPane.heightProperty().doubleValue());
+        System.out.println("rowconstraint height property: " + rowConstraints.percentHeightProperty().doubleValue());
+        System.out.println(this.mapGridPane.widthProperty());
+        field.prefHeightProperty().bind(this.mapGridPane.heightProperty().multiply(rowConstraints.percentHeightProperty()).divide(100.0));
+        field.prefWidthProperty().bind(this.mapGridPane.widthProperty().multiply(columnConstraints.percentWidthProperty()).divide(100.0));
+
         Optional<Plant> plant = this.worldMap.plantAt(mapPosition);
         if (plant.isPresent()) {
             field.getChildren().add(this.getGrassNode(field));
@@ -143,8 +152,10 @@ public class MapDrawer {
             }
         }
 
-        field.prefHeightProperty().bind(rowConstraints.prefHeightProperty());
-        field.prefWidthProperty().bind(columnConstraints.prefWidthProperty());
+        System.out.println("RowConstraint height property: " + rowConstraints.prefHeightProperty().doubleValue());
+        System.out.println("RowConstraint percent height property: " + rowConstraints.percentHeightProperty().doubleValue());
+        System.out.println("RowConstraint max height property: " + rowConstraints.maxHeightProperty().doubleValue());
+        System.out.println("RowConstraint min height property: " + rowConstraints.minHeightProperty().doubleValue());
 
         field.setOnMouseClicked(event -> this.onMapFieldClicked(mapPosition));
 
@@ -169,15 +180,45 @@ public class MapDrawer {
         return animalCircle;
     }
 
+//    private Node getGrassNode(Pane parentPane) {
+//        System.out.println("Parent height property: " + parentPane.prefHeightProperty().doubleValue());
+//
+////        Image grassTileImage = new Image("images/tiles/dirt_tile.png");
+//        Image grassTileImage = new Image("images/animals/single_animal.png");
+//        ImageView grassTile = new ImageView(grassTileImage);
+//
+////        grassTile.setPreserveRatio(true);
+//        grassTile.fitWidthProperty().bind(parentPane.widthProperty());
+//        grassTile.fitHeightProperty().bind(parentPane.heightProperty());
+//
+//        return grassTile;
+//    }
+
     private Node getGrassNode(Pane parentPane) {
-        Rectangle grassRectangle = new Rectangle();
-        grassRectangle.setFill(new Color(0, 0.8, 0.05, 0.5));
+        System.out.println("Parent height property: " + parentPane.heightProperty().doubleValue());
+        System.out.println("Parent prefheight property: " + parentPane.prefHeightProperty().doubleValue());
 
-        grassRectangle.widthProperty().bind(parentPane.widthProperty());
-        grassRectangle.heightProperty().bind(parentPane.heightProperty());
+        Image grassTileImage = new Image(getClass().getResource("/images/animals/single_animal.png").toExternalForm());
+        ImageView grassTile = new ImageView(grassTileImage);
 
-        return grassRectangle;
+        grassTile.setPreserveRatio(true);
+
+        // Properly bind width & height
+        grassTile.fitWidthProperty().bind(parentPane.prefWidthProperty());
+        grassTile.fitHeightProperty().bind(parentPane.prefHeightProperty());
+
+        return grassTile;
     }
+
+//    private Node getGrassNode(Pane parentPane) {
+//        Rectangle grassRectangle = new Rectangle();
+//        grassRectangle.setFill(new Color(0, 0.8, 0.05, 0.5));
+//
+//        grassRectangle.widthProperty().bind(parentPane.widthProperty());
+//        grassRectangle.heightProperty().bind(parentPane.heightProperty());
+//
+//        return grassRectangle;
+//    }
 
     public void highlightPositions(List<Vector2d> mapPositions, Color color) {
         for (var mapPosition : mapPositions) {
