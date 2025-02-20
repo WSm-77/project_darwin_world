@@ -29,6 +29,12 @@ public class MapDrawer {
     private final static Color DEFAULT_HIGHLIGHT_COLOR = new Color(0.8, 0.8, 0.8, 0.7);
     private final static Image GRASS_TILE_IMAGE = new Image(MapDrawer.class.getResource("/images/tiles/grass_tile.jpg").toExternalForm());
     private final static Image DIRT_TILE_IMAGE = new Image(MapDrawer.class.getResource("/images/tiles/dirt_tile.png").toExternalForm());
+    private final static Image SINGLE_ANIMAL_IMAGE_1 = new Image(MapDrawer.class.getResource("/images/animals/single_animal1.png").toExternalForm());
+    private final static Image SINGLE_ANIMAL_IMAGE_2 = new Image(MapDrawer.class.getResource("/images/animals/single_animal2.png").toExternalForm());
+    private final static Image MULTIPLE_ANIMALS_IMAGE = new Image(MapDrawer.class.getResource("/images/animals/multiple_animals.png").toExternalForm());
+    private final static List<Image> SINGLE_ANIMALS_IMAGES_LIST = List.of(SINGLE_ANIMAL_IMAGE_1, SINGLE_ANIMAL_IMAGE_2);
+
+    private final Random random = new Random();
     private final GridPane mapGridPane;
     private final WorldMap worldMap;
     private final AnimalMediator animalMediator = new AnimalMediatorStandardVariant();
@@ -64,7 +70,6 @@ public class MapDrawer {
         this.setGridCellsSize(mapRowsCnt + 1, mapColumnsCnt + 1);
         this.addRowsAndColumnsHeaders(mapRowsCnt, mapColumnsCnt, upperLeft);
         this.fillGridCells(upperLeft);
-        this.mapGridPane.setGridLinesVisible(true);
     }
 
 
@@ -149,13 +154,10 @@ public class MapDrawer {
         field.getChildren().add(fieldTile);
 
         Optional<Set<Animal>> animals = this.worldMap.animalsAt(mapPosition);
-        if (animals.isPresent()) {
-            List<Animal> strongestAnimalList = this.animalMediator.resolveAnimalsConflict(animals.get(), 1);
 
-            if (strongestAnimalList.size() == 1) {
-                Node animalNode = this.getAnimalNode(field, strongestAnimalList.getFirst());
-                field.getChildren().add(animalNode);
-            }
+        if (animals.isPresent()) {
+            Node animalNode = this.getAnimalNode(field, animals.get());
+            field.getChildren().add(animalNode);
         }
 
         field.setOnMouseClicked(event -> this.onMapFieldClicked(mapPosition));
@@ -163,38 +165,50 @@ public class MapDrawer {
         return field;
     }
 
-    private Node getAnimalNode(Pane parentPane, Animal animal) {
-        double animalEnergy = Math.min(animal.getStatistics().getEnergy(), MAX_ENERGY_COLOR);
-        double colorRate = animalEnergy / MAX_ENERGY_COLOR;
-        colorRate = Math.max(colorRate, MIN_ANIMAL_OPACITY);
-        var color = new Color(0.8, 0.0, 0.0, colorRate);
+    private Node getAnimalNode(Pane parentPane, Set<Animal> animalsSet) {
+            return animalsSet.size() > 1 ?
+                    this.getMultipleAnimalsNode(parentPane) :
+                    this.getSingleAnimalNode(parentPane);
+    }
 
-        Circle animalCircle = new Circle();
-        animalCircle.setFill(color);
+    private Node getMultipleAnimalsNode(Pane parentPane) {
+        return this.getAnimalsNodeFromImage(parentPane, MULTIPLE_ANIMALS_IMAGE);
+    }
 
-        animalCircle.radiusProperty()
-                .bind(Bindings.min(
-                        parentPane.widthProperty(),
-                        parentPane.heightProperty())
-                .divide(2));
+    private Node getSingleAnimalNode(Pane parentPane) {
+        return this.getAnimalsNodeFromImage(parentPane, this.getRandomSingleAnimalIMage());
+    }
 
-        return animalCircle;
+    private Image getRandomSingleAnimalIMage() {
+        int idx = this.random.nextInt(SINGLE_ANIMALS_IMAGES_LIST.size());
+
+        return SINGLE_ANIMALS_IMAGES_LIST.get(idx);
+    }
+
+    private Node getAnimalsNodeFromImage(Pane parentPane, Image animalsImage) {
+        ImageView animalsNode = new ImageView(animalsImage);
+
+        animalsNode.setPreserveRatio(true);
+
+        animalsNode.fitWidthProperty().bind(parentPane.prefWidthProperty());
+        animalsNode.fitHeightProperty().bind(parentPane.prefHeightProperty());
+
+        return animalsNode;
     }
 
     private Node getGrassTile(Pane parentPane) {
-        return this.getMapTile(parentPane, GRASS_TILE_IMAGE);
+        return this.getMapTileFromImage(parentPane, GRASS_TILE_IMAGE);
     }
 
     private Node getDirtTile(Pane parentPane) {
-        return this.getMapTile(parentPane, DIRT_TILE_IMAGE);
+        return this.getMapTileFromImage(parentPane, DIRT_TILE_IMAGE);
     }
 
-    private Node getMapTile(Pane parentPane, Image grassTileImage) {
-        ImageView mapTile = new ImageView(grassTileImage);
+    private Node getMapTileFromImage(Pane parentPane, Image mapTileImage) {
+        ImageView mapTile = new ImageView(mapTileImage);
 
         mapTile.setPreserveRatio(false);
 
-        // Properly bind width & height
         mapTile.fitWidthProperty().bind(parentPane.prefWidthProperty());
         mapTile.fitHeightProperty().bind(parentPane.prefHeightProperty());
 
