@@ -134,7 +134,7 @@ public class Sphere implements WorldMap {
             Vector2d position = animal.getPosition();
 
             if (this.isOnMap(position)) {
-                Optional<Set<Animal>> optionalAnimals = this.animalsAt(position);
+                Optional<Set<Animal>> optionalAnimals = Optional.ofNullable(this.animals.get(position));
 
                 if (optionalAnimals.isPresent()) {
                     optionalAnimals.get().add(animal);
@@ -188,8 +188,8 @@ public class Sphere implements WorldMap {
                 this.place(animal);
             }
 
-            this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation, animal.getStatistics().getOrientation(),
-                    prevPosition, animal.getPosition()));
+            this.mapChanged(String.format(Sphere.MOVE_MESSAGE_TEMPLATE, prevOrientation,
+                    animal.getStatistics().getOrientation(), prevPosition, animal.getPosition()));
 
             this.isInMoveState = false;
     }
@@ -197,7 +197,9 @@ public class Sphere implements WorldMap {
     @Override
     public Optional<Set<Animal>> animalsAt(Vector2d position) {
         synchronized (this.animals) {
-            return this.animals.containsKey(position) ? Optional.of(new HashSet<>(this.animals.get(position))) : Optional.empty();
+            return this.animals.containsKey(position) ?
+                    Optional.of(new HashSet<>(this.animals.get(position))) :
+                    Optional.empty();
         }
     }
 

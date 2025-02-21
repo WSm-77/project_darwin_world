@@ -112,7 +112,7 @@ public interface WorldMap extends NextPositionCalculator {
 
     /**
      * @param position position of animals
-     * @return optional object of set of animals that are on given position
+     * @return optional object of set copy of animals that are on given position
      */
     Optional<Set<Animal>> animalsAt(Vector2d position);
 
