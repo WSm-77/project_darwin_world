@@ -59,8 +59,7 @@ public class MapDrawer {
         int mapRowsCnt = this.worldMap.getHeight();
         int mapColumnsCnt = this.worldMap.getWidth();
 
-        this.setGridCellsSize(mapRowsCnt + 1, mapColumnsCnt + 1);
-        this.addRowsAndColumnsHeaders(mapRowsCnt, mapColumnsCnt, upperLeft);
+        this.setGridCellsSize(mapRowsCnt, mapColumnsCnt);
         this.fillGridCells(upperLeft);
     }
 
@@ -112,14 +111,14 @@ public class MapDrawer {
     }
 
     private void fillGridCells(Vector2d upperLeft) {
-        for (int gridRow = 0; gridRow < this.mapGridPane.getRowCount() - 1; gridRow++) {
-            for (int gridColumn = 0; gridColumn < this.mapGridPane.getColumnCount() - 1; gridColumn++) {
+        for (int gridRow = 0; gridRow < this.mapGridPane.getRowCount(); gridRow++) {
+            for (int gridColumn = 0; gridColumn < this.mapGridPane.getColumnCount(); gridColumn++) {
                 var mapPosition = upperLeft.add(new Vector2d(gridColumn, -gridRow));
-                RowConstraints rowConstraints = this.mapGridPane.getRowConstraints().get(gridRow + 1);
-                ColumnConstraints columnConstraints = this.mapGridPane.getColumnConstraints().get(gridColumn + 1);
+                RowConstraints rowConstraints = this.mapGridPane.getRowConstraints().get(gridRow);
+                ColumnConstraints columnConstraints = this.mapGridPane.getColumnConstraints().get(gridColumn);
 
                 Pane field = this.getFieldPane(mapPosition, rowConstraints, columnConstraints);
-                this.mapGridPane.add(field, gridColumn + 1, gridRow + 1);
+                this.mapGridPane.add(field, gridColumn, gridRow);
                 this.mapFieldsMap.put(mapPosition, field);
 
                 GridPane.setHalignment(field, HPos.CENTER);
