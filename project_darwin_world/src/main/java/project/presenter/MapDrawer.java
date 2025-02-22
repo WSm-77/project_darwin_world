@@ -27,14 +27,9 @@ public class MapDrawer {
     private final static int MAX_ENERGY_COLOR = 100;
     private final static double MIN_ANIMAL_OPACITY = 0.1;
     private final static Color DEFAULT_HIGHLIGHT_COLOR = new Color(0.8, 0.8, 0.8, 0.7);
-    private final static Image GRASS_TILE_IMAGE = new Image(MapDrawer.class.getResource("/images/tiles/grass_tile.jpg").toExternalForm());
     private final static Image DIRT_TILE_IMAGE = new Image(MapDrawer.class.getResource("/images/tiles/dirt_tile.png").toExternalForm());
-    private final static Image SINGLE_ANIMAL_IMAGE_1 = new Image(MapDrawer.class.getResource("/images/animals/single_animal1.png").toExternalForm());
-    private final static Image SINGLE_ANIMAL_IMAGE_2 = new Image(MapDrawer.class.getResource("/images/animals/single_animal2.png").toExternalForm());
     private final static Image MULTIPLE_ANIMALS_IMAGE = new Image(MapDrawer.class.getResource("/images/animals/multiple_animals.png").toExternalForm());
-    private final static List<Image> SINGLE_ANIMALS_IMAGES_LIST = List.of(SINGLE_ANIMAL_IMAGE_1, SINGLE_ANIMAL_IMAGE_2);
 
-    private final Random random = new Random();
     private final GridPane mapGridPane;
     private final WorldMap worldMap;
     private final AnimalMediator animalMediator = new AnimalMediatorStandardVariant();
@@ -142,14 +137,10 @@ public class MapDrawer {
         field.prefHeightProperty().bind(this.mapGridPane.heightProperty().multiply(rowConstraints.percentHeightProperty()).divide(100.0));
         field.prefWidthProperty().bind(this.mapGridPane.widthProperty().multiply(columnConstraints.percentWidthProperty()).divide(100.0));
 
-        Node fieldTile;
-        Optional<Plant> plant = this.worldMap.plantAt(mapPosition);
+        Optional<Plant> optionalPlant = this.worldMap.plantAt(mapPosition);
 
-        if (plant.isPresent()) {
-            fieldTile = this.getGrassTile(field);
-        } else {
-            fieldTile = this.getDirtTile(field);
-        }
+        Node fieldTile = optionalPlant.map(plant -> this.getGrassTile(field, plant))
+                .orElseGet(() -> this.getDirtTile(field));
 
         field.getChildren().add(fieldTile);
 
@@ -168,21 +159,15 @@ public class MapDrawer {
     private Node getAnimalNode(Pane parentPane, Set<Animal> animalsSet) {
             return animalsSet.size() > 1 ?
                     this.getMultipleAnimalsNode(parentPane) :
-                    this.getSingleAnimalNode(parentPane);
+                    this.getSingleAnimalNode(parentPane, animalsSet.iterator().next());
     }
 
     private Node getMultipleAnimalsNode(Pane parentPane) {
         return this.getAnimalsNodeFromImage(parentPane, MULTIPLE_ANIMALS_IMAGE);
     }
 
-    private Node getSingleAnimalNode(Pane parentPane) {
-        return this.getAnimalsNodeFromImage(parentPane, this.getRandomSingleAnimalIMage());
-    }
-
-    private Image getRandomSingleAnimalIMage() {
-        int idx = this.random.nextInt(SINGLE_ANIMALS_IMAGES_LIST.size());
-
-        return SINGLE_ANIMALS_IMAGES_LIST.get(idx);
+    private Node getSingleAnimalNode(Pane parentPane, Animal animal) {
+        return this.getAnimalsNodeFromImage(parentPane, WorldElementBoxCreator.getWorldElementImage(animal));
     }
 
     private Node getAnimalsNodeFromImage(Pane parentPane, Image animalsImage) {
@@ -196,8 +181,8 @@ public class MapDrawer {
         return animalsNode;
     }
 
-    private Node getGrassTile(Pane parentPane) {
-        return this.getMapTileFromImage(parentPane, GRASS_TILE_IMAGE);
+    private Node getGrassTile(Pane parentPane, Plant plant) {
+        return this.getMapTileFromImage(parentPane, WorldElementBoxCreator.getWorldElementImage(plant));
     }
 
     private Node getDirtTile(Pane parentPane) {
