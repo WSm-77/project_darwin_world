@@ -4,11 +4,27 @@ import project.model.movement.NextPositionCalculator;
 import project.model.movement.PositionDirectionPair;
 import project.model.movement.Vector2d;
 
+import java.util.List;
+import java.util.Random;
+
 public class AnimalStandardVariant implements Animal {
+    private final static String SINGLE_ANIMAL_RESOURCE_PATH_1 = "/images/animals/single_animal1.png";
+    private final static String SINGLE_ANIMAL_RESOURCE_PATH_2 = "/images/animals/single_animal2.png";
+    private final static List<String > SINGLE_ANIMALS_IMAGES_LIST = List.of(SINGLE_ANIMAL_RESOURCE_PATH_1, SINGLE_ANIMAL_RESOURCE_PATH_2);
+
+    private final Random random = new Random();
+    private final String resourcePath;
     final private AnimalStatistics statistics;
 
     public AnimalStandardVariant(AnimalStatistics statistics) {
         this.statistics = statistics;
+        this.resourcePath = getRandomSingleAnimalResourcePath();
+    }
+
+    private String getRandomSingleAnimalResourcePath() {
+        int idx = this.random.nextInt(SINGLE_ANIMALS_IMAGES_LIST.size());
+
+        return SINGLE_ANIMALS_IMAGES_LIST.get(idx);
     }
 
     public boolean move(NextPositionCalculator nextPositionCalculator) {
@@ -34,6 +50,11 @@ public class AnimalStandardVariant implements Animal {
     @Override
     public Vector2d getPosition() {
         return this.getStatistics().getPosition();
+    }
+
+    @Override
+    public String getResourcePath() {
+        return this.resourcePath;
     }
 
     @Override

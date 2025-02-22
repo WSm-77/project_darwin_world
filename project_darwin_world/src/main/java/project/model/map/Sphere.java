@@ -125,7 +125,8 @@ public class Sphere implements WorldMap {
             throw new IllegalArgumentException(this.createIncorrectAnimalToRemoveMessage(animal));
         };
 
-        this.animalsAt(animalPosition).ifPresentOrElse(actionIfPresent, actionIfNotPresent);
+        Optional<Set<Animal>> animalsOptionalSet = Optional.ofNullable(this.animals.get(animalPosition));
+        animalsOptionalSet.ifPresentOrElse(actionIfPresent, actionIfNotPresent);
     }
 
     @Override
@@ -198,7 +199,7 @@ public class Sphere implements WorldMap {
     public Optional<Set<Animal>> animalsAt(Vector2d position) {
         synchronized (this.animals) {
             return this.animals.containsKey(position) ?
-                    Optional.of(new HashSet<>(this.animals.get(position))) :
+                    Optional.of(Set.copyOf(this.animals.get(position))) :
                     Optional.empty();
         }
     }

@@ -1,14 +1,15 @@
 package project.presenter;
 
-import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
@@ -21,9 +22,11 @@ import java.util.*;
 
 public class MapDrawer {
     private final static String AXIS_DESCRIPTION_STRING = "y/x";
-    private final static int MAX_ENERGY_COLOR = 100;
-    private final static double MIN_ANIMAL_OPACITY = 0.1;
+    private final static int MAX_ENERGY_FOR_HEALTH_BAR = 100;
     private final static Color DEFAULT_HIGHLIGHT_COLOR = new Color(0.8, 0.8, 0.8, 0.7);
+    private final static Image DIRT_TILE_IMAGE = new Image(MapDrawer.class.getResource("/images/tiles/dirt_tile.png").toExternalForm());
+    private final static Image MULTIPLE_ANIMALS_IMAGE = new Image(MapDrawer.class.getResource("/images/animals/multiple_animals.png").toExternalForm());
+
     private final GridPane mapGridPane;
     private final WorldMap worldMap;
     private final AnimalMediator animalMediator = new AnimalMediatorStandardVariant();
@@ -56,8 +59,7 @@ public class MapDrawer {
         int mapRowsCnt = this.worldMap.getHeight();
         int mapColumnsCnt = this.worldMap.getWidth();
 
-        this.setGridCellsSize(mapRowsCnt + 1, mapColumnsCnt + 1);
-        this.addRowsAndColumnsHeaders(mapRowsCnt, mapColumnsCnt, upperLeft);
+        this.setGridCellsSize(mapRowsCnt, mapColumnsCnt);
         this.fillGridCells(upperLeft);
     }
 
@@ -70,7 +72,7 @@ public class MapDrawer {
     private void setRowsSize(int rows) {
         for (int i = 0; i < rows; i++){
             RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setPrefHeight(100.0 / rows);
+            rowConstraints.setPercentHeight(100.0 / rows);
             rowConstraints.setVgrow(Priority.ALWAYS);
             this.mapGridPane.getRowConstraints().add(rowConstraints);
         }
@@ -109,14 +111,14 @@ public class MapDrawer {
     }
 
     private void fillGridCells(Vector2d upperLeft) {
-        for (int gridRow = 0; gridRow < this.mapGridPane.getRowCount() - 1; gridRow++) {
-            for (int gridColumn = 0; gridColumn < this.mapGridPane.getColumnCount() - 1; gridColumn++) {
+        for (int gridRow = 0; gridRow < this.mapGridPane.getRowCount(); gridRow++) {
+            for (int gridColumn = 0; gridColumn < this.mapGridPane.getColumnCount(); gridColumn++) {
                 var mapPosition = upperLeft.add(new Vector2d(gridColumn, -gridRow));
-                RowConstraints rowConstraints = this.mapGridPane.getRowConstraints().get(gridRow + 1);
-                ColumnConstraints columnConstraints = this.mapGridPane.getColumnConstraints().get(gridColumn + 1);
+                RowConstraints rowConstraints = this.mapGridPane.getRowConstraints().get(gridRow);
+                ColumnConstraints columnConstraints = this.mapGridPane.getColumnConstraints().get(gridColumn);
 
                 Pane field = this.getFieldPane(mapPosition, rowConstraints, columnConstraints);
-                this.mapGridPane.add(field, gridColumn + 1, gridRow + 1);
+                this.mapGridPane.add(field, gridColumn, gridRow);
                 this.mapFieldsMap.put(mapPosition, field);
 
                 GridPane.setHalignment(field, HPos.CENTER);
@@ -128,55 +130,90 @@ public class MapDrawer {
     private Pane getFieldPane(Vector2d mapPosition, RowConstraints rowConstraints, ColumnConstraints columnConstraints) {
         StackPane field = new StackPane();
 
-        Optional<Plant> plant = this.worldMap.plantAt(mapPosition);
-        if (plant.isPresent()) {
-            field.getChildren().add(this.getGrassNode(field));
-        }
+        field.prefHeightProperty().bind(this.mapGridPane.heightProperty().multiply(rowConstraints.percentHeightProperty()).divide(100.0));
+        field.prefWidthProperty().bind(this.mapGridPane.widthProperty().multiply(columnConstraints.percentWidthProperty()).divide(100.0));
+
+        Optional<Plant> optionalPlant = this.worldMap.plantAt(mapPosition);
+
+        Node fieldTile = optionalPlant.map(plant -> this.getGrassTile(field, plant))
+                .orElseGet(() -> this.getDirtTile(field));
+
+        field.getChildren().add(fieldTile);
 
         Optional<Set<Animal>> animals = this.worldMap.animalsAt(mapPosition);
+
         if (animals.isPresent()) {
-            List<Animal> strongestAnimalList = this.animalMediator.resolveAnimalsConflict(animals.get(), 1);
-
-            if (strongestAnimalList.size() == 1) {
-                Node animalNode = this.getAnimalNode(field, strongestAnimalList.getFirst());
-                field.getChildren().add(animalNode);
-            }
+            Node animalNode = this.getAnimalNode(field, animals.get());
+            field.getChildren().add(animalNode);
         }
-
-        field.prefHeightProperty().bind(rowConstraints.prefHeightProperty());
-        field.prefWidthProperty().bind(columnConstraints.prefWidthProperty());
 
         field.setOnMouseClicked(event -> this.onMapFieldClicked(mapPosition));
 
         return field;
     }
 
-    private Node getAnimalNode(Pane parentPane, Animal animal) {
-        double animalEnergy = Math.min(animal.getStatistics().getEnergy(), MAX_ENERGY_COLOR);
-        double colorRate = animalEnergy / MAX_ENERGY_COLOR;
-        colorRate = Math.max(colorRate, MIN_ANIMAL_OPACITY);
-        var color = new Color(0.8, 0.0, 0.0, colorRate);
-
-        Circle animalCircle = new Circle();
-        animalCircle.setFill(color);
-
-        animalCircle.radiusProperty()
-                .bind(Bindings.min(
-                        parentPane.widthProperty(),
-                        parentPane.heightProperty())
-                .divide(2));
-
-        return animalCircle;
+    private Node getAnimalNode(Pane parentPane, Set<Animal> animalsSet) {
+            return animalsSet.size() > 1 ?
+                    this.getMultipleAnimalsNode(parentPane, animalsSet) :
+                    this.getSingleAnimalNode(parentPane, animalsSet.iterator().next());
     }
 
-    private Node getGrassNode(Pane parentPane) {
-        Rectangle grassRectangle = new Rectangle();
-        grassRectangle.setFill(new Color(0, 0.8, 0.05, 0.5));
+    private Node getMultipleAnimalsNode(Pane parentPane, Set<Animal> animalSet) {
+        List<Animal> animals = this.animalMediator.resolveAnimalsConflict(animalSet, 1);
+        return this.getAnimalsNodeFromImage(parentPane, MULTIPLE_ANIMALS_IMAGE, animals.getFirst());
+    }
 
-        grassRectangle.widthProperty().bind(parentPane.widthProperty());
-        grassRectangle.heightProperty().bind(parentPane.heightProperty());
+    private Node getSingleAnimalNode(Pane parentPane, Animal animal) {
+        return this.getAnimalsNodeFromImage(parentPane, WorldElementBoxCreator.getWorldElementImage(animal), animal);
+    }
 
-        return grassRectangle;
+    private Node getAnimalsNodeFromImage(Pane parentPane, Image animalsImage, Animal animal) {
+        ImageView animalsNode = new ImageView(animalsImage);
+
+        animalsNode.setPreserveRatio(true);
+
+        ProgressBar healthBar = new ProgressBar();
+        double healthPercentage = Math.min(1.0, (double) animal.getStatistics().getEnergy() / MAX_ENERGY_FOR_HEALTH_BAR);
+        healthBar.setProgress(healthPercentage);
+
+        healthBar.prefWidthProperty().bind(parentPane.prefWidthProperty().multiply(0.9));
+        healthBar.prefHeightProperty().bind(parentPane.prefHeightProperty().multiply(0.18));
+        healthBar.setStyle("-fx-accent: red; -fx-border-width: 0px;");
+
+        BorderPane animalContainer = new BorderPane();
+
+        animalContainer.prefWidthProperty().bind(parentPane.prefWidthProperty());
+        animalContainer.prefHeightProperty().bind(parentPane.prefHeightProperty());
+
+        animalsNode.fitWidthProperty().bind(animalContainer.prefWidthProperty());
+        animalsNode.fitHeightProperty().bind(animalContainer.prefHeightProperty().multiply(0.8));
+
+        animalContainer.setCenter(animalsNode);
+        animalContainer.setBottom(healthBar);
+
+        BorderPane.setAlignment(healthBar, Pos.CENTER);
+        BorderPane.setAlignment(animalsNode, Pos.CENTER);
+
+        return animalContainer;
+    }
+
+    private Node getGrassTile(Pane parentPane, Plant plant) {
+        return this.getMapTileFromImage(parentPane, WorldElementBoxCreator.getWorldElementImage(plant));
+    }
+
+    private Node getDirtTile(Pane parentPane) {
+        return this.getMapTileFromImage(parentPane, DIRT_TILE_IMAGE);
+    }
+
+    private Node getMapTileFromImage(Pane parentPane, Image mapTileImage) {
+        ImageView mapTile = new ImageView(mapTileImage);
+
+        mapTile.setPreserveRatio(false);
+
+        mapTile.fitWidthProperty().bind(parentPane.prefWidthProperty());
+        mapTile.fitHeightProperty().bind(parentPane.prefHeightProperty());
+
+        return mapTile;
     }
 
     public void highlightPositions(List<Vector2d> mapPositions, Color color) {

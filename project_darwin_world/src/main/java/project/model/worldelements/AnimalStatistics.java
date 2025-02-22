@@ -84,7 +84,7 @@ public class AnimalStatistics {
      *                     negative to decrease.
      */
     public void updateEnergy(int energyAmount) {
-        this.energy += energyAmount;
+        this.energy = Integer.max(0, this.energy + energyAmount);
     }
 
     public int getEatenPlants() {
