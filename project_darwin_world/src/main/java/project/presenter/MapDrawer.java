@@ -1,18 +1,16 @@
 package project.presenter;
 
-import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import project.app.DarwinWorldApp;
 import project.model.map.WorldMap;
 import project.model.movement.Vector2d;
 import project.model.util.AnimalMediator;
@@ -24,8 +22,7 @@ import java.util.*;
 
 public class MapDrawer {
     private final static String AXIS_DESCRIPTION_STRING = "y/x";
-    private final static int MAX_ENERGY_COLOR = 100;
-    private final static double MIN_ANIMAL_OPACITY = 0.1;
+    private final static int MAX_ENERGY_FOR_HEALTH_BAR = 100;
     private final static Color DEFAULT_HIGHLIGHT_COLOR = new Color(0.8, 0.8, 0.8, 0.7);
     private final static Image DIRT_TILE_IMAGE = new Image(MapDrawer.class.getResource("/images/tiles/dirt_tile.png").toExternalForm());
     private final static Image MULTIPLE_ANIMALS_IMAGE = new Image(MapDrawer.class.getResource("/images/animals/multiple_animals.png").toExternalForm());
@@ -158,27 +155,46 @@ public class MapDrawer {
 
     private Node getAnimalNode(Pane parentPane, Set<Animal> animalsSet) {
             return animalsSet.size() > 1 ?
-                    this.getMultipleAnimalsNode(parentPane) :
+                    this.getMultipleAnimalsNode(parentPane, animalsSet) :
                     this.getSingleAnimalNode(parentPane, animalsSet.iterator().next());
     }
 
-    private Node getMultipleAnimalsNode(Pane parentPane) {
-        return this.getAnimalsNodeFromImage(parentPane, MULTIPLE_ANIMALS_IMAGE);
+    private Node getMultipleAnimalsNode(Pane parentPane, Set<Animal> animalSet) {
+        List<Animal> animals = this.animalMediator.resolveAnimalsConflict(animalSet, 1);
+        return this.getAnimalsNodeFromImage(parentPane, MULTIPLE_ANIMALS_IMAGE, animals.getFirst());
     }
 
     private Node getSingleAnimalNode(Pane parentPane, Animal animal) {
-        return this.getAnimalsNodeFromImage(parentPane, WorldElementBoxCreator.getWorldElementImage(animal));
+        return this.getAnimalsNodeFromImage(parentPane, WorldElementBoxCreator.getWorldElementImage(animal), animal);
     }
 
-    private Node getAnimalsNodeFromImage(Pane parentPane, Image animalsImage) {
+    private Node getAnimalsNodeFromImage(Pane parentPane, Image animalsImage, Animal animal) {
         ImageView animalsNode = new ImageView(animalsImage);
 
         animalsNode.setPreserveRatio(true);
 
         animalsNode.fitWidthProperty().bind(parentPane.prefWidthProperty());
-        animalsNode.fitHeightProperty().bind(parentPane.prefHeightProperty());
+        animalsNode.fitHeightProperty().bind(parentPane.prefHeightProperty().multiply(0.8));
 
-        return animalsNode;
+        ProgressBar healthBar = new ProgressBar();
+        double healthPercentage = Math.min(1.0, (double) animal.getStatistics().getEnergy() / MAX_ENERGY_FOR_HEALTH_BAR);
+        healthBar.setProgress(healthPercentage);
+
+        healthBar.prefWidthProperty().bind(parentPane.prefWidthProperty().multiply(0.9));
+        healthBar.prefHeightProperty().bind(parentPane.prefHeightProperty().multiply(0.18));
+        healthBar.setStyle("-fx-accent: red; -fx-border-width: 0px;");
+
+        BorderPane animalContainer = new BorderPane();
+
+        animalContainer.prefWidthProperty().bind(parentPane.prefWidthProperty());
+        animalContainer.prefHeightProperty().bind(parentPane.prefHeightProperty());
+
+        animalContainer.setCenter(animalsNode);
+        animalContainer.setBottom(healthBar);
+
+        BorderPane.setAlignment(healthBar, Pos.CENTER);
+
+        return animalContainer;
     }
 
     private Node getGrassTile(Pane parentPane, Plant plant) {
