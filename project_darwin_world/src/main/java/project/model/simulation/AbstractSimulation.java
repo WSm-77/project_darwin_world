@@ -170,7 +170,7 @@ public abstract class AbstractSimulation implements Simulation {
     @Override
     public List<Animal> getDeadAnimals() {
         synchronized (this.deadAnimals) {
-            return new ArrayList<>(this.deadAnimals);
+            return List.copyOf(this.deadAnimals);
         }
     }
 
