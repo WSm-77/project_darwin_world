@@ -34,9 +34,9 @@
                            </font>
                         </Label>
                         <Label alignment="CENTER" prefHeight="56.0" prefWidth="290.0" text="Width" />
-                        <Slider fx:id="mapWidthSlider" majorTickUnit="10.0" max="35.0" min="5.0" minorTickCount="5" prefHeight="40.0" prefWidth="290.0" showTickLabels="true" showTickMarks="true" value="10.0" />
+                        <Slider fx:id="mapWidthSlider" majorTickUnit="10.0" max="15.0" min="5.0" minorTickCount="5" prefHeight="40.0" prefWidth="290.0" showTickLabels="true" showTickMarks="true" value="10.0" />
                         <Label alignment="CENTER" prefHeight="56.0" prefWidth="290.0" text="Height" />
-                        <Slider fx:id="mapHeightSlider" majorTickUnit="10.0" max="35.0" min="5.0" minorTickCount="5" prefHeight="40.0" prefWidth="290.0" showTickLabels="true" showTickMarks="true" value="10.0" />
+                        <Slider fx:id="mapHeightSlider" majorTickUnit="10.0" max="15.0" min="5.0" minorTickCount="5" prefHeight="40.0" prefWidth="290.0" showTickLabels="true" showTickMarks="true" value="10.0" />
                         <VBox alignment="TOP_CENTER" prefHeight="75.0" prefWidth="215.0">
                            <children>
                               <Label alignment="CENTER" prefHeight="33.0" prefWidth="241.0" text="Map Variant" />
@@ -117,8 +117,8 @@
             <HBox alignment="CENTER" prefHeight="62.0" prefWidth="912.0" spacing="50.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#onStartButtonClick" text="Start Simulation" />
-                  <Button mnemonicParsing="false" onAction="#onSaveConfigurationClick" text="Save Configuration"/>
-                  <Button mnemonicParsing="false" onAction="#onLoadConfigurationClick" text="Load Configuration"/>
+                  <Button mnemonicParsing="false" onAction="#onSaveConfigurationClick" text="Save Configuration" />
+                  <Button mnemonicParsing="false" onAction="#onLoadConfigurationClick" text="Load Configuration" />
                </children></HBox>
          </children>
       </VBox>

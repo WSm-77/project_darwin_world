@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
 
 <SplitPane fx:id="verticalSplit" dividerPositions="0.5662878787878788" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="576.0" prefWidth="794.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.presenter.SimulationWindowController">
     <items>
         <SplitPane fx:id="horizontalSplit" dividerPositions="0.3283582089552239" prefHeight="262.0" prefWidth="598.0">
-         <items>
-                  <fx:include fx:id="settingsPane" source="settingsPane.fxml" />
-                  <fx:include fx:id="mapPane" source="mapPane.fxml" />
+            <items>
+             <AnchorPane minHeight="0.0" minWidth="0.0" SplitPane.resizableWithParent="false">
+                 <children>
+                     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" minHeight="-Infinity" minWidth="245.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.8000000000000114" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                         <content>
+                             <fx:include fx:id="settingsPane" source="settingsPane.fxml" />
+                         </content>
+                     </ScrollPane>
+                 </children>
+             </AnchorPane>
+             <fx:include fx:id="mapPane" source="mapPane.fxml" />
          </items></SplitPane>
         <fx:include fx:id="chartPane" source="chartPane.fxml" />
     </items>
