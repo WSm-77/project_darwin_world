@@ -173,9 +173,6 @@ public class MapDrawer {
 
         animalsNode.setPreserveRatio(true);
 
-        animalsNode.fitWidthProperty().bind(parentPane.prefWidthProperty());
-        animalsNode.fitHeightProperty().bind(parentPane.prefHeightProperty().multiply(0.8));
-
         ProgressBar healthBar = new ProgressBar();
         double healthPercentage = Math.min(1.0, (double) animal.getStatistics().getEnergy() / MAX_ENERGY_FOR_HEALTH_BAR);
         healthBar.setProgress(healthPercentage);
@@ -189,10 +186,14 @@ public class MapDrawer {
         animalContainer.prefWidthProperty().bind(parentPane.prefWidthProperty());
         animalContainer.prefHeightProperty().bind(parentPane.prefHeightProperty());
 
+        animalsNode.fitWidthProperty().bind(animalContainer.prefWidthProperty());
+        animalsNode.fitHeightProperty().bind(animalContainer.prefHeightProperty().multiply(0.8));
+
         animalContainer.setCenter(animalsNode);
         animalContainer.setBottom(healthBar);
 
         BorderPane.setAlignment(healthBar, Pos.CENTER);
+        BorderPane.setAlignment(animalsNode, Pos.CENTER);
 
         return animalContainer;
     }
