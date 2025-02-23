@@ -10,7 +10,7 @@
             <items>
              <AnchorPane minHeight="0.0" minWidth="0.0" SplitPane.resizableWithParent="false">
                  <children>
-                     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" minHeight="-Infinity" minWidth="245.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.8000000000000114" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" minHeight="-Infinity" minWidth="245.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                          <content>
                              <fx:include fx:id="settingsPane" source="settingsPane.fxml" />
                          </content>
@@ -19,6 +19,8 @@
              </AnchorPane>
              <fx:include fx:id="mapPane" source="mapPane.fxml" />
          </items></SplitPane>
-        <fx:include fx:id="chartPane" source="chartPane.fxml" />
+        <AnchorPane minWidth="0.0" minHeight="0.0" prefHeight="410.0" prefWidth="757.0" SplitPane.resizableWithParent="false">
+            <fx:include fx:id="chartPane" source="chartPane.fxml" AnchorPane.leftAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+        </AnchorPane>
     </items>
 </SplitPane>
