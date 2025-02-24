@@ -1,7 +1,13 @@
 # Project: Darwin World
 
+## App showcase
+
 <p align="center">
     <img src="description_resources/app_showcase.gif">
+</p>
+
+<p align="center">
+    <img src="description_resources/resizeable.gif">
 </p>
 
 ## Project Description
