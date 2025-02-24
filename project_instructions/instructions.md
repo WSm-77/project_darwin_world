@@ -1,6 +1,6 @@
 # Project: Darwin World
 
-#### [Original instructions source](https://github.com/Soamid/obiektowe-lab/blob/master/proj/Readme.md)
+#### [Original instructions source](https://github.com/Soamid/obiektowe-lab/blob/proj-2024/proj/Readme.md)
 
 This content has been adapted by Aleksander Smywiński-Pohl based on descriptions and illustrations prepared by Wojciech Kosior. His inspiration came from the book "Land of Lisp" by Conrad Barski, which in turn was inspired by an article in "Scientific American." Finally, modifications were introduced by Radosław Łazarz, partially based on the book "Genetic Algorithms in Search, Optimization, and Machine Learning" by David E. Goldberg. Quite a few people for a single project. :-)
 
